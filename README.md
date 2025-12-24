@@ -1,4 +1,4 @@
-# Device Life - Frontend
+# 📱Device Life - Frontend
 > 수많은 디바이스 중 유저에게 최적의 조합을 제공하다
 > UMC 9th Project - Client Repository
 
