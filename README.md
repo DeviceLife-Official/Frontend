@@ -16,12 +16,15 @@
 
 ## 🛠️ 기술 스택 (Tech Stack)
 
-* Framework: 미정
-* Language: 미정
-* State Management: 미정
-* Styling: 미정
-* Build Tool: 미정
-* Package Manager: 미정
+Library / Framework	React, Vite
+Language	TypeScript
+Styling	Tailwind CSS
+Data Fetching	Axios, TanStack Query (React Query)
+Formatting	ESLint, Prettier
+State Management	Zustand, TanStack Query (Server State)
+Package Manager	npm
+Version Control	Git, GitHub
+Deployment	Vercel
 
 ---
 
