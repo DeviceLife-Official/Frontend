@@ -15,16 +15,14 @@
 ---
 
 ## 🛠️ 기술 스택 (Tech Stack)
-
-Library / Framework	React, Vite
-Language	TypeScript
-Styling	Tailwind CSS
-Data Fetching	Axios, TanStack Query (React Query)
-Formatting	ESLint, Prettier
-State Management	Zustand, TanStack Query (Server State)
-Package Manager	npm
-Version Control	Git, GitHub
-Deployment	Vercel
+| Category | Technology |
+| :--- | :--- |
+| **Language & Framework** | ![TypeScript](https://img.shields.io/badge/-TypeScript-3178C6?style=flat&logo=typescript&logoColor=white) ![React](https://img.shields.io/badge/-React-61DAFB?style=flat&logo=react&logoColor=black) ![Vite](https://img.shields.io/badge/-Vite-646CFF?style=flat&logo=vite&logoColor=white) |
+| **Styling** | ![Tailwind CSS](https://img.shields.io/badge/-Tailwind%20CSS-38B2AC?style=flat&logo=tailwind-css&logoColor=white) |
+| **State Management** | **Zustand** (Client), **TanStack Query** (Server) |
+| **Data Fetching** | Axios, TanStack Query |
+| **Tools** | ESLint, Prettier, npm |
+| **DevOps** | Git, GitHub, Vercel |
 
 ---
 
