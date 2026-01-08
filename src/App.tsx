@@ -1,5 +1,8 @@
-const App = () => {
-  return <div>App</div>;
-};
-
-export default App;
+export default function App() {
+  return (
+    <>
+      <div className="font-service-name">Device Life</div>
+      <div className="font-service-name-sm">Device Life</div>
+    </>
+  );
+}
