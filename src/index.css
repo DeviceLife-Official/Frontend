@@ -79,22 +79,8 @@
   --spacing-204: 204px;
   --spacing-268: 268px;
   --spacing-280: 280px;
-}
 
-/* Background Effects */
-/* Radial glow - 조합 생성 완료 화면 */
-.bg-effect-glow {
-  border-radius: 800px;
-  opacity: 0.8;
-  background: radial-gradient(50% 50% at 50% 50%, var(--color-blue-200), transparent);
-}
-
-/* Bottom fade overlay - 기기 검색 화면 */
-.bg-effect-fade-bottom {
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0) 60%, rgba(0, 0, 0, 0.2) 100%);
-}
-
-@theme {
+  /* Typography */
   --font-service: 'KIMM_Bold', system-ui, sans-serif;
   --font-main: 'WantedSans', system-ui, sans-serif;
 
@@ -116,6 +102,19 @@
 
   --letter-spacing: 0em;
   --letter-spacing-1: -0.01em;
+}
+
+/* Background Effects */
+/* Radial glow - 조합 생성 완료 화면 */
+.bg-effect-glow {
+  border-radius: 800px;
+  opacity: 0.8;
+  background: radial-gradient(50% 50% at 50% 50%, var(--color-blue-200), transparent);
+}
+
+/* Bottom fade overlay - 기기 검색 화면 */
+.bg-effect-fade-bottom {
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0) 60%, rgba(0, 0, 0, 0.2) 100%);
 }
 
 @font-face {
