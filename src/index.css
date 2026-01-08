@@ -260,7 +260,7 @@
   letter-spacing: var(--letter-spacing-1);
 }
 
-/* Caption (regular) */
+/* caption (regular) */
 .font-caption-r {
   font-family: var(--font-main);
   font-size: var(--font-size-12);
