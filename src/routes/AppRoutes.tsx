@@ -5,12 +5,7 @@ import RootLayout from '@/layouts/RootLayout';
 import HomePage from '@/pages/HomePage';
 
 // lifestyle
-import OfficeLifestylePage from '@/pages/lifestyle/OfficeLifestylePage';
-import DeveloperLifestylePage from '@/pages/lifestyle/DeveloperLifestylePage';
-import GameLifestylePage from '@/pages/lifestyle/GameLifestylePage';
-import StudyLifestylePage from '@/pages/lifestyle/StudyLifestylePage';
-import VideoEditingLifestylePage from '@/pages/lifestyle/VidieoEdittingLifestylePage';
-import PortabilityLifestylePage from '@/pages/lifestyle/PortabilityLifestylePage';
+import LifestylePage from '@/pages/lifestyle/LifestylePage';
 
 // devices
 import DeviceSearchPage from '@/pages/devices/DeviceSearchPage';
@@ -38,14 +33,7 @@ export const AppRoutes = [
       // lifestyle
       {
         path: 'lifestyle',
-        children: [
-          { path: 'office', element: <OfficeLifestylePage /> },
-          { path: 'developer', element: <DeveloperLifestylePage /> },
-          { path: 'game', element: <GameLifestylePage /> },
-          { path: 'study', element: <StudyLifestylePage /> },
-          { path: 'video-editing', element: <VideoEditingLifestylePage /> },
-          { path: 'portability', element: <PortabilityLifestylePage /> },
-        ],
+        element: <LifestylePage />,
       },
 
       // devices
