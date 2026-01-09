@@ -20,6 +20,7 @@
   --color-gray-400: #54545f;
   --color-gray-500: #21212d;
   --color-black: #000000;
+  --color-black-50: rgba(0, 0, 0, 0.5); /* background */
 
   /* Warning */
   --color-warning: #e6284b;
@@ -36,9 +37,6 @@
   --color-optimal: #0069f0; /* 최적 */
   --color-normal: #009f96; /* 보통 */
   --color-poor: #e6284b; /* 미흡 */
-
-  /* Opacity Scale - 모달 뒷 배경 */
-  --color-opacity-black-20: rgba(0, 0, 0, 0.2);
 
   /* Radius */
   --radius-button: 8px;
