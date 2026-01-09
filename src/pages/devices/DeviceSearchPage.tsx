@@ -1,3 +1,5 @@
-export const DeviceSearchPage = () => {
+const DeviceSearchPage = () => {
   return <div>DeviceSearchPage</div>;
 };
+
+export default DeviceSearchPage;

@@ -1,4 +1,4 @@
-import AuthLayout from '@/layouts/AuthLayout';
+import RootLayout from '@/layouts/RootLayout';
 import LoginPage from '@/pages/auth/LoginPage';
 import OnboardingCombinationPage from '@/pages/auth/OnboardingCombinationPage';
 import OnboardingCompletePage from '@/pages/auth/OnboardingCompletePage';
@@ -9,16 +9,21 @@ import SignupPage from '@/pages/auth/SignupPage';
 export const AuthFlowRoutes = [
   {
     path: '/auth',
-    element: <AuthLayout />,
+    element: <RootLayout />,
     children: [
       { path: 'login', element: <LoginPage /> },
       { path: 'signup', element: <SignupPage /> },
       { path: 'signup/form', element: <SignupFormPage /> },
 
-      // onboarding routes
-      { path: 'onboarding/lifestyle', element: <OnboardingLifestylePage /> },
-      { path: 'onboarding/combination', element: <OnboardingCombinationPage /> },
-      { path: 'onboarding/complete', element: <OnboardingCompletePage /> },
+      // onboarding
+      {
+        path: 'onboarding',
+        children: [
+          { path: 'lifestyle', element: <OnboardingLifestylePage /> },
+          { path: 'combination', element: <OnboardingCombinationPage /> },
+          { path: 'complete', element: <OnboardingCompletePage /> },
+        ],
+      },
     ],
   },
 ];
