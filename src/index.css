@@ -1,0 +1,268 @@
+@import 'tailwindcss';
+
+@theme {
+  /* Main Color */
+  --color-blue-100: #eff6ff;
+  --color-blue-200: #bddaff;
+  --color-blue-300: #8abdff;
+  --color-blue-400: #57a0ff;
+  --color-blue-500: #2484ff;
+  --color-blue-600: #0069f0;
+  --color-blue-700: #0053bd;
+  --color-blue-800: #003c8a;
+  --color-blue-900: #002657;
+
+  /* gray scale */
+  --color-white: #ffffff;
+  --color-gray-100: #eeeef0;
+  --color-gray-200: #bababe;
+  --color-gray-300: #878791;
+  --color-gray-400: #54545f;
+  --color-gray-500: #21212d;
+  --color-black: #000000;
+  --color-black-50: rgba(0, 0, 0, 0.5); /* background */
+
+  /* Warning */
+  --color-warning: #e6284b;
+
+  /* sub1 (tag color) */
+  --color-light-green: #bdf8e1;
+  --color-dark-green: #00719f;
+  --color-light-yellow: #fee8c3;
+  --color-dark-yellow: #fb7104;
+  --color-light-purple: #eadaff;
+  --color-dark-purple: #941e9f;
+
+  /* sub2 (tag status color) */
+  --color-optimal: #0069f0; /* 최적 */
+  --color-normal: #009f96; /* 보통 */
+  --color-poor: #e6284b; /* 미흡 */
+
+  /* Radius */
+  --radius-button: 8px;
+  --radius-card: 12px;
+  --radius-tag: 999px;
+
+  /* Spacing */
+  --spacing: 1px;
+  --spacing-8: 8px;
+  --spacing-12: 12px;
+  --spacing-16: 16px;
+  --spacing-20: 20px;
+  --spacing-24: 24px;
+  --spacing-28: 28px;
+  --spacing-32: 32px;
+  --spacing-36: 36px;
+  --spacing-40: 40px;
+  --spacing-44: 44px;
+  --spacing-56: 56px;
+  --spacing-60: 60px;
+  --spacing-68: 68px;
+  --spacing-72: 72px;
+  --spacing-76: 76px;
+  --spacing-80: 80px;
+  --spacing-88: 88px;
+  --spacing-96: 96px;
+  --spacing-100: 100px;
+  --spacing-104: 104px;
+  --spacing-108: 108px;
+  --spacing-116: 116px;
+  --spacing-124: 124px;
+  --spacing-132: 132px;
+  --spacing-146: 146px;
+  --spacing-156: 156px;
+  --spacing-160: 160px;
+  --spacing-164: 164px;
+  --spacing-184: 184px;
+  --spacing-196: 196px;
+  --spacing-204: 204px;
+  --spacing-268: 268px;
+  --spacing-280: 280px;
+
+  /* Typography */
+  --font-service: 'KIMM_Bold', system-ui, sans-serif;
+  --font-main: 'WantedSans', system-ui, sans-serif;
+
+  --font-size-48: 48px;
+  --font-size-34: 34px;
+  --font-size-32: 32px;
+  --font-size-28: 28px;
+  --font-size-24: 24px;
+  --font-size-20: 20px;
+  --font-size-16: 16px;
+  --font-size-14: 14px;
+  --font-size-12: 12px;
+
+  --font-weight-bold: 700;
+  --font-weight-semibold: 600;
+  --font-weight-regular: 400;
+
+  --line-height-normal: normal;
+
+  --letter-spacing: 0em;
+  --letter-spacing-1: -0.01em;
+}
+
+/* Background Effects */
+/* Radial glow - 조합 생성 완료 화면 */
+.bg-effect-glow {
+  border-radius: 800px;
+  opacity: 0.8;
+  background: radial-gradient(50% 50% at 50% 50%, var(--color-blue-200), transparent);
+}
+
+/* Bottom fade overlay - 기기 검색 화면 */
+.bg-effect-fade-bottom {
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0) 60%, rgba(0, 0, 0, 0.2) 100%);
+}
+
+@font-face {
+  font-family: 'KIMM_Bold';
+  src: url('./assets/fonts/KIMM_bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* SERVICE NAME (34px) */
+.font-service-name {
+  font-family: var(--font-service);
+  font-size: var(--font-size-34);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-normal);
+  letter-spacing: var(--letter-spacing);
+}
+
+/* service name (24px) */
+.font-service-name-sm {
+  font-family: var(--font-service);
+  font-size: var(--font-size-24);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-normal);
+  letter-spacing: var(--letter-spacing);
+}
+
+@font-face {
+  font-family: 'WantedSans';
+  src: url('./assets/fonts/WantedSansVariable.woff2') format('woff2');
+  font-weight: 400 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Heading1 */
+.font-heading-1 {
+  font-family: var(--font-main);
+  font-size: var(--font-size-48);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-normal);
+  letter-spacing: var(--letter-spacing-1);
+}
+
+/* Heading2 */
+.font-heading-2 {
+  font-family: var(--font-main);
+  font-size: var(--font-size-32);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-normal);
+  letter-spacing: var(--letter-spacing-1);
+}
+
+/* Heading3 */
+.font-heading-3 {
+  font-family: var(--font-main);
+  font-size: var(--font-size-28);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-normal);
+  letter-spacing: var(--letter-spacing-1);
+}
+
+/* Body1 (semibold) */
+.font-body-1-sm {
+  font-family: var(--font-main);
+  font-size: var(--font-size-24);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-normal);
+  letter-spacing: var(--letter-spacing-1);
+}
+
+/* body1 (regular) */
+.font-body-1-r {
+  font-family: var(--font-main);
+  font-size: var(--font-size-24);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-normal);
+  letter-spacing: var(--letter-spacing-1);
+}
+
+/* Body2 (semibold) */
+.font-body-2-sm {
+  font-family: var(--font-main);
+  font-size: var(--font-size-20);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-normal);
+  letter-spacing: var(--letter-spacing-1);
+}
+
+/* body2 (regular) */
+.font-body-2-r {
+  font-family: var(--font-main);
+  font-size: var(--font-size-20);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-normal);
+  letter-spacing: var(--letter-spacing-1);
+}
+
+/* Body3 (semibold) */
+.font-body-3-sm {
+  font-family: var(--font-main);
+  font-size: var(--font-size-16);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-normal);
+  letter-spacing: var(--letter-spacing-1);
+}
+
+/* body3 (regular) */
+.font-body-3-r {
+  font-family: var(--font-main);
+  font-size: var(--font-size-16);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-normal);
+  letter-spacing: var(--letter-spacing-1);
+}
+
+/* Body4 (semibold) */
+.font-body-4-sm {
+  font-family: var(--font-main);
+  font-size: var(--font-size-14);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-normal);
+  letter-spacing: var(--letter-spacing-1);
+}
+
+/* body4 (regular) */
+.font-body-4-r {
+  font-family: var(--font-main);
+  font-size: var(--font-size-14);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-normal);
+  letter-spacing: var(--letter-spacing-1);
+}
+
+/* Caption (semibold) */
+.font-caption-sm {
+  font-family: var(--font-main);
+  font-size: var(--font-size-12);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-normal);
+  letter-spacing: var(--letter-spacing-1);
+}
+
+/* caption (regular) */
+.font-caption-r {
+  font-family: var(--font-main);
+  font-size: var(--font-size-12);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-normal);
+  letter-spacing: var(--letter-spacing-1);
+}
