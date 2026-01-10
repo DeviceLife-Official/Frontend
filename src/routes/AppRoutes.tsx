@@ -21,6 +21,11 @@ import MyCombinationDetailPage from '@/pages/my/MyCombinationDetailPage';
 import MySettingsProfilePage from '@/pages/my/settings/ProfileEditPage';
 import MySettingsPasswordPage from '@/pages/my/settings/PasswordEditPage';
 import MyTrashPage from '@/pages/my/MyTrashPage';
+import CustomerCenterPage from '@/pages/support/CustomerCenterPage';
+import FaqPage from '@/pages/support/FaqPage';
+import NoticesPage from '@/pages/support/NoticesPage';
+import TermsPage from '@/pages/support/TermsPage';
+import PrivacyPolicyPage from '@/pages/support/PrivacyPolicyPage';
 
 export const AppRoutes = [
   {
@@ -68,6 +73,18 @@ export const AppRoutes = [
             ],
           },
           { path: 'trash', element: <MyTrashPage /> },
+        ],
+      },
+
+      // support
+      {
+        path: 'support',
+        children: [
+          { path: 'customer-center', element: <CustomerCenterPage /> },
+          { path: 'faq', element: <FaqPage /> },
+          { path: 'notices', element: <NoticesPage /> },
+          { path: 'terms', element: <TermsPage /> },
+          { path: 'privacy-policy', element: <PrivacyPolicyPage /> },
         ],
       },
     ],
