@@ -26,6 +26,7 @@ import FaqPage from '@/pages/support/FaqPage';
 import NoticesPage from '@/pages/support/NoticesPage';
 import TermsPage from '@/pages/support/TermsPage';
 import PrivacyPolicyPage from '@/pages/support/PrivacyPolicyPage';
+import NotFoundPage from '@/pages/NotFoundPage';
 
 export const AppRoutes = [
   {
@@ -87,6 +88,9 @@ export const AppRoutes = [
           { path: 'privacy-policy', element: <PrivacyPolicyPage /> },
         ],
       },
+
+      // not found
+      { path: '*', element: <NotFoundPage /> },
     ],
   },
 ];

@@ -5,6 +5,7 @@ import OnboardingCompletePage from '@/pages/auth/OnboardingCompletePage';
 import OnboardingLifestylePage from '@/pages/auth/OnboardingLifestylePage';
 import SignupFormPage from '@/pages/auth/SignupFormPage';
 import SignupPage from '@/pages/auth/SignupPage';
+import NotFoundPage from '@/pages/NotFoundPage';
 
 export const AuthFlowRoutes = [
   {
@@ -24,6 +25,9 @@ export const AuthFlowRoutes = [
           { path: 'complete', element: <OnboardingCompletePage /> },
         ],
       },
+
+      // not found
+      { path: '*', element: <NotFoundPage /> },
     ],
   },
 ];
