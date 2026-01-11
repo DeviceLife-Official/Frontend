@@ -6,7 +6,9 @@ const RootLayout = () => {
     <main className="mx-auto min-w-1440 max-w-1920 w-full min-h-screen overflow-auto">
       <div className="min-w-max flex flex-col">
         <HomeIndicator />
-        <Outlet />
+        <div className="pt-108">
+          <Outlet />
+        </div>
       </div>
     </main>
   );

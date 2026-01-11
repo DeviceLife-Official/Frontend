@@ -4,7 +4,7 @@ import HomeImage2 from '@/assets/images/home/HomeImage2.svg?react';
 import HomeImage3 from '@/assets/images/home/HomeImage3.svg?react';
 import Connectivity from '@/assets/icons/connectivity.svg?react';
 import Portability from '@/assets/icons/portability.svg?react';
-import LifeStyle from '@/assets/icons/lifestyle.svg?react';
+import Lifestyle from '@/assets/icons/lifestyle.svg?react';
 import Colormatching from '@/assets/icons/colormatching.svg?react';
 
 import Footer from '@/components/Home/Footer';
@@ -77,7 +77,7 @@ const HomePage = () => {
                     가장 중요한 기준을 우선적으로 분석합니다.
                   </p>
                 </div>
-                <LifeStyle className="w-280 h-280" />
+                <Lifestyle className="w-280 h-280" />
               </div>
               <div className="flex flex-col justify-center items-center w-448 h-380">
                 <div className="flex flex-col gap-20">
