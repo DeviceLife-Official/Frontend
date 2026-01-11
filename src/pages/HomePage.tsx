@@ -87,7 +87,7 @@ const HomePage = () => {
                     완성도 높은 나만의 데스크테리어를 제안합니다.
                   </p>
                 </div>
-                <Connectivity className="w-280 h-280" />
+                <Colormatching className="w-280 h-280" />
               </div>
             </div>
           </div>
