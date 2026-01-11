@@ -177,15 +177,6 @@
   letter-spacing: var(--letter-spacing-1);
 }
 
-/* Body1 (bold) */
-.font-body-1-b {
-  font-family: var(--font-main);
-  font-size: var(--font-size-24);
-  font-weight: var(--font-weight-bold);
-  line-height: var(--line-height-normal);
-  letter-spacing: var(--letter-spacing-1);
-}
-
 /* Body1 (semibold) */
 .font-body-1-sm {
   font-family: var(--font-main);
