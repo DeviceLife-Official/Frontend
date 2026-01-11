@@ -15,7 +15,7 @@ const HomeIndicator = () => {
   const [authStatus] = useState<AuthStatus>('logout');
 
   return (
-    <header className="bg-blue-300 h-108">
+    <header className="bg-white h-108">
       <div className="flex items-center justify-between h-full px-160 pl-44">
         <div className="flex justify-end items-center gap-108">
           <div className="flex items-center gap-20">
@@ -35,7 +35,6 @@ const HomeIndicator = () => {
           </Link>
         </div>
         <div className="flex items-center gap-56">
-          {/* 로그아웃 상태 */}
           {authStatus === 'logout' && (
             <>
               <Link to="/auth/login" className={navTextClass}>
@@ -46,7 +45,6 @@ const HomeIndicator = () => {
               </Link>
             </>
           )}
-          {/* 로그인 / 게스트 상태 */}
           {authStatus !== 'logout' && (
             <>
               <div className="flex items-center gap-6">

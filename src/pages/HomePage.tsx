@@ -1,5 +1,7 @@
+import Footer from '@/components/Home/Footer';
+
 const HomePage = () => {
-  return <div>HomePage</div>;
+  return <Footer />;
 };
 
 export default HomePage;
