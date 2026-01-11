@@ -25,7 +25,6 @@ const HomePage = () => {
   return (
     <div className="flex flex-col">
       <div className="w-full max-w-1200 mx-auto flex flex-col gap-100 pb-268">
-        {/* 사진 영역 */}
         <div className="relative w-full max-w-1200">
           {IMAGES.map((Img, i) => (
             <Img
@@ -40,8 +39,6 @@ const HomePage = () => {
             <HomeImage1 className="w-full h-auto" />
           </div>
         </div>
-
-        {/* 소개 영역 */}
         <div className="w-full flex flex-col items-center gap-88">
           <p className="font-heading-2 text-blue-600 text-center">스마트한 평가 시스템</p>
           <div className="flex flex-col gap-124">
@@ -99,4 +96,3 @@ const HomePage = () => {
 };
 
 export default HomePage;
-//todo:헤더 플로팅

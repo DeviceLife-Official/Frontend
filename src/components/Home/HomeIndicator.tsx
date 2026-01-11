@@ -23,7 +23,6 @@ const HomeIndicator = () => {
                 Device Life
               </Link>
             </div>
-
             <Link to="/devices" className={navTextClass}>
               기기검색
             </Link>
@@ -34,7 +33,6 @@ const HomeIndicator = () => {
               조합 생성하기
             </Link>
           </div>
-
           <div className="flex items-center gap-56 whitespace-nowrap">
             {authStatus === 'logout' && (
               <>
@@ -46,7 +44,6 @@ const HomeIndicator = () => {
                 </Link>
               </>
             )}
-
             {authStatus !== 'logout' && (
               <>
                 <div className="flex items-center gap-6">

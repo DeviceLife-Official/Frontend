@@ -39,5 +39,3 @@ const Footer = () => {
 };
 
 export default Footer;
-
-// todo: 호버했을때밑줄, 혹시모를 클래스 상수분리
