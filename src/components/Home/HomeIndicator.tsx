@@ -1,4 +1,4 @@
-import Logo from '@/assets/logos/logo.png';
+import Logo from '@/assets/logos/logo.svg?react';
 import { Link } from 'react-router-dom';
 
 const navTextClass =
@@ -10,7 +10,7 @@ const HomeIndicator = () => {
       <div className="flex items-center justify-between h-full px-160 pl-44">
         <div className="flex justify-end items-center gap-108">
           <div className="flex items-center gap-20">
-            <img src={Logo} alt="Logo" className="w-48 h-48" />
+            <Logo className="w-48 h-48" aria-label="Logo" />
             <Link
               to="/"
               className="font-service-name-sm text-black cursor-pointer hover:text-blue-500 active:text-blue-600"
