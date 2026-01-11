@@ -3,10 +3,8 @@ import User from '@/assets/icons/user.svg?react';
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
 
-const brandLinkClass =
-  'font-service-name-sm text-black cursor-pointer hover:text-blue-500 active:text-blue-600';
-const navTextClass =
-  'font-body-1-sm text-black cursor-pointer hover:text-blue-500 active:text-blue-600';
+const brandLinkClass = 'font-service-name-sm text-black hover:text-blue-500 active:text-blue-600';
+const navTextClass = 'font-body-1-sm text-black hover:text-blue-500 active:text-blue-600';
 
 type AuthStatus = 'logout' | 'login' | 'guest';
 
