@@ -1,20 +1,26 @@
 import Logo from '@/assets/logos/logo.svg?react';
+import User from '@/assets/icons/user.svg?react';
 import { Link } from 'react-router-dom';
+import { useState } from 'react';
 
+const brandLinkClass =
+  'font-service-name-sm text-black cursor-pointer hover:text-blue-500 active:text-blue-600';
 const navTextClass =
   'font-body-1-sm text-black cursor-pointer hover:text-blue-500 active:text-blue-600';
 
+type AuthStatus = 'logout' | 'login' | 'guest';
+
 const HomeIndicator = () => {
+  // TODO: 실제 상태로 교체
+  const [authStatus] = useState<AuthStatus>('logout');
+
   return (
-    <header className="bg-white h-108">
+    <header className="bg-blue-300 h-108">
       <div className="flex items-center justify-between h-full px-160 pl-44">
         <div className="flex justify-end items-center gap-108">
           <div className="flex items-center gap-20">
             <Logo className="w-48 h-48" aria-label="Logo" />
-            <Link
-              to="/"
-              className="font-service-name-sm text-black cursor-pointer hover:text-blue-500 active:text-blue-600"
-            >
+            <Link to="/" className={brandLinkClass}>
               Device Life
             </Link>
           </div>
@@ -29,12 +35,29 @@ const HomeIndicator = () => {
           </Link>
         </div>
         <div className="flex items-center gap-56">
-          <Link to="/auth/login" className={navTextClass}>
-            로그인
-          </Link>
-          <Link to="/auth/signup" className={navTextClass}>
-            회원가입
-          </Link>
+          {/* 로그아웃 상태 */}
+          {authStatus === 'logout' && (
+            <>
+              <Link to="/auth/login" className={navTextClass}>
+                로그인
+              </Link>
+              <Link to="/auth/signup" className={navTextClass}>
+                회원가입
+              </Link>
+            </>
+          )}
+          {/* 로그인 / 게스트 상태 */}
+          {authStatus !== 'logout' && (
+            <>
+              <div className="flex items-center gap-6">
+                <User className="w-32 h-32" aria-label="User" />
+                <Link to="/my" className={navTextClass}>
+                  {authStatus === 'guest' ? 'MY(guest)' : 'MY'}
+                </Link>
+              </div>
+              <p className={navTextClass}>로그아웃</p>
+            </>
+          )}
         </div>
       </div>
     </header>
