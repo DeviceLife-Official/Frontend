@@ -6,7 +6,6 @@ import Connectivity from '@/assets/icons/connectivity.svg?react';
 import Portability from '@/assets/icons/portability.svg?react';
 import Lifestyle from '@/assets/icons/lifestyle.svg?react';
 import Colormatching from '@/assets/icons/colormatching.svg?react';
-
 import Footer from '@/components/Home/Footer';
 
 const IMAGES = [HomeImage1, HomeImage2, HomeImage3];
@@ -64,7 +63,6 @@ const HomePage = () => {
                 <Portability className="w-280 h-280" />
               </div>
             </div>
-
             <div className="flex flex-row gap-108">
               <div className="flex flex-col justify-center items-center w-448 h-380">
                 <div className="flex flex-col gap-20">

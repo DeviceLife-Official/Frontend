@@ -10,7 +10,7 @@ type AuthStatus = 'logout' | 'login' | 'guest';
 
 const HomeIndicator = () => {
   // TODO: 실제 상태로 교체
-  const [authStatus] = useState<AuthStatus>('logout');
+  const [authStatus] = useState<AuthStatus>('login');
 
   return (
     <header className="fixed top-0 left-0 w-full z-50 bg-white h-108">
@@ -46,7 +46,7 @@ const HomeIndicator = () => {
             )}
             {authStatus !== 'logout' && (
               <>
-                <div className="flex items-center gap-6">
+                <div className="flex items-center gap-4">
                   <User className="w-32 h-32" aria-label="User" />
                   <Link to="/my" className={navTextClass}>
                     {authStatus === 'guest' ? 'MY(guest)' : 'MY'}
