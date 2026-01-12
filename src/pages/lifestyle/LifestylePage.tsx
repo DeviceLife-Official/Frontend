@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import LifestyleTag from '@/components/Lifestyle/LifeStyleTag';
+import LifestyleTag from '@/components/Lifestyle/LifestyleTag';
 
 const TAGS = [
   'Office/portability',
