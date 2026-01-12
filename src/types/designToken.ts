@@ -46,9 +46,6 @@ export type TypographyToken =
   | 'font-heading-2'
   | 'font-heading-3'
 
-  /* Body (bold) */
-  | 'font-body-1-b'
-
   /* Body (semibold) */
   | 'font-body-1-sm'
   | 'font-body-2-sm'
