@@ -1,6 +1,9 @@
 import Logo from '@/assets/logos/logo.svg?react';
-import User from '@/assets/icons/user.svg?react';
-import { Link } from 'react-router-dom';
+import UserBlack from '@/assets/icons/userblack.svg?react';
+import UserBlue500 from '@/assets/icons/userblue500.svg?react';
+import UserBlue600 from '@/assets/icons/userblue600.svg?react';
+
+import { NavLink } from 'react-router-dom';
 import { useState } from 'react';
 
 const brandLinkClass = 'font-service-name-sm text-black hover:text-blue-500 active:text-blue-600';
@@ -9,8 +12,13 @@ const navTextClass = 'font-body-1-sm text-black hover:text-blue-500 active:text-
 type AuthStatus = 'logout' | 'login' | 'guest';
 
 const HomeIndicator = () => {
-  // TODO: 실제 상태로 교체
   const [authStatus] = useState<AuthStatus>('login');
+
+  const navClass = ({ isActive }: { isActive: boolean }) =>
+    `${navTextClass} ${isActive ? 'text-blue-600 hover:text-blue-500' : ''}`;
+
+  const brandClass = ({ isActive }: { isActive: boolean }) =>
+    `${brandLinkClass} ${isActive ? 'text-blue-600 hover:text-blue-500' : ''}`;
 
   return (
     <header className="fixed top-0 left-0 w-full z-50 bg-white h-108">
@@ -20,40 +28,78 @@ const HomeIndicator = () => {
             <div className="flex justify-end items-center gap-108 whitespace-nowrap shrink-0">
               <div className="flex items-center gap-20">
                 <Logo className="w-48 h-48" aria-label="Logo" />
-                <Link to="/" className={brandLinkClass}>
+                <NavLink to="/" end className={brandClass}>
                   Device Life
-                </Link>
+                </NavLink>
               </div>
-              <Link to="/devices" className={navTextClass}>
+              <NavLink to="/devices" className={navClass}>
                 기기검색
-              </Link>
-              <Link to="/lifestyle" className={navTextClass}>
+              </NavLink>
+              <NavLink to="/lifestyle" className={navClass}>
                 라이프스타일
-              </Link>
-              <Link to="/combination/create" className={navTextClass}>
+              </NavLink>
+              <NavLink to="/combination/create" className={navClass}>
                 조합 생성하기
-              </Link>
+              </NavLink>
             </div>
             <div className="flex items-center gap-56 whitespace-nowrap shrink-0">
               {authStatus === 'logout' && (
                 <>
-                  <Link to="/auth/login" className={navTextClass}>
+                  <NavLink to="/auth/login" className={navClass}>
                     로그인
-                  </Link>
-                  <Link to="/auth/signup" className={navTextClass}>
+                  </NavLink>
+                  <NavLink to="/auth/signup" className={navClass}>
                     회원가입
-                  </Link>
+                  </NavLink>
                 </>
               )}
               {authStatus !== 'logout' && (
                 <>
-                  <div className="flex items-center gap-4">
-                    <User className="w-32 h-32" aria-label="User" />
-                    <Link to="/my" className={navTextClass}>
-                      {authStatus === 'guest' ? 'MY(guest)' : 'MY'}
-                    </Link>
-                  </div>
-                  <p className={`${navTextClass} cursor-pointer`}>로그아웃</p>
+                  <NavLink
+                    to="/my"
+                    className={({ isActive }) =>
+                      `group flex items-center gap-4 ${
+                        isActive ? 'font-body-1-sm text-blue-600 hover:text-blue-500' : navTextClass
+                      }`
+                    }
+                  >
+                    {({ isActive }) => (
+                      <>
+                        <span className="relative w-32 h-32">
+                          <UserBlack
+                            className={`absolute inset-0 w-32 h-32 transition-opacity duration-200 ease-out
+                              ${isActive ? 'opacity-0' : 'opacity-100 group-hover:opacity-0'}`}
+                          />
+                          <UserBlue500
+                            className={`absolute inset-0 w-32 h-32 transition-opacity duration-200 ease-out
+                              ${
+                                isActive
+                                  ? 'opacity-0 group-hover:opacity-100'
+                                  : 'opacity-0 group-hover:opacity-100'
+                              }`}
+                          />
+                          <UserBlue600
+                            className={`absolute inset-0 w-32 h-32 transition-opacity duration-200 ease-out
+                              ${
+                                isActive
+                                  ? 'opacity-100 group-hover:opacity-0'
+                                  : 'opacity-0 group-active:opacity-100'
+                              }`}
+                          />
+                        </span>
+                        {authStatus === 'guest' ? 'MY(guest)' : 'MY'}
+                      </>
+                    )}
+                  </NavLink>
+                  <NavLink
+                    to="/"
+                    className={navTextClass}
+                    onClick={() => {
+                      // TODO: 로그아웃 로직 작성
+                    }}
+                  >
+                    로그아웃
+                  </NavLink>
                 </>
               )}
             </div>
