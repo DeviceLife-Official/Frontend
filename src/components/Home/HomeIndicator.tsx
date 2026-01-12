@@ -16,7 +16,7 @@ const HomeIndicator = () => {
     <header className="fixed top-0 left-0 w-full z-50 bg-white h-108">
       <div className="mx-auto w-full max-w-1920 h-full">
         <div className="min-w-1440 h-full">
-          <div className="flex items-center justify-between h-full px-160 pl-44">
+          <div className="flex items-center justify-between h-full pl-44 pr-[clamp(60px,calc(60px+(100vw-1440px)*0.208333),160px)]">
             <div className="flex justify-end items-center gap-108 whitespace-nowrap shrink-0">
               <div className="flex items-center gap-20">
                 <Logo className="w-48 h-48" aria-label="Logo" />
