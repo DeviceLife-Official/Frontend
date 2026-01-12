@@ -4,7 +4,7 @@ import HomeImage2 from '@/assets/images/home/HomeImage2.svg?react';
 import HomeImage3 from '@/assets/images/home/HomeImage3.svg?react';
 import ConnectivitySection from '@/components/Home/ConnectivitySection';
 import PortabilitySection from '@/components/Home/PortabilitySection';
-import LifeStyleSection from '@/components/Home/LifeStyleSection';
+import LifeStyleSection from '@/components/Home/LifestyleSection';
 import ColormatchingSection from '@/components/Home/ColormatchingSection';
 import Footer from '@/components/Home/Footer';
 
