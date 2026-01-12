@@ -53,7 +53,7 @@ const HomeIndicator = () => {
                       {authStatus === 'guest' ? 'MY(guest)' : 'MY'}
                     </Link>
                   </div>
-                  <p className={navTextClass}>로그아웃</p>
+                  <p className={`${navTextClass} cursor-pointer`}>로그아웃</p>
                 </>
               )}
             </div>
