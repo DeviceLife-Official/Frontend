@@ -116,6 +116,17 @@
   background: linear-gradient(180deg, rgba(0, 0, 0, 0) 60%, rgba(0, 0, 0, 0.2) 100%);
 }
 
+/* 태그 뒤 그림자 */
+@layer utilities {
+  .border-shadow-black {
+    box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.25);
+  }
+
+  .border-shadow-blue {
+    box-shadow: 0 0 7px 0 var(--color-blue-400);
+  }
+}
+
 @font-face {
   font-family: 'KIMM_Bold';
   src: url('./assets/fonts/KIMM_bold.woff2') format('woff2');
