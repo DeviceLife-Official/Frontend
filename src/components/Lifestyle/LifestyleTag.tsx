@@ -31,8 +31,8 @@ const LifestyleTag = ({ label, selected = false, onClick }: LifestyleTagProps) =
       transition-all duration-150 origin-left
       ${
         selected
-          ? 'border-shadow-blue font-heading-1 text-blue-700'
-          : 'border-shadow-black font-heading-2 text-black hover:text-blue-500'
+          ? 'border-shadow-blue font-heading-2 text-blue-700'
+          : 'border-shadow-black font-heading-3 text-black hover:text-blue-500'
       }
     `}
     >
