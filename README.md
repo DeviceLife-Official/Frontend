@@ -16,7 +16,7 @@
 
 ## 🧑🏻‍💻 팀원 (Contributors)
 
-| <img src="https://github.com/waldls.png" width="150" height="150"/> | <img src="https://github.com/Seony777.png" width="140" height="140"/> | <img src="https://github.com/H-un1.png" width="150" height="150"/> |
+| <img src="https://github.com/waldls.png" width="150" height="150"/> | <img src="https://github.com/Seony777.png" width="150" height="150"/> | <img src="https://github.com/H-un1.png" width="150" height="150"/> |
 | :---------------------------------------------------------------: | :-----------------------------------------------------------------: | :---------------------------------------------------------------: |
 | 박유민 <br/> [@waldls](https://github.com/waldls) | 이선우 <br/> [@Seony777](https://github.com/Seony777) | 임병훈 <br/> [@H-un1](https://github.com/H-un1) |
 | **Frontend Lead** | **Frontend** | **Frontend** |
