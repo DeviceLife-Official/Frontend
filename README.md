@@ -14,15 +14,28 @@
 
 ---
 
+## 🧑🏻‍💻 팀원 (Contributors)
+
+| <img src="https://github.com/waldls.png" width="150" height="150"/> | <img src="https://github.com/Seony777.png" width="140" height="140"/> | <img src="https://github.com/H-un1.png" width="150" height="150"/> |
+| :---------------------------------------------------------------: | :-----------------------------------------------------------------: | :---------------------------------------------------------------: |
+| 박유민 <br/> [@waldls](https://github.com/waldls) | 이선우 <br/> [@Seony777](https://github.com/Seony777) | 임병훈 <br/> [@H-un1](https://github.com/H-un1) |
+| **Frontend Lead** | **Frontend** | **Frontend** |
+
+
+---
+
 ## 🛠️ 기술 스택 (Tech Stack)
-| Category | Technology |
-| :--- | :--- |
-| **Language & Framework** | ![TypeScript](https://img.shields.io/badge/-TypeScript-3178C6?style=flat&logo=typescript&logoColor=white) ![React](https://img.shields.io/badge/-React-61DAFB?style=flat&logo=react&logoColor=black) ![Vite](https://img.shields.io/badge/-Vite-646CFF?style=flat&logo=vite&logoColor=white) |
-| **Styling** | ![Tailwind CSS](https://img.shields.io/badge/-Tailwind%20CSS-38B2AC?style=flat&logo=tailwind-css&logoColor=white) |
-| **State Management** | **Zustand** (Client), **TanStack Query** (Server) |
-| **Data Fetching** | Axios, TanStack Query |
-| **Tools** | ESLint, Prettier, npm |
-| **DevOps** | Git, GitHub, Vercel |
+| 역할 | 종류 | 선정 근거 |
+| :--: | :-- | :-- |
+| **Language & Framework** | ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white) ![React](https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=react&logoColor=black) ![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white) | TypeScript로 타입 안정성을 확보하고, React 컴포넌트 기반 UI를 구성했으며, Vite의 빠른 번들링과 HMR로 개발 생산성 증가 |
+| **Styling** | ![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white) | 유틸리티 기반 스타일링으로 빠르고 일관된 UI 구현 |
+| **State Management** | ![Zustand](https://img.shields.io/badge/Zustand-000000?style=for-the-badge&logoColor=white) ![TanStack Query](https://img.shields.io/badge/TanStack_Query-FF4154?style=for-the-badge&logo=reactquery&logoColor=white) | Zustand로 클라이언트 상태를 간단히 관리하고, TanStack Query로 서버 상태/캐싱을 선언적으로 관리 |
+| **Data Fetching** | ![Axios](https://img.shields.io/badge/Axios-5A29E4?style=for-the-badge&logo=axios&logoColor=white) ![TanStack Query](https://img.shields.io/badge/TanStack_Query-FF4154?style=for-the-badge&logo=reactquery&logoColor=white) | Axios로 HTTP 요청을 처리하고, TanStack Query로 요청 상태/캐싱/동기화 관리 |
+| **Tools** | ![ESLint](https://img.shields.io/badge/ESLint-4B32C3?style=for-the-badge&logo=eslint&logoColor=white) ![Prettier](https://img.shields.io/badge/Prettier-F7B93E?style=for-the-badge&logo=prettier&logoColor=black) | ESLint로 코드 규칙을 통일하고, Prettier로 포맷을 자동화하여 일관된 코드 스타일 유지 |
+| **DevOps** | ![Git](https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=git&logoColor=white) ![GitHub](https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white) ![Vercel](https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white) | Git/GitHub로 버전 관리 및 협업을 진행하고, Vercel로 배포 자동화 및 CI/CD 간소화 |
+| **Package Manager** | ![npm](https://img.shields.io/badge/npm-CB3837?style=for-the-badge&logo=npm&logoColor=white) | 패키지 관리 및 의존성 설치를 표준 방식으로 관리 |
+
+
 
 ---
 
@@ -73,3 +86,23 @@
 ### ✨ 예시
 * feat: 컴포넌트 추가
 * fix: 가려짐 현상 해결
+
+---
+
+## 🤝 그라운드 룰 (Ground Rules)
+
+- **연락 자주 확인하기**
+  - 디스코드/카카오톡 알림을 자주 확인합니다.
+
+- **적극적으로 의견 공유하기**
+  - 막히는 부분이나 변경 사항이 생기면 빠르게 공유합니다.
+
+- **PR Merge 규칙**
+  - 기본적으로 전원 Approve 후 Merge하며, PR 작성자가 브랜치를 삭제합니다.
+  - 단, 여행 등 개인 일정으로 확인이 어려운 경우, 해당 인원을 제외한 팀원의 Approve로 Merge 가능합니다.
+
+- **라이브러리 설치 공유**
+  - 작업 중 새로운 라이브러리를 설치한 경우, 디스코드 스레드에 댓글로 공유합니다.
+
+- **Figma 수치 규칙**
+  - 디자이너님께서 별도로 안내한 경우를 제외하고, 가장 가까운 4의 배수로 스냅하여 적용합니다.
