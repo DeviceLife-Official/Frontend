@@ -28,34 +28,29 @@ const TAG_IMAGE_MAP: Record<Tag, string> = {
 const LifestylePage = () => {
   const [selectedLabel, setSelectedLabel] = useState<Tag>(TAGS[0]);
   return (
-    <div className="w-full flex justify-center mt-50">
-      <div className="flex flex-col gap-88">
-        <p className="font-body-1-sm text-blue-600 text-center">
-          라이프스타일에 따른 최적의 기기 조합을 살펴보세요!
-        </p>
-        <div className="w-1140 flex items-stretch">
-          <div className="flex flex-col gap-12">
-            {TAGS.map((label) => (
-              <LifestyleTag
-                key={label}
-                label={label}
-                selected={selectedLabel === label}
-                onClick={() => setSelectedLabel(label)}
-              />
-            ))}
-          </div>
-          <div className="ml-auto w-660 h-408 relative">
-            <div className="flex absolute bottom-24 left-1/2 -translate-x-1/2 gap-20">
-              <DeviceSummaryCard />
-              <DeviceSummaryCard />
-              <DeviceSummaryCard />
-            </div>
-            <img
-              src={TAG_IMAGE_MAP[selectedLabel]}
-              alt={selectedLabel}
-              className="block w-full h-full object-cover"
+    <div className="w-full flex justify-center mt-100">
+      <div className="w-1140 flex items-stretch">
+        <div className="flex flex-col gap-12">
+          {TAGS.map((label) => (
+            <LifestyleTag
+              key={label}
+              label={label}
+              selected={selectedLabel === label}
+              onClick={() => setSelectedLabel(label)}
             />
+          ))}
+        </div>
+        <div className="ml-auto w-660 h-408 relative">
+          <div className="flex absolute bottom-24 left-1/2 -translate-x-1/2 gap-20">
+            <DeviceSummaryCard />
+            <DeviceSummaryCard />
+            <DeviceSummaryCard />
           </div>
+          <img
+            src={TAG_IMAGE_MAP[selectedLabel]}
+            alt={selectedLabel}
+            className="block w-full h-full object-cover"
+          />
         </div>
       </div>
     </div>
