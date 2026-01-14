@@ -87,9 +87,9 @@ const DeviceSearchPage = () => {
       <HomeIndicator />
 
       {/* Main Content */}
-      <div className="pt-108">
+      {/* <div className="pt-108"> */}
         {/* Search Bar */}
-        <div className="flex justify-center pt-164">
+        <div className="flex justify-center pt-156">
           <div className="w-600 h-72 bg-blue-100 rounded-button px-10 py-20 flex items-center gap-12">
             <SearchIcon className="w-28 h-28 flex-shrink-0 text-black" />
             <input
@@ -104,7 +104,7 @@ const DeviceSearchPage = () => {
 
         {/* Device Categories */}
         <div className="w-full pt-80">
-          <div className="w-[1100px] mx-auto flex items-center justify-between">
+          <div className="w-1100 mx-auto 2xl:w-full 2xl:px-[328px] flex items-center justify-between">
             {DEVICE_CATEGORIES.map((category) => {
               const { Icon } = category;
               return (
@@ -142,7 +142,7 @@ const DeviceSearchPage = () => {
             <div ref={priceRef} className="relative flex flex-col gap-16 ml-72">
               <button
                 onClick={() => setShowPriceFilter(!showPriceFilter)}
-                className={`flex items-center justify-center gap-[15px] pl-16 pr-10 py-10 rounded-button ${
+                className={`flex items-center justify-center gap-[15px] pl-16 pr-10 py-10 rounded-button cursor-pointer ${
                   selectedPrice
                     ? 'border-2 border-blue-600'
                     : showPriceFilter
@@ -183,7 +183,7 @@ const DeviceSearchPage = () => {
                         setSelectedPrice(selectedPrice === option.value ? null : option.value);
                         setShowPriceFilter(false);
                       }}
-                      className={`flex items-center gap-12 justify-between pb-20 ${
+                      className={`flex items-center gap-12 justify-between pb-20 hover:bg-gray-100 transition-colors ${
                         index < PRICE_OPTIONS.length - 1
                           ? 'border-b border-black'
                           : ''
@@ -205,7 +205,7 @@ const DeviceSearchPage = () => {
             <div ref={brandRef} className="relative flex flex-col gap-16 ml-32">
               <button
                 onClick={() => setShowBrandFilter(!showBrandFilter)}
-                className={`flex items-center justify-center gap-[15px] pl-16 pr-10 py-10 rounded-button ${
+                className={`flex items-center justify-center gap-[15px] pl-16 pr-10 py-10 rounded-button cursor-pointer ${
                   selectedBrand
                     ? 'border-2 border-blue-600'
                     : showBrandFilter
@@ -243,10 +243,10 @@ const DeviceSearchPage = () => {
                     <button
                       key={option.value}
                       onClick={() => {
-                        setSelectedBrand(option.value);
+                        setSelectedBrand(selectedBrand === option.value ? null : option.value);
                         setShowBrandFilter(false);
                       }}
-                      className={`flex items-center gap-10 justify-between pb-10 ${
+                      className={`flex items-center gap-10 justify-between pb-10 hover:bg-gray-100 transition-colors ${
                         index < BRAND_OPTIONS.length - 1
                           ? 'border-b border-black'
                           : ''
@@ -299,7 +299,7 @@ const DeviceSearchPage = () => {
                         setSortOption(option.value);
                         setShowSortDropdown(false);
                       }}
-                      className={`font-body-1-sm text-black text-left pb-10 whitespace-nowrap ${
+                      className={`font-body-1-sm text-black text-left pb-10 whitespace-nowrap hover:bg-gray-100 transition-colors ${
                         sortOption === option.value
                           ? 'bg-gray-100'
                           : ''
@@ -342,7 +342,7 @@ const DeviceSearchPage = () => {
 
         {/* Bottom Spacing */}
         <div className="h-268" />
-      </div>
+      {/* </div> */}
     </div>
   );
 };
