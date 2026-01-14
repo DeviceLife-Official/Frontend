@@ -304,3 +304,17 @@
 .link-underline:hover::after {
   transform: scaleX(1);
 }
+
+/* device summary card: hover 시 marquee animation */
+@keyframes device-marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+.device-card:hover .device-name {
+  animation: device-marquee 6s linear infinite;
+}
