@@ -16,7 +16,7 @@ const HomePage = () => {
   useEffect(() => {
     const intervalId = window.setInterval(() => {
       setIndex((prev) => (prev + 1) % IMAGES.length);
-    }, 10_000);
+    }, 2_000);
 
     return () => window.clearInterval(intervalId);
   }, []);
