@@ -2,7 +2,7 @@ const DeviceSummaryCard = () => {
   return (
     <div className="device-card flex items-center p-8 gap-8 rounded-button bg-white border-shadow-gray w-180 shrink-0">
       <div className="w-48 h-48 bg-gray-200 shrink-0" />
-      <div className="flex flex-col gap-3 min-w-0">
+      <div className="flex flex-col gap-4 min-w-0">
         {/* TODO: API 연동 */}
         <div className="w-108 overflow-hidden">
           <p className="device-name font-caption-sm text-black whitespace-nowrap">

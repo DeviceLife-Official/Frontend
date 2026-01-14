@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import LifestyleTag from '@/components/Lifestyle/LifestyleTag';
 import Office from '@/assets/images/lifestyle/office.jpg';
 import Developer from '@/assets/images/lifestyle/developer.jpg';
@@ -16,7 +16,9 @@ const TAGS = [
   'Video-editing',
   'Tour/portability',
 ] as const;
+
 type Tag = (typeof TAGS)[number];
+
 const TAG_IMAGE_MAP: Record<Tag, string> = {
   'Office/portability': Office,
   Developer,
@@ -25,8 +27,31 @@ const TAG_IMAGE_MAP: Record<Tag, string> = {
   'Video-editing': VideoEditing,
   'Tour/portability': Tour,
 };
+
+const ROTATE_MS = 2000;
+
 const LifestylePage = () => {
   const [selectedLabel, setSelectedLabel] = useState<Tag>(TAGS[0]);
+  const [isAutoRotate, setIsAutoRotate] = useState(true);
+
+  useEffect(() => {
+    if (!isAutoRotate) return;
+
+    const id = window.setInterval(() => {
+      setSelectedLabel((prev) => {
+        const idx = TAGS.indexOf(prev);
+        return TAGS[(idx + 1) % TAGS.length];
+      });
+    }, ROTATE_MS);
+
+    return () => window.clearInterval(id);
+  }, [isAutoRotate]);
+
+  const handleClickTag = (label: Tag) => {
+    setIsAutoRotate(false);
+    setSelectedLabel(label);
+  };
+
   return (
     <div className="w-full flex justify-center mt-100">
       <div className="w-1140 flex items-stretch">
@@ -36,7 +61,7 @@ const LifestylePage = () => {
               key={label}
               label={label}
               selected={selectedLabel === label}
-              onClick={() => setSelectedLabel(label)}
+              onClick={() => handleClickTag(label)}
             />
           ))}
         </div>
@@ -56,4 +81,5 @@ const LifestylePage = () => {
     </div>
   );
 };
+
 export default LifestylePage;
