@@ -25,15 +25,16 @@
 ---
 
 ## 🛠️ 기술 스택 (Tech Stack)
+
 | 역할 | 종류 | 선정 근거 |
-| :--: | :-- | :-- |
-| **Language & Framework** | ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white) ![React](https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=react&logoColor=black) ![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white) | TypeScript로 타입 안정성을 확보하고, React 컴포넌트 기반 UI를 구성했으며, Vite의 빠른 번들링과 HMR로 개발 생산성 증가 |
-| **Styling** | ![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white) | 유틸리티 기반 스타일링으로 빠르고 일관된 UI 구현 |
-| **State Management** | ![Zustand](https://img.shields.io/badge/Zustand-000000?style=for-the-badge&logoColor=white) ![TanStack Query](https://img.shields.io/badge/TanStack_Query-FF4154?style=for-the-badge&logo=reactquery&logoColor=white) | Zustand로 클라이언트 상태를 간단히 관리하고, TanStack Query로 서버 상태/캐싱을 선언적으로 관리 |
-| **Data Fetching** | ![Axios](https://img.shields.io/badge/Axios-5A29E4?style=for-the-badge&logo=axios&logoColor=white) ![TanStack Query](https://img.shields.io/badge/TanStack_Query-FF4154?style=for-the-badge&logo=reactquery&logoColor=white) | Axios로 HTTP 요청을 처리하고, TanStack Query로 요청 상태/캐싱/동기화 관리 |
-| **Tools** | ![ESLint](https://img.shields.io/badge/ESLint-4B32C3?style=for-the-badge&logo=eslint&logoColor=white) ![Prettier](https://img.shields.io/badge/Prettier-F7B93E?style=for-the-badge&logo=prettier&logoColor=black) | ESLint로 코드 규칙을 통일하고, Prettier로 포맷을 자동화하여 일관된 코드 스타일 유지 |
-| **DevOps** | ![Git](https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=git&logoColor=white) ![GitHub](https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white) ![Vercel](https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white) | Git/GitHub로 버전 관리 및 협업을 진행하고, Vercel로 배포 자동화 및 CI/CD 간소화 |
-| **Package Manager** | ![npm](https://img.shields.io/badge/npm-CB3837?style=for-the-badge&logo=npm&logoColor=white) | 패키지 관리 및 의존성 설치를 표준 방식으로 관리 |
+| :-- | :-- | :-- |
+| **Language & Framework** | ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white) ![React](https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=react&logoColor=black) ![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white) | TypeScript로 타입 안정성을 확보하고, React 기반 컴포넌트 UI를 구성했으며, Vite의 빠른 번들링과 HMR로 개발 생산성을 높였습니다. |
+| **Styling** | ![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white) | 유틸리티 기반 스타일링으로 빠르고 일관된 UI를 구현했습니다. |
+| **State Management** | ![Zustand](https://img.shields.io/badge/Zustand-000000?style=for-the-badge&logoColor=white) ![TanStack Query](https://img.shields.io/badge/TanStack_Query-FF4154?style=for-the-badge&logo=reactquery&logoColor=white) | Zustand로 클라이언트 상태를 간단히 관리하고, TanStack Query로 서버 상태/캐싱을 선언적으로 관리했습니다. |
+| **Data Fetching** | ![Axios](https://img.shields.io/badge/Axios-5A29E4?style=for-the-badge&logo=axios&logoColor=white) ![TanStack Query](https://img.shields.io/badge/TanStack_Query-FF4154?style=for-the-badge&logo=reactquery&logoColor=white) | Axios로 HTTP 요청을 처리하고, TanStack Query로 요청 상태/캐싱/동기화 관리를 수행했습니다. |
+| **Tools** | ![ESLint](https://img.shields.io/badge/ESLint-4B32C3?style=for-the-badge&logo=eslint&logoColor=white) ![Prettier](https://img.shields.io/badge/Prettier-F7B93E?style=for-the-badge&logo=prettier&logoColor=black) | ESLint로 코드 규칙을 통일하고, Prettier로 포맷을 자동화해 일관된 코드 스타일을 유지했습니다. |
+| **DevOps** | ![Git](https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=git&logoColor=white) ![GitHub](https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white) ![Vercel](https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white) | Git/GitHub로 버전 관리 및 협업을 진행하고, Vercel로 배포 자동화 및 CI/CD 과정을 간소화했습니다. |
+| **Package Manager** | ![npm](https://img.shields.io/badge/npm-CB3837?style=for-the-badge&logo=npm&logoColor=white) | 표준 패키지 매니저(npm)를 사용하여 의존성 설치 및 관리를 수행했습니다. |
 
 
 
