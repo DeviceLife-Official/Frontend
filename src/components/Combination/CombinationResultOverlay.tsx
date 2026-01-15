@@ -35,7 +35,7 @@ const CombinationResultOverlay = ({
         transitionProperty: 'transform',
         transitionDuration: `260ms`,
         transitionTimingFunction: 'ease-out',
-        willChange: 'transform',
+        willChange: undefined,
       };
 
   return (
@@ -63,12 +63,15 @@ const CombinationResultOverlay = ({
                 absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2
                 flex flex-col justify-center items-center gap-8
                 rounded-button bg-white border-shadow-blue font-heading-2 text-black
+                whitespace-nowrap overflow-hidden text-ellipsis
+                transition-all
               `}
               style={{
                 width: `${innerSize.w}px`,
                 height: `${innerSize.h}px`,
                 padding: '20px',
-                transitionProperty: 'width, height',
+                fontSize: phase === 'shrink' ? '30px' : undefined,
+
                 transitionDuration: `${phase === 'shrink' ? M.T_SHRINK : M.T_STACK}ms`,
                 transitionTimingFunction: 'cubic-bezier(0.22,1,0.36,1)',
               }}
