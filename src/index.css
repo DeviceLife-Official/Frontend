@@ -122,6 +122,10 @@
     box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.25);
   }
 
+  .border-shadow-gray {
+    box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.1);
+  }
+
   .border-shadow-blue {
     box-shadow: 0 0 7px 0 var(--color-blue-400);
   }
@@ -299,4 +303,18 @@
 
 .link-underline:hover::after {
   transform: scaleX(1);
+}
+
+/* device summary card: hover 시 marquee animation */
+@keyframes device-marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+.device-card:hover .device-name {
+  animation: device-marquee 6s linear infinite;
 }
