@@ -1,5 +1,6 @@
 import PrimaryButton from '@/components/Button/PrimaryButton';
 import { COMBO_MOTION as M } from '@/constants/combination';
+import { useNavigate } from 'react-router-dom';
 
 type Props = {
   centerText: string;
@@ -37,6 +38,8 @@ const CombinationResultOverlay = ({
         transitionTimingFunction: 'ease-out',
         willChange: undefined,
       };
+
+  const navigate = useNavigate();
 
   return (
     <div className="fixed left-0 right-0 bottom-0 top-108 z-900 flex items-center justify-center">
@@ -94,7 +97,11 @@ const CombinationResultOverlay = ({
             이제 기기검색 창에서 원하는 기기들을 골라 내가 만든 조합에 담아보세요!
           </p>
           <div className="mt-120">
-            <PrimaryButton text="완료" className="w-280 bg-blue-600 hover:bg-blue-500" />
+            <PrimaryButton
+              text="완료"
+              className="w-280 bg-blue-600 hover:bg-blue-500"
+              onClick={() => navigate('/devices')}
+            />
           </div>
         </div>
       </div>
