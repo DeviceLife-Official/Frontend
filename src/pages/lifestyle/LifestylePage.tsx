@@ -29,8 +29,6 @@ const TAG_IMAGE_MAP: Record<Tag, string> = {
   'Tour/portability': Tour,
 };
 
-const ROTATE_MS = 2000;
-
 const LifestylePage = () => {
   const [selectedLabel, setSelectedLabel] = useState<Tag>(TAGS[0]);
   const [isAutoRotate, setIsAutoRotate] = useState(true);
