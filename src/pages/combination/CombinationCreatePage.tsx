@@ -4,26 +4,10 @@ import PrimaryButton from '@/components/Button/PrimaryButton';
 import Stage1Section from '@/components/Combination/Stage1Section';
 import Stage2Section from '@/components/Combination/Stage2Section';
 import Stage3Section from '@/components/Combination/Stage3Section';
+import { COMBO_MOTION as M } from '@/constants/combination';
+import { useCombinationMotion } from '@/hooks/useCombinationMotion';
 
 type ResultPhase = 'idle' | 'shrink' | 'stack' | 'done';
-
-const HEADER_H = 80;
-const INNER_W = 600;
-const INNER_H = 72;
-const SHRINK_W = 558;
-const SHRINK_H = 66;
-const OUTER_W = 638;
-const OUTER_H = 111;
-const T_SHRINK = 420;
-const T_STACK = 520;
-const DROP_DURATION = 1600;
-const DROP_EASING = 'cubic-bezier(0.12, 0.95, 0.18, 1)';
-const LIFT_DISTANCE = 100;
-const LIFT_DURATION = 1800;
-const LIFT_DELAY = 180;
-const LIFT_EASING = 'cubic-bezier(0.12, 0.9, 0.18, 1)';
-const DOUBLE_DELAY = 160;
-const EXTRAS_AT_LIFT_PROGRESS = 0.01;
 
 const CombinationCreatePage = () => {
   const [name, setName] = useState('');
@@ -34,127 +18,40 @@ const CombinationCreatePage = () => {
   const [phase, setPhase] = useState<ResultPhase>('idle');
   const [showDouble, setShowDouble] = useState(false);
   const [showExtras, setShowExtras] = useState(false);
+
   const inputRef = useRef<HTMLInputElement | null>(null);
   const styleProbeRef = useRef<HTMLDivElement | null>(null);
   const isValid = useMemo(() => name.trim().length > 0, [name]);
 
-  const dropToCenter = (text: string) => {
-    const startEl = inputRef.current;
-
-    if (!startEl) {
-      setCenterText(text);
-      setMode('result');
-      setResultOn(true);
-      setPhase('done');
-      setShowDouble(true);
-
-      const extrasDelay = Math.round(LIFT_DELAY + LIFT_DURATION * EXTRAS_AT_LIFT_PROGRESS);
-      window.setTimeout(() => setShowExtras(true), extrasDelay);
-
-      return;
-    }
-
-    const startRect = startEl.getBoundingClientRect();
-    const targetLeft = window.innerWidth / 2 - INNER_W / 2;
-    const targetTop = HEADER_H + (window.innerHeight - HEADER_H) / 2 - INNER_H / 2;
-    const startLeft = startRect.left + startRect.width / 2 - INNER_W / 2;
-    const startTop = startRect.top + startRect.height / 2 - INNER_H / 2;
-
-    const floating = document.createElement('div');
-    floating.textContent = text;
-    floating.style.position = 'fixed';
-    floating.style.left = `${startLeft}px`;
-    floating.style.top = `${startTop}px`;
-    floating.style.width = `${INNER_W}px`;
-    floating.style.height = `${INNER_H}px`;
-    floating.style.padding = '20px';
-
-    floating.style.display = 'flex';
-    floating.style.flexDirection = 'column';
-    floating.style.justifyContent = 'center';
-    floating.style.alignItems = 'center';
-    floating.style.gap = '10px';
-
-    const probe = styleProbeRef.current;
-    if (probe) {
-      const cs = window.getComputedStyle(probe);
-      floating.style.borderRadius = cs.borderRadius;
-      floating.style.boxShadow = cs.boxShadow;
-      floating.style.backgroundColor = cs.backgroundColor;
-      floating.style.border = cs.border;
-
-      floating.style.fontFamily = cs.fontFamily;
-      floating.style.fontSize = cs.fontSize;
-      floating.style.fontWeight = cs.fontWeight;
-      floating.style.lineHeight = cs.lineHeight;
-      floating.style.letterSpacing = cs.letterSpacing;
-      floating.style.color = cs.color;
-      floating.style.textAlign = cs.textAlign;
-    }
-
-    floating.style.zIndex = '9999';
-    floating.style.pointerEvents = 'none';
-    floating.style.willChange = 'transform, opacity';
-    floating.style.opacity = '1';
-
-    document.body.appendChild(floating);
-
-    const dx = targetLeft - startLeft;
-    const dy = targetTop - startTop;
-
-    floating.animate(
-      [{ transform: 'translate3d(0,0,0)' }, { transform: `translate3d(${dx}px, ${dy}px, 0)` }],
-      {
-        duration: DROP_DURATION,
-        easing: DROP_EASING,
-        fill: 'forwards',
-      }
-    );
-
-    window.setTimeout(() => {
-      setCenterText(text);
-      setMode('result');
-      setResultOn(false);
-      setPhase('idle');
-      setShowDouble(false);
-      setShowExtras(false);
-
-      requestAnimationFrame(() => setResultOn(true));
-
-      floating.style.transition = 'opacity 240ms ease-out';
-      floating.style.opacity = '0';
-      window.setTimeout(() => floating.remove(), 260);
-      window.setTimeout(() => setPhase('shrink'), 80);
-      window.setTimeout(() => setPhase('stack'), 80 + T_SHRINK);
-      window.setTimeout(() => setShowDouble(true), 80 + T_SHRINK + DOUBLE_DELAY);
-      window.setTimeout(
-        () => {
-          setPhase('done');
-
-          const extrasDelay = Math.round(LIFT_DELAY + LIFT_DURATION * EXTRAS_AT_LIFT_PROGRESS);
-          window.setTimeout(() => setShowExtras(true), extrasDelay);
-        },
-        80 + T_SHRINK + Math.max(T_STACK, 520)
-      );
-    }, DROP_DURATION);
-  };
+  const { start } = useCombinationMotion({
+    inputRef,
+    styleProbeRef,
+    setCenterText,
+    setMode,
+    setResultOn,
+    setPhase,
+    setShowDouble,
+    setShowExtras,
+  });
 
   const handleCreate = () => {
     if (!isValid) return;
     setBgOn(true);
-    dropToCenter(name.trim());
+    start(name.trim());
   };
 
-  const innerSize = phase === 'shrink' ? { w: SHRINK_W, h: SHRINK_H } : { w: INNER_W, h: INNER_H };
+  const innerSize =
+    phase === 'shrink' ? { w: M.SHRINK_W, h: M.SHRINK_H } : { w: M.INNER_W, h: M.INNER_H };
+
   const liftActive = phase === 'done';
 
   const liftStyle: React.CSSProperties = liftActive
     ? {
-        transform: `translate3d(0, -${LIFT_DISTANCE}px, 0)`,
+        transform: `translate3d(0, -${M.LIFT_DISTANCE}px, 0)`,
         transitionProperty: 'transform',
-        transitionDuration: `${LIFT_DURATION}ms`,
-        transitionDelay: `${LIFT_DELAY}ms`,
-        transitionTimingFunction: LIFT_EASING,
+        transitionDuration: `${M.LIFT_DURATION}ms`,
+        transitionDelay: `${M.LIFT_DELAY}ms`,
+        transitionTimingFunction: M.LIFT_EASING,
         willChange: 'transform',
       }
     : {
@@ -164,7 +61,6 @@ const CombinationCreatePage = () => {
         transitionTimingFunction: 'ease-out',
         willChange: 'transform',
       };
-
   return (
     <div className="mt-92 flex flex-col gap-143">
       <div
@@ -190,7 +86,10 @@ const CombinationCreatePage = () => {
               `}
               style={liftStyle}
             >
-              <div className="relative" style={{ width: `${OUTER_W}px`, height: `${OUTER_H}px` }}>
+              <div
+                className="relative"
+                style={{ width: `${M.OUTER_W}px`, height: `${M.OUTER_H}px` }}
+              >
                 <div
                   className={`
                     absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2
@@ -198,7 +97,7 @@ const CombinationCreatePage = () => {
                     transition-opacity duration-320 ease-out
                     ${showDouble ? 'opacity-100' : 'opacity-0'}
                   `}
-                  style={{ width: `${OUTER_W}px`, height: `${OUTER_H}px` }}
+                  style={{ width: `${M.OUTER_W}px`, height: `${M.OUTER_H}px` }}
                 />
                 <div
                   className={`
@@ -211,7 +110,7 @@ const CombinationCreatePage = () => {
                     height: `${innerSize.h}px`,
                     padding: '20px',
                     transitionProperty: 'width, height',
-                    transitionDuration: `${phase === 'shrink' ? T_SHRINK : T_STACK}ms`,
+                    transitionDuration: `${phase === 'shrink' ? M.T_SHRINK : M.T_STACK}ms`,
                     transitionTimingFunction: 'cubic-bezier(0.22,1,0.36,1)',
                   }}
                 >
