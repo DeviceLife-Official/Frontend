@@ -413,11 +413,15 @@ const DeviceSearchPage = () => {
 
               {/* Card */}
               <div
-                className="w-1021 bg-white rounded-card px-56 py-40"
+                className="bg-white rounded-card px-56 py-40"
+                style={{ width: 'clamp(903px, calc(903px + (100vw - 1440px) * 0.245833), 1021px)' }}
                 onClick={(e) => e.stopPropagation()}
               >
                 {/* Content */}
-                <div className="flex items-start justify-between gap-100">
+                <div
+                  className="flex items-start justify-between"
+                  style={{ gap: 'clamp(88px, calc(88px + (100vw - 1440px) * 0.245833), 206px)' }}
+                >
                   {/* Left Section */}
                   <div className="w-400 flex flex-col gap-20">
                     {/* Name & Price */}
