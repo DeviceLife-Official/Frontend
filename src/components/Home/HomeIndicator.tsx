@@ -11,7 +11,11 @@ const navTextClass = 'font-body-1-sm text-black hover:text-blue-500 active:text-
 
 type AuthStatus = 'logout' | 'login' | 'guest';
 
-const HomeIndicator = () => {
+interface HomeIndicatorProps {
+  paddingRight?: number;
+}
+
+const HomeIndicator = ({ paddingRight = 0 }: HomeIndicatorProps) => {
   const [authStatus] = useState<AuthStatus>('login');
 
   const navClass = ({ isActive }: { isActive: boolean }) =>
@@ -21,7 +25,10 @@ const HomeIndicator = () => {
     `${brandLinkClass} ${isActive ? 'text-blue-600 hover:text-blue-500' : ''}`;
 
   return (
-    <header className="fixed top-0 left-0 w-full z-50 bg-white h-80">
+    <header
+      className="fixed top-0 left-0 w-full z-50 bg-white h-80"
+      style={{ paddingRight: `${paddingRight}px` }}
+    >
       <div className="mx-auto w-full max-w-1920 h-full">
         <div className="min-w-1440 h-full">
           <div className="flex items-center justify-between h-full pl-44 pr-[clamp(60px,calc(60px+(100vw-1440px)*0.208333),160px)]">
