@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
+import { ROTATION_MS } from '@/constants/time';
 import HomeImage1 from '@/assets/images/home/HomeImage1.svg?react';
 import HomeImage2 from '@/assets/images/home/HomeImage2.svg?react';
 import HomeImage3 from '@/assets/images/home/HomeImage3.svg?react';
 import ConnectivitySection from '@/components/Home/ConnectivitySection';
 import PortabilitySection from '@/components/Home/PortabilitySection';
-import LifeStyleSection from '@/components/Home/LifestyleSection';
+import LifestyleSection from '@/components/Home/LifestyleSection';
 import ColormatchingSection from '@/components/Home/ColormatchingSection';
 import Footer from '@/components/Home/Footer';
 
@@ -16,7 +17,7 @@ const HomePage = () => {
   useEffect(() => {
     const intervalId = window.setInterval(() => {
       setIndex((prev) => (prev + 1) % IMAGES.length);
-    }, 10_000);
+    }, ROTATION_MS);
 
     return () => window.clearInterval(intervalId);
   }, []);
@@ -46,7 +47,7 @@ const HomePage = () => {
               <PortabilitySection />
             </div>
             <div className="flex flex-row gap-108">
-              <LifeStyleSection />
+              <LifestyleSection />
               <ColormatchingSection />
             </div>
           </div>
