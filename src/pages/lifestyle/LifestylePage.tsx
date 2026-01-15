@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { ROTATION_MS } from '@/constants/time';
 import LifestyleTag from '@/components/Lifestyle/LifestyleTag';
 import Office from '@/assets/images/lifestyle/office.jpg';
 import Developer from '@/assets/images/lifestyle/developer.jpg';

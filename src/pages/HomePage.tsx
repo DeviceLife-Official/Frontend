@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { ROTATION_MS } from '@/constants/time';
 import HomeImage1 from '@/assets/images/home/HomeImage1.svg?react';
 import HomeImage2 from '@/assets/images/home/HomeImage2.svg?react';
 import HomeImage3 from '@/assets/images/home/HomeImage3.svg?react';
@@ -16,7 +17,7 @@ const HomePage = () => {
   useEffect(() => {
     const intervalId = window.setInterval(() => {
       setIndex((prev) => (prev + 1) % IMAGES.length);
-    }, 2_000);
+    }, ROTATION_MS);
 
     return () => window.clearInterval(intervalId);
   }, []);
