@@ -7,11 +7,14 @@ import Stage3Section from '@/components/Combination/Stage3Section';
 import CombinationResultOverlay from '@/components/Combination/CombinationResultOverlay';
 import CombinationStyleProbe from '@/components/Combination/CombinationStyleProbe';
 import { useCombinationMotion } from '@/hooks/useCombinationMotion';
+import { useCombinationNameInput } from '@/hooks/useCombinationNameInput';
 
 type ResultPhase = 'idle' | 'shrink' | 'stack' | 'done';
 
+// TODO: 나중에 API/상태에서 가져오기 (내가 만든 조합명 리스트)
+const EXISTING_COMBO_NAMES = ['사무실 세팅'];
+
 const CombinationCreatePage = () => {
-  const [name, setName] = useState('');
   const [centerText, setCenterText] = useState<string | null>(null);
   const [mode, setMode] = useState<'form' | 'result'>('form');
   const [bgOn, setBgOn] = useState(false);
@@ -22,7 +25,20 @@ const CombinationCreatePage = () => {
 
   const inputRef = useRef<HTMLInputElement | null>(null);
   const styleProbeRef = useRef<HTMLDivElement | null>(null);
-  const isValid = useMemo(() => name.trim().length > 0, [name]);
+
+  const {
+    value: name,
+    onChange: onNameChange,
+    onCompositionStart,
+    onCompositionEnd,
+    errorMessage,
+    isValid,
+    validate,
+  } = useCombinationNameInput({
+    inputRef,
+    existingNames: EXISTING_COMBO_NAMES,
+    maxLen: 20,
+  });
 
   const { start } = useCombinationMotion({
     inputRef,
@@ -37,9 +53,19 @@ const CombinationCreatePage = () => {
 
   const handleCreate = () => {
     if (!isValid) return;
+    if (validate(name) !== null) return;
     setBgOn(true);
     start(name.trim());
   };
+
+  const helperText =
+    errorMessage ??
+    '회원의 경우 로그인 한 뒤 조합을 생성해야 마이페이지>내 조합 목록에 저장됩니다.';
+
+  const buttonClass = useMemo(
+    () => `w-280 ${isValid ? 'bg-blue-600 hover:bg-blue-500' : 'bg-gray-300 cursor-not-allowed'}`,
+    [isValid]
+  );
 
   return (
     <div className="mt-92 flex flex-col gap-143">
@@ -69,20 +95,21 @@ const CombinationCreatePage = () => {
                 type="text"
                 placeholder="생성하고 싶은 조합명을 입력하세요"
                 value={name}
-                onChange={(e) => setName(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleCreate()}
+                onChange={onNameChange}
+                onCompositionStart={onCompositionStart}
+                onCompositionEnd={onCompositionEnd}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && isValid) handleCreate();
+                }}
                 className="w-600 h-72 px-20 py-20 rounded-button bg-blue-100 placeholder-gray-300 font-body-1-r outline-none"
               />
-              <p className="pl-20 mt-16 text-warning font-body-4-r">
-                *회원의 경우에는 로그인 한 뒤, 조합을 생성해야지 마이페이지&gt;내 조합 목록에
-                저장됩니다.
-              </p>
+              <p className="pl-20 mt-16 font-body-4-r text-warning">{helperText}</p>
             </div>
             <PrimaryButton
               text="조합 생성하기"
               onClick={handleCreate}
               disabled={!isValid}
-              className={`w-280 ${isValid ? 'bg-blue-600 hover:bg-blue-500' : 'bg-gray-300 cursor-not-allowed'}`}
+              className={buttonClass}
             />
           </div>
           <div className="flex flex-row gap-40 justify-center">
