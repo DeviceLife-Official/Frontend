@@ -5,7 +5,7 @@ import Stage3Section from '@/components/Combination/Stage3Section';
 
 const CombinationCreatePage = () => {
   return (
-    <div className="mt-96 flex flex-col gap-143">
+    <div className="mt-92 flex flex-col gap-143">
       <div className="flex flex-row gap-20 justify-center">
         <div className="flex flex-col">
           <input
@@ -20,7 +20,7 @@ const CombinationCreatePage = () => {
         </div>
         <PrimaryButton text="조합 생성하기" className="w-280 bg-blue-600 hover:bg-blue-500" />
       </div>
-      <div className="flex flex-row gap-20 justify-center">
+      <div className="flex flex-row gap-40 justify-center">
         <Stage1Section />
         <Stage2Section />
         <Stage3Section />
@@ -31,9 +31,5 @@ const CombinationCreatePage = () => {
 
 export default CombinationCreatePage;
 
-// TODO: 간격 줄인 버전으로 간격 재조정
-// 입력창 유효성 검사 함수
-// 배경 깔기
-
-// TODO: 간격 줄인 버전으로 간격 재조정
-// 입력창 유효성 검사 함수
+// TODO
+// 입력창 유효성 검사 처리(버튼 disabled->active)
