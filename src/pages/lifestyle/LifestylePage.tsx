@@ -41,7 +41,7 @@ const LifestylePage = () => {
         const idx = TAGS.indexOf(prev);
         return TAGS[(idx + 1) % TAGS.length];
       });
-    }, ROTATE_MS);
+    }, ROTATION_MS);
 
     return () => window.clearInterval(id);
   }, [isAutoRotate]);
