@@ -19,7 +19,7 @@ export const COMBO_MOTION = {
   T_SHRINK: 420,
   T_STACK: 520,
 
-  DROP_DURATION: 1200,
+  DROP_DURATION: 2000,
   DROP_EASING: 'cubic-bezier(0.12, 0.95, 0.18, 1)',
 
   LIFT_DISTANCE: 90,
