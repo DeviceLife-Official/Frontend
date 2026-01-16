@@ -42,7 +42,7 @@ const CombinationResultOverlay = ({
   const navigate = useNavigate();
 
   return (
-    <div className="fixed left-0 right-0 bottom-0 top-108 z-900 flex items-center justify-center">
+    <div className="fixed left-0 right-0 bottom-0 top-80 z-900 flex items-center justify-center">
       <div className="relative w-800 h-520 flex items-center justify-center">
         <div
           className={`
@@ -74,7 +74,6 @@ const CombinationResultOverlay = ({
                 height: `${innerSize.h}px`,
                 padding: '20px',
                 fontSize: phase === 'shrink' ? '30px' : undefined,
-
                 transitionDuration: `${phase === 'shrink' ? M.T_SHRINK : M.T_STACK}ms`,
                 transitionTimingFunction: 'cubic-bezier(0.22,1,0.36,1)',
               }}

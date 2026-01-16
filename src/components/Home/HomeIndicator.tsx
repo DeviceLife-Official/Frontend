@@ -8,8 +8,7 @@ import { useState } from 'react';
 
 const brandLinkClass = 'font-service-name-sm text-black hover:text-blue-500 active:text-blue-600';
 const navTextClass = 'font-body-1-sm text-black hover:text-blue-500 active:text-blue-600';
-
-type AuthStatus = 'logout' | 'login' | 'guest';
+type AuthStatus = 'logout' | 'login';
 
 interface HomeIndicatorProps {
   paddingRight?: number;
@@ -25,16 +24,13 @@ const HomeIndicator = ({ paddingRight = 0 }: HomeIndicatorProps) => {
     `${brandLinkClass} ${isActive ? 'text-blue-600 hover:text-blue-500' : ''}`;
 
   return (
-    <header
-      className="fixed top-0 left-0 w-full z-50 bg-white h-80"
-      style={{ paddingRight: `${paddingRight}px` }}
-    >
+    <header className="fixed top-0 left-0 w-full z-50 bg-white h-80">
       <div className="mx-auto w-full max-w-1920 h-full">
         <div className="min-w-1440 h-full">
           <div className="flex items-center justify-between h-full pl-44 pr-[clamp(60px,calc(60px+(100vw-1440px)*0.208333),160px)]">
-            <div className="flex justify-end items-center gap-108 whitespace-nowrap shrink-0">
+            <div className="flex items-center gap-108 shrink-0">
               <div className="flex items-center gap-20">
-                <Logo className="w-48 h-48" aria-label="Logo" />
+                <Logo className="w-48 h-48" />
                 <NavLink to="/" end className={brandClass}>
                   Device Life
                 </NavLink>
@@ -49,8 +45,8 @@ const HomeIndicator = ({ paddingRight = 0 }: HomeIndicatorProps) => {
                 조합 생성하기
               </NavLink>
             </div>
-            <div className="flex items-center gap-56 whitespace-nowrap shrink-0">
-              {authStatus === 'logout' && (
+            <div className="flex items-center gap-56 shrink-0">
+              {authStatus === 'logout' ? (
                 <>
                   <NavLink to="/auth/login" className={navClass}>
                     로그인
@@ -59,8 +55,7 @@ const HomeIndicator = ({ paddingRight = 0 }: HomeIndicatorProps) => {
                     회원가입
                   </NavLink>
                 </>
-              )}
-              {authStatus !== 'logout' && (
+              ) : (
                 <>
                   <NavLink
                     to="/my"
@@ -74,27 +69,14 @@ const HomeIndicator = ({ paddingRight = 0 }: HomeIndicatorProps) => {
                       <>
                         <span className="relative w-32 h-32">
                           <UserBlack
-                            className={`absolute inset-0 w-32 h-32 transition-opacity duration-200 ease-out
-                              ${isActive ? 'opacity-0' : 'opacity-100 group-hover:opacity-0'}`}
+                            className={`absolute inset-0 ${isActive ? 'opacity-0' : 'opacity-100 group-hover:opacity-0'}`}
                           />
-                          <UserBlue500
-                            className={`absolute inset-0 w-32 h-32 transition-opacity duration-200 ease-out
-                              ${
-                                isActive
-                                  ? 'opacity-0 group-hover:opacity-100'
-                                  : 'opacity-0 group-hover:opacity-100'
-                              }`}
-                          />
+                          <UserBlue500 className="absolute inset-0 opacity-0 group-hover:opacity-100" />
                           <UserBlue600
-                            className={`absolute inset-0 w-32 h-32 transition-opacity duration-200 ease-out
-                              ${
-                                isActive
-                                  ? 'opacity-100 group-hover:opacity-0'
-                                  : 'opacity-0 group-active:opacity-100'
-                              }`}
+                            className={`absolute inset-0 ${isActive ? 'opacity-100' : 'opacity-0 group-active:opacity-100'}`}
                           />
                         </span>
-                        {authStatus === 'guest' ? 'MY(guest)' : 'MY'}
+                        MY
                       </>
                     )}
                   </NavLink>
@@ -102,7 +84,7 @@ const HomeIndicator = ({ paddingRight = 0 }: HomeIndicatorProps) => {
                     to="/"
                     className={navTextClass}
                     onClick={() => {
-                      // TODO: 로그아웃 로직 작성
+                      // TODO: 로그아웃 로직
                     }}
                   >
                     로그아웃
