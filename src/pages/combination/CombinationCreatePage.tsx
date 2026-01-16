@@ -15,7 +15,7 @@ type ResultPhase = 'idle' | 'shrink' | 'stack' | 'done';
 const EXISTING_COMBO_NAMES = ['사무실 세팅'];
 
 const CombinationCreatePage = () => {
-  const [centerText, setCenterText] = useState<string | null>(null);
+  const [centerText, setCenterText] = useState<string>('');
   const [mode, setMode] = useState<'form' | 'result'>('form');
   const [bgOn, setBgOn] = useState(false);
   const [resultOn, setResultOn] = useState(false);
@@ -25,6 +25,7 @@ const CombinationCreatePage = () => {
 
   const inputRef = useRef<HTMLInputElement | null>(null);
   const styleProbeRef = useRef<HTMLDivElement | null>(null);
+  const targetRef = useRef<HTMLDivElement | null>(null);
 
   const {
     value: name,
@@ -43,6 +44,7 @@ const CombinationCreatePage = () => {
   const { start } = useCombinationMotion({
     inputRef,
     styleProbeRef,
+    targetRef,
     setCenterText,
     setMode,
     setResultOn,
@@ -77,15 +79,14 @@ const CombinationCreatePage = () => {
           ${bgOn ? 'opacity-100' : 'opacity-0'}
         `}
       />
-      {mode === 'result' && centerText && (
-        <CombinationResultOverlay
-          centerText={centerText}
-          resultOn={resultOn}
-          phase={phase}
-          showDouble={showDouble}
-          showExtras={showExtras}
-        />
-      )}
+      <CombinationResultOverlay
+        centerText={centerText}
+        resultOn={resultOn && mode === 'result'}
+        phase={phase}
+        showDouble={showDouble}
+        showExtras={showExtras}
+        targetRef={targetRef}
+      />
       {mode === 'form' && (
         <>
           <div className="flex flex-row gap-20 justify-center">

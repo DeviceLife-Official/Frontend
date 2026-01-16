@@ -19,6 +19,7 @@ type Setters = {
 export const useCombinationMotion = ({
   inputRef,
   styleProbeRef,
+  targetRef,
   setCenterText,
   setMode,
   setResultOn,
@@ -28,6 +29,7 @@ export const useCombinationMotion = ({
 }: {
   inputRef: React.RefObject<HTMLInputElement | null>;
   styleProbeRef: React.RefObject<HTMLDivElement | null>;
+  targetRef: React.RefObject<HTMLDivElement | null>;
 } & Setters) => {
   const scheduleExtras = useCallback(() => {
     const extrasDelay = Math.round(M.LIFT_DELAY + M.LIFT_DURATION * M.EXTRAS_AT_LIFT_PROGRESS);
@@ -37,6 +39,15 @@ export const useCombinationMotion = ({
   const start = useCallback(
     (text: string) => {
       const startEl = inputRef.current;
+      const targetRect = targetRef.current?.getBoundingClientRect();
+
+      const targetLeft = targetRect
+        ? targetRect.left + targetRect.width / 2 - M.INNER_W / 2
+        : window.innerWidth / 2 - M.INNER_W / 2;
+
+      const targetTop = targetRect
+        ? targetRect.top + targetRect.height / 2 - M.INNER_H / 2
+        : M.HEADER_H + (window.innerHeight - M.HEADER_H) / 2 - M.INNER_H / 2;
 
       if (!startEl) {
         setCenterText(text);
@@ -50,8 +61,6 @@ export const useCombinationMotion = ({
 
       const startRect = startEl.getBoundingClientRect();
 
-      const targetLeft = window.innerWidth / 2 - M.INNER_W / 2;
-      const targetTop = M.HEADER_H + (window.innerHeight - M.HEADER_H) / 2 - M.INNER_H / 2;
       const startLeft = startRect.left + startRect.width / 2 - M.INNER_W / 2;
       const startTop = startRect.top + startRect.height / 2 - M.INNER_H / 2;
 
@@ -79,25 +88,27 @@ export const useCombinationMotion = ({
         setShowDouble(false);
         setShowExtras(false);
 
-        requestAnimationFrame(() => setResultOn(true));
-        fadeOutAndRemove(floating, 240);
+        requestAnimationFrame(() => {
+          setResultOn(true);
+          setPhase('shrink');
+          window.setTimeout(() => setPhase('stack'), M.T_SHRINK);
+          window.setTimeout(() => setShowDouble(true), M.T_SHRINK + M.DOUBLE_DELAY);
 
-        window.setTimeout(() => setPhase('shrink'), 80);
-        window.setTimeout(() => setPhase('stack'), 80 + M.T_SHRINK);
-        window.setTimeout(() => setShowDouble(true), 80 + M.T_SHRINK + M.DOUBLE_DELAY);
-
-        window.setTimeout(
-          () => {
-            setPhase('done');
-            scheduleExtras();
-          },
-          80 + M.T_SHRINK + Math.max(M.T_STACK, 520)
-        );
+          window.setTimeout(
+            () => {
+              setPhase('done');
+              scheduleExtras();
+            },
+            M.T_SHRINK + Math.max(M.T_STACK, 520)
+          );
+        });
+        fadeOutAndRemove(floating, 180);
       }, M.DROP_DURATION);
     },
     [
       inputRef,
       styleProbeRef,
+      targetRef,
       setCenterText,
       setMode,
       setResultOn,

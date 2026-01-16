@@ -8,6 +8,7 @@ type Props = {
   phase: 'idle' | 'shrink' | 'stack' | 'done';
   showDouble: boolean;
   showExtras: boolean;
+  targetRef: React.RefObject<HTMLDivElement | null>;
 };
 
 const CombinationResultOverlay = ({
@@ -16,6 +17,7 @@ const CombinationResultOverlay = ({
   phase,
   showDouble,
   showExtras,
+  targetRef,
 }: Props) => {
   const innerSize =
     phase === 'shrink' ? { w: M.SHRINK_W, h: M.SHRINK_H } : { w: M.INNER_W, h: M.INNER_H };
@@ -42,7 +44,10 @@ const CombinationResultOverlay = ({
   const navigate = useNavigate();
 
   return (
-    <div className="fixed left-0 right-0 bottom-0 top-80 z-900 flex items-center justify-center">
+    <div
+      className="fixed left-0 right-0 bottom-0 z-900 flex items-center justify-center pointer-events-none"
+      style={{ top: `${M.HEADER_H}px` }}
+    >
       <div className="relative w-800 h-520 flex items-center justify-center">
         <div
           className={`
@@ -55,13 +60,14 @@ const CombinationResultOverlay = ({
             <div
               className={`
                 absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2
-                rounded-button border-shadow-blue-double pointer-events-none
+                rounded-button border-shadow-blue-double
                 transition-opacity duration-320 ease-out
                 ${showDouble ? 'opacity-100' : 'opacity-0'}
               `}
               style={{ width: `${M.OUTER_W}px`, height: `${M.OUTER_H}px` }}
             />
             <div
+              ref={targetRef}
               className={`
                 absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2
                 flex flex-col justify-center items-center gap-8
@@ -82,14 +88,13 @@ const CombinationResultOverlay = ({
             </div>
           </div>
         </div>
-
         <div
           className={`
             absolute left-1/2 -translate-x-1/2
             top-[calc(50%+4px)]
             flex flex-col items-center
             transition-all duration-420 ease-out
-            ${showExtras ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6 pointer-events-none'}
+            ${showExtras ? 'opacity-100 translate-y-0 pointer-events-auto' : 'opacity-0 translate-y-6'}
           `}
         >
           <p className="w-600 text-center font-body-2-sm text-blue-600">
