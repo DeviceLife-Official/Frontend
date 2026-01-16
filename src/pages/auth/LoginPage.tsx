@@ -41,7 +41,7 @@ const LoginPage = () => {
           {/* 폼 컨테이너 */}
           <form
             onSubmit={handleSubmit(onSubmit)}
-            className="flex flex-col items-center gap-24 w-[400px]"
+            className="flex flex-col items-center gap-24 w-400"
           >
             {/* 입력 + 버튼 영역 */}
             <div className="flex flex-col gap-20 w-full">
@@ -62,11 +62,7 @@ const LoginPage = () => {
                 onClick={() => setKeepLogin(!keepLogin)}
                 className="flex items-center gap-8 cursor-pointer"
               >
-                {keepLogin ? (
-                  <CheckboxOn className="size-[26px]" />
-                ) : (
-                  <Checkbox className="size-[26px]" />
-                )}
+                {keepLogin ? <CheckboxOn className="size-26" /> : <Checkbox className="size-26" />}
                 <span className="font-body-2-r text-gray-400">로그인 상태 유지</span>
               </button>
 
@@ -98,10 +94,10 @@ const LoginPage = () => {
         {/* 소셜 로그인 */}
         <div className="flex items-center gap-40">
           <button type="button" className="cursor-pointer">
-            <img src={googleLogo} alt="Google 로그인" className="size-[50px]" />
+            <img src={googleLogo} alt="Google 로그인" className="size-50" />
           </button>
           <button type="button" className="cursor-pointer">
-            <img src={appleLogo} alt="Apple 로그인" className="size-[50px]" />
+            <img src={appleLogo} alt="Apple 로그인" className="size-50" />
           </button>
         </div>
 
