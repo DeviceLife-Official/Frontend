@@ -17,25 +17,21 @@ export const createFloating = ({
 }) => {
   const floating = document.createElement('div');
   floating.textContent = text;
-
   floating.style.position = 'fixed';
   floating.style.left = `${startLeft}px`;
   floating.style.top = `${startTop}px`;
   floating.style.width = `${width}px`;
   floating.style.height = `${height}px`;
   floating.style.padding = `${padding}px`;
-
   floating.style.display = 'flex';
   floating.style.flexDirection = 'column';
   floating.style.justifyContent = 'center';
   floating.style.alignItems = 'center';
   floating.style.gap = '10px';
-
   floating.style.zIndex = '9999';
   floating.style.pointerEvents = 'none';
   floating.style.willChange = 'transform, opacity';
   floating.style.opacity = '1';
-
   document.body.appendChild(floating);
   return floating;
 };
@@ -49,7 +45,6 @@ export const copyComputedStyle = (target: HTMLElement, source: FloatingStyleSour
   target.style.boxShadow = cs.boxShadow;
   target.style.backgroundColor = cs.backgroundColor;
   target.style.border = cs.border;
-
   target.style.fontFamily = cs.fontFamily;
   target.style.fontSize = cs.fontSize;
   target.style.fontWeight = cs.fontWeight;

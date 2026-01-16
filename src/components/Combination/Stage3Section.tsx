@@ -10,7 +10,7 @@ const Stage3Section = () => {
             우측 상단 MY에 들어가서 <br /> 내가 만든 조합의 조합도를 확인해 보세요!
           </p>
         </div>
-        <Stage3 className="w-227 h-73" />
+        <Stage3 className="w-227 h-72" />
       </div>
     </div>
   );

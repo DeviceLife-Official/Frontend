@@ -13,7 +13,7 @@ const Stage2Section = () => {
             하나씩만 담는 것을 추천해요!
           </p>
         </div>
-        <Stage2 className="w-176 h-126" />
+        <Stage2 className="w-176 h-128" />
       </div>
     </div>
   );

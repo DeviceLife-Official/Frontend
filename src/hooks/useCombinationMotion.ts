@@ -38,7 +38,6 @@ export const useCombinationMotion = ({
     (text: string) => {
       const startEl = inputRef.current;
 
-      // fallback (DOM 없으면 즉시 결과)
       if (!startEl) {
         setCenterText(text);
         setMode('result');
@@ -53,7 +52,6 @@ export const useCombinationMotion = ({
 
       const targetLeft = window.innerWidth / 2 - M.INNER_W / 2;
       const targetTop = M.HEADER_H + (window.innerHeight - M.HEADER_H) / 2 - M.INNER_H / 2;
-
       const startLeft = startRect.left + startRect.width / 2 - M.INNER_W / 2;
       const startTop = startRect.top + startRect.height / 2 - M.INNER_H / 2;
 
@@ -76,8 +74,6 @@ export const useCombinationMotion = ({
       window.setTimeout(() => {
         setCenterText(text);
         setMode('result');
-
-        // reset
         setResultOn(false);
         setPhase('idle');
         setShowDouble(false);
