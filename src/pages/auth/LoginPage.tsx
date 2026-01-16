@@ -106,7 +106,7 @@ const LoginPage = () => {
           <span>아직 Device Life 회원이 아니신가요?</span>
           <button
             type="button"
-            className="underline cursor-pointer"
+            className="underline underline-offset-4 cursor-pointer"
             onClick={() => navigate('/auth/signup')}
           >
             회원가입 하기
