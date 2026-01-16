@@ -315,3 +315,12 @@
 .device-card:hover .device-name {
   animation: device-marquee 6s linear infinite;
 }
+
+/* x스크롤 방지 + 레이아웃 시프트 방지 */
+html {
+  overflow-x: hidden;
+  scrollbar-gutter: stable;
+}
+body {
+  overflow-x: hidden;
+}

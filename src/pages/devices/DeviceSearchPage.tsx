@@ -20,9 +20,14 @@ import {
 } from '@/constants/devices';
 import { MOCK_PRODUCTS } from '@/constants/mockData';
 
+type AuthStatus = 'logout' | 'login' | 'guest';
+
 const DeviceSearchPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const selectedProductId = searchParams.get('productId');
+
+  // 추후 Zustand/Context에서 인증 상태 가져오기
+  const [authStatus] = useState<AuthStatus>('logout');
 
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
@@ -34,7 +39,6 @@ const DeviceSearchPage = () => {
   const [selectedBrand, setSelectedBrand] = useState<string | null>(null);
   const [isAtBottom, setIsAtBottom] = useState(false);
   const [showTopButton, setShowTopButton] = useState(false);
-  const [scrollbarWidth, setScrollbarWidth] = useState(0);
 
   const productGridRef = useRef<HTMLDivElement>(null);
   const sortRef = useRef<HTMLDivElement>(null);
@@ -96,21 +100,15 @@ const DeviceSearchPage = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  /* 모달 열렸을 때 배경 스크롤 방지 + 레이아웃 시프트 방지 */
+  /* 모달 열렸을 때 y 스크롤 방지 */
   useEffect(() => {
     if (selectedProduct) {
-      const width = window.innerWidth - document.documentElement.clientWidth;
-      setScrollbarWidth(width);
-      document.body.style.overflow = 'hidden';
-      document.body.style.paddingRight = `${width}px`;
+      document.documentElement.style.overflowY = 'hidden';
     } else {
-      setScrollbarWidth(0);
-      document.body.style.overflow = 'auto';
-      document.body.style.paddingRight = '0px';
+      document.documentElement.style.overflowY = 'auto';
     }
     return () => {
-      document.body.style.overflow = 'auto';
-      document.body.style.paddingRight = '0px';
+      document.documentElement.style.overflowY = 'auto';
     };
   }, [selectedProduct]);
 
@@ -120,7 +118,7 @@ const DeviceSearchPage = () => {
 
   return (
     <div className={`min-h-screen bg-white relative ${isAtBottom ? 'bg-effect-fade-bottom' : ''}`}>
-      <HomeIndicator paddingRight={scrollbarWidth} />
+      <HomeIndicator />
 
       {/* Main Content */}
       {/* <div className="pt-108"> */}
@@ -139,7 +137,7 @@ const DeviceSearchPage = () => {
         </div>
 
         {/* Device Categories */}
-        <div className="w-full pt-80">
+        <div className="w-full pt-36 2xl:pt-56">
           <div className="w-1100 mx-auto 2xl:w-full 2xl:px-328 flex items-center justify-between">
             {DEVICE_CATEGORIES.map((category) => {
               const { Icon } = category;
@@ -151,10 +149,10 @@ const DeviceSearchPage = () => {
                     selectedCategory === category.id ? 'opacity-100' : 'opacity-60 hover:opacity-80'
                   }`}
                 >
-                  <div className="w-60 h-60 flex items-center justify-center">
-                    <Icon className="w-60 h-60" />
+                  <div className="w-50 h-50 2xl:w-60 2xl:h-60 flex items-center justify-center">
+                    <Icon className="w-50 h-50 2xl:w-60 2xl:h-60" />
                   </div>
-                  <p className="font-body-2-sm text-black whitespace-nowrap">{category.name}</p>
+                  <p className="font-body-3-sm 2xl:font-body-2-sm text-black whitespace-nowrap">{category.name}</p>
                 </button>
               );
             })}
@@ -397,10 +395,7 @@ const DeviceSearchPage = () => {
           />
 
           {/* Modal */}
-          <div
-            className="fixed inset-0 flex justify-center items-center z-[72] pointer-events-none"
-            style={{ paddingRight: `${scrollbarWidth}px` }}
-          >
+          <div className="fixed inset-0 flex justify-center items-center z-[72] pointer-events-none">
             <div className="flex flex-col items-end gap-20 pointer-events-auto">
               {/* Close Button - 카드 바깥 */}
               <button
