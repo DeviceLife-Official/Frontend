@@ -44,7 +44,12 @@ const FindIdPage = () => {
             <div className="flex flex-col gap-20 w-full">
               {/* 입력창들 */}
               <div className="flex flex-col gap-8">
-                <PrimaryInput {...register('name')} type="text" placeholder="이름" />
+                <div className="flex flex-col gap-4">
+                  <PrimaryInput {...register('name')} type="text" placeholder="이름" />
+                  {errors.name && (
+                    <p className="font-body-3-r text-warning">{errors.name.message}</p>
+                  )}
+                </div>
                 <div className="flex flex-col gap-4">
                   <PrimaryInput
                     {...register('phone')}
