@@ -19,13 +19,14 @@ const LoginPage = () => {
   const {
     register, // input과 폼 연결하는 함수
     handleSubmit, // 폼 제출 처리 함수
-    formState: { isValid }, // 폼이 유효한지 (true/false)
+    formState: { errors, isValid }, // errors: 에러 메시지, isValid: 폼 유효 여부
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema), // zod 스키마로 검사해줘!
     mode: 'onChange', // 입력할 때마다 검사
   });
 
   // 로그인 제출 핸들러
+  // TODO: 로딩 상태 추가 (중복 클릭 방지)
   const onSubmit = (data: LoginFormData) => {
     // TODO: 로그인 API 호출
   };
@@ -49,12 +50,17 @@ const LoginPage = () => {
               {/* 입력창들 */}
               <div className="flex flex-col gap-8">
                 <PrimaryInput {...register('email')} type="email" placeholder="이메일" />
-                <PrimaryInput
-                  {...register('password')}
-                  type="password"
-                  placeholder="비밀번호"
-                  maxLength={20}
-                />
+                <div className="flex flex-col gap-4">
+                  <PrimaryInput
+                    {...register('password')}
+                    type="password"
+                    placeholder="비밀번호"
+                    maxLength={20}
+                  />
+                  {errors.password && (
+                    <p className="font-body-3-r text-warning">{errors.password.message}</p>
+                  )}
+                </div>
               </div>
 
               {/* 체크박스 */}
