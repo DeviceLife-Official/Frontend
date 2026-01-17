@@ -70,7 +70,7 @@ const CombinationCreatePage = () => {
   );
 
   return (
-    <div className="mt-92 flex flex-col gap-144">
+    <div className="mt-160 flex flex-col gap-144">
       <CombinationStyleProbe ref={styleProbeRef} />
       <div
         className={`

@@ -53,9 +53,9 @@ const LifestylePage = () => {
   };
 
   return (
-    <div className="w-full flex justify-center mt-200">
-      <div className="w-1140 flex items-stretch">
-        <div className="flex flex-col gap-12">
+    <div className="w-full flex justify-center mt-180">
+      <div className="w-1100 flex items-stretch">
+        <div className="flex flex-col gap-20">
           {TAGS.map((label) => (
             <LifestyleTag
               key={label}
@@ -66,11 +66,11 @@ const LifestylePage = () => {
           ))}
         </div>
         <div
-          className="ml-auto w-660 h-408 relative"
+          className="ml-auto w-660 relative h-full"
           onMouseEnter={() => setIsPaused(true)}
           onMouseLeave={() => setIsPaused(false)}
         >
-          <div className="flex absolute bottom-24 left-1/2 -translate-x-1/2 gap-20">
+          <div className="flex absolute bottom-24 left-1/2 -translate-x-1/2 gap-20 z-10">
             <DeviceSummaryCard />
             <DeviceSummaryCard />
             <DeviceSummaryCard />
@@ -78,7 +78,7 @@ const LifestylePage = () => {
           <img
             src={TAG_IMAGE_MAP[selectedLabel]}
             alt={selectedLabel}
-            className="block w-full h-full object-cover"
+            className="absolute inset-0 w-full h-full object-cover"
           />
         </div>
       </div>
