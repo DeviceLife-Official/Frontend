@@ -56,7 +56,7 @@ const LifestylePage = () => {
     <div className="min-h-[calc(100vh-80px)] flex items-center justify-center">
       <div className="w-full flex justify-center">
         <div className="w-1100 flex items-stretch">
-          <div className="flex flex-col gap-16 min-[1441px]:gap-20">
+          <div className="flex flex-col gap-16 min-[1440px]:gap-20">
             {TAGS.map((label) => (
               <LifestyleTag
                 key={label}
