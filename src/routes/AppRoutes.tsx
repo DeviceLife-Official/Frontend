@@ -13,7 +13,6 @@ import DeviceDetailPage from '@/pages/devices/DeviceDetailPage';
 
 // combination
 import CombinationCreatePage from '@/pages/combination/CombinationCreatePage';
-import CombinationCompletePage from '@/pages/combination/CombinationCompletePage';
 
 // my
 import MyPage from '@/pages/my/MyPage';
@@ -54,10 +53,7 @@ export const AppRoutes = [
       // combination
       {
         path: 'combination',
-        children: [
-          { path: 'create', element: <CombinationCreatePage /> },
-          { path: 'complete', element: <CombinationCompletePage /> },
-        ],
+        children: [{ path: 'create', element: <CombinationCreatePage /> }],
       },
 
       // my page

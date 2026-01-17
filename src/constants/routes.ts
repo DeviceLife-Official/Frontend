@@ -28,7 +28,6 @@ export const ROUTES = {
   // combination
   combination: {
     create: '/combination/create',
-    complete: '/combination/complete',
   },
 
   // my
