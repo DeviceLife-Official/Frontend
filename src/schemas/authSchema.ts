@@ -30,3 +30,10 @@ export const findIdSchema = z.object({
 });
 
 export type FindIdFormData = z.infer<typeof findIdSchema>;
+
+// 비밀번호 찾기 스키마
+export const findPasswordSchema = z.object({
+  email: emailSchema,
+});
+
+export type FindPasswordFormData = z.infer<typeof findPasswordSchema>;
