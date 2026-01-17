@@ -1,4 +1,4 @@
-import ChevronRightIcon from '@/assets/icons/chevron_right.svg?react';
+import ChevronRight from '@/assets/icons/chevron_right.svg?react';
 
 interface SettingRowProps {
   title: string;
@@ -26,7 +26,7 @@ const SettingRow = ({ title, onClick }: SettingRowProps) => {
       "
     >
       <span className="font-body-1-sm text-black">{title}</span>
-      <ChevronRightIcon className="w-20 h-36" />
+      <ChevronRight className="w-20 h-36" />
     </button>
   );
 };
