@@ -6,9 +6,10 @@ import PrimaryInput from '@/components/Input/PrimaryInput';
 import PrimaryButton from '@/components/Button/PrimaryButton';
 import Checkbox from '@/assets/icons/checkbox.svg?react';
 import CheckboxOn from '@/assets/icons/checkbox_on.svg?react';
-import googleLogo from '@/assets/logos/google.png';
-import appleLogo from '@/assets/logos/apple.png';
+import GoogleLogo from '@/assets/logos/google.svg?react';
+import AppleLogo from '@/assets/logos/apple.svg?react';
 import { useNavigate } from 'react-router-dom';
+import { ROUTES } from '@/constants/routes';
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -75,7 +76,7 @@ const LoginPage = () => {
               <button
                 type="button"
                 className="cursor-pointer"
-                onClick={() => navigate('/auth/find-id')}
+                onClick={() => navigate(ROUTES.auth.findId)}
               >
                 아이디 찾기
               </button>
@@ -83,7 +84,7 @@ const LoginPage = () => {
               <button
                 type="button"
                 className="cursor-pointer"
-                onClick={() => navigate('/auth/find-password')}
+                onClick={() => navigate(ROUTES.auth.findPassword)}
               >
                 비밀번호 찾기
               </button>
@@ -94,10 +95,10 @@ const LoginPage = () => {
         {/* 소셜 로그인 */}
         <div className="flex items-center gap-40">
           <button type="button" className="cursor-pointer">
-            <img src={googleLogo} alt="Google 로그인" className="size-50" />
+            <GoogleLogo className="size-50" />
           </button>
           <button type="button" className="cursor-pointer">
-            <img src={appleLogo} alt="Apple 로그인" className="size-50" />
+            <AppleLogo className="size-50" />
           </button>
         </div>
 
@@ -107,7 +108,7 @@ const LoginPage = () => {
           <button
             type="button"
             className="underline underline-offset-4 cursor-pointer"
-            onClick={() => navigate('/auth/signup')}
+            onClick={() => navigate(ROUTES.auth.signup)}
           >
             회원가입 하기
           </button>
