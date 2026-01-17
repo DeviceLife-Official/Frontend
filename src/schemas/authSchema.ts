@@ -17,3 +17,16 @@ export const loginSchema = z.object({
 });
 
 export type LoginFormData = z.infer<typeof loginSchema>;
+
+// 아이디 찾기 스키마
+export const findIdSchema = z.object({
+  name: z.string().min(1, '이름을 입력해주세요'),
+  phone: z
+    .string()
+    .min(1, '휴대폰 번호를 입력해주세요')
+    .regex(/^[0-9]+$/, '숫자만 입력해주세요')
+    .min(10, '휴대폰 번호는 10자리 이상이어야 합니다')
+    .max(11, '휴대폰 번호는 11자리 이하여야 합니다'),
+});
+
+export type FindIdFormData = z.infer<typeof findIdSchema>;
