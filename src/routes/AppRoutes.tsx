@@ -17,6 +17,7 @@ import CombinationCreatePage from '@/pages/combination/CombinationCreatePage';
 // my
 import MyPage from '@/pages/my/MyPage';
 import MyCombinationDetailPage from '@/pages/my/MyCombinationDetailPage';
+import MySettingsPage from '@/pages/my/settings/SettingPage';
 import MySettingsProfilePage from '@/pages/my/settings/ProfileEditPage';
 import MySettingsPasswordPage from '@/pages/my/settings/PasswordEditPage';
 import MyTrashPage from '@/pages/my/MyTrashPage';
@@ -65,6 +66,7 @@ export const AppRoutes = [
           {
             path: 'settings',
             children: [
+              { index: true, element: <MySettingsPage /> },
               { path: 'profile', element: <MySettingsProfilePage /> },
               { path: 'password', element: <MySettingsPasswordPage /> },
             ],
