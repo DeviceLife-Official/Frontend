@@ -193,7 +193,7 @@ const DeviceSearchPage = () => {
         <div className="w-full h-8 opacity-50 bg-gradient-to-t from-[#EEEEF0] to-[#E4E4E7] mt-88" />
 
         {/* Filter Section */}
-        <div className="max-w-1600 mx-auto px-160 pt-68">
+        <div className="mx-auto px-200 pt-68">
           
           {/* Filters */}
           <div className="flex items-center gap-0 pt-8">
@@ -385,7 +385,7 @@ const DeviceSearchPage = () => {
         </div>
 
         {/* Product Grid */}
-        <div ref={productGridRef} className="max-w-1600 mx-auto px-160 pt-68">
+        <div ref={productGridRef} className="mx-auto px-160 pt-68">
           <div className="grid grid-cols-4 gap-x-28 gap-y-164">
             {MOCK_PRODUCTS.map((product) => (
               <ProductCard
