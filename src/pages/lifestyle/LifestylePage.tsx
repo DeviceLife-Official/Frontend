@@ -53,33 +53,35 @@ const LifestylePage = () => {
   };
 
   return (
-    <div className="w-full flex justify-center mt-180">
-      <div className="w-1100 flex items-stretch">
-        <div className="flex flex-col gap-20">
-          {TAGS.map((label) => (
-            <LifestyleTag
-              key={label}
-              label={label}
-              selected={selectedLabel === label}
-              onClick={() => handleClickTag(label)}
-            />
-          ))}
-        </div>
-        <div
-          className="ml-auto w-660 relative h-full"
-          onMouseEnter={() => setIsPaused(true)}
-          onMouseLeave={() => setIsPaused(false)}
-        >
-          <div className="flex absolute bottom-24 left-1/2 -translate-x-1/2 gap-20 z-10">
-            <DeviceSummaryCard />
-            <DeviceSummaryCard />
-            <DeviceSummaryCard />
+    <div className="min-h-[calc(100vh-80px)] flex items-center justify-center">
+      <div className="w-full flex justify-center">
+        <div className="w-1100 flex items-stretch">
+          <div className="flex flex-col gap-20">
+            {TAGS.map((label) => (
+              <LifestyleTag
+                key={label}
+                label={label}
+                selected={selectedLabel === label}
+                onClick={() => handleClickTag(label)}
+              />
+            ))}
           </div>
-          <img
-            src={TAG_IMAGE_MAP[selectedLabel]}
-            alt={selectedLabel}
-            className="absolute inset-0 w-full h-full object-cover"
-          />
+          <div
+            className="ml-auto w-660 relative h-full"
+            onMouseEnter={() => setIsPaused(true)}
+            onMouseLeave={() => setIsPaused(false)}
+          >
+            <div className="flex absolute bottom-24 left-1/2 -translate-x-1/2 gap-20 z-10">
+              <DeviceSummaryCard />
+              <DeviceSummaryCard />
+              <DeviceSummaryCard />
+            </div>
+            <img
+              src={TAG_IMAGE_MAP[selectedLabel]}
+              alt={selectedLabel}
+              className="absolute inset-0 w-full h-full object-cover"
+            />
+          </div>
         </div>
       </div>
     </div>

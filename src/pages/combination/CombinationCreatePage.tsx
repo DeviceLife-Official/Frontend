@@ -70,56 +70,58 @@ const CombinationCreatePage = () => {
   );
 
   return (
-    <div className="mt-160 flex flex-col gap-144">
-      <CombinationStyleProbe ref={styleProbeRef} />
-      <div
-        className={`
-          fixed left-0 right-0 bottom-0 top-108 z-800 bg-white pointer-events-none
-          transition-opacity duration-900 ease-out
-          ${bgOn ? 'opacity-100' : 'opacity-0'}
-        `}
-      />
-      <CombinationResultOverlay
-        centerText={centerText}
-        resultOn={resultOn && mode === 'result'}
-        phase={phase}
-        showDouble={showDouble}
-        showExtras={showExtras}
-        targetRef={targetRef}
-      />
-      {mode === 'form' && (
-        <>
-          <div className="flex flex-row gap-20 justify-center">
-            <div className="flex flex-col">
-              <input
-                ref={inputRef}
-                type="text"
-                placeholder="생성하고 싶은 조합명을 입력하세요"
-                value={name}
-                onChange={onNameChange}
-                onCompositionStart={onCompositionStart}
-                onCompositionEnd={onCompositionEnd}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' && isValid) handleCreate();
-                }}
-                className="w-600 h-72 px-20 py-20 rounded-button bg-blue-100 placeholder-gray-300 font-body-1-r outline-none"
+    <div className="min-h-[calc(100vh-80px)] flex items-center justify-center">
+      <div className="flex flex-col gap-144">
+        <CombinationStyleProbe ref={styleProbeRef} />
+        <div
+          className={`
+            fixed left-0 right-0 bottom-0 top-80 z-800 bg-white pointer-events-none
+            transition-opacity duration-900 ease-out
+            ${bgOn ? 'opacity-100' : 'opacity-0'}
+          `}
+        />
+        <CombinationResultOverlay
+          centerText={centerText}
+          resultOn={resultOn && mode === 'result'}
+          phase={phase}
+          showDouble={showDouble}
+          showExtras={showExtras}
+          targetRef={targetRef}
+        />
+        {mode === 'form' && (
+          <>
+            <div className="flex flex-row gap-20 justify-center">
+              <div className="flex flex-col">
+                <input
+                  ref={inputRef}
+                  type="text"
+                  placeholder="생성하고 싶은 조합명을 입력하세요"
+                  value={name}
+                  onChange={onNameChange}
+                  onCompositionStart={onCompositionStart}
+                  onCompositionEnd={onCompositionEnd}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && isValid) handleCreate();
+                  }}
+                  className="w-600 h-72 px-20 py-20 rounded-button bg-blue-100 placeholder-gray-300 font-body-1-r outline-none"
+                />
+                <p className="pl-20 mt-16 font-body-4-r text-warning">{helperText}</p>
+              </div>
+              <PrimaryButton
+                text="조합 생성하기"
+                onClick={handleCreate}
+                disabled={!isValid}
+                className={buttonClass}
               />
-              <p className="pl-20 mt-16 font-body-4-r text-warning">{helperText}</p>
             </div>
-            <PrimaryButton
-              text="조합 생성하기"
-              onClick={handleCreate}
-              disabled={!isValid}
-              className={buttonClass}
-            />
-          </div>
-          <div className="flex flex-row gap-40 justify-center">
-            <Stage1Section />
-            <Stage2Section />
-            <Stage3Section />
-          </div>
-        </>
-      )}
+            <div className="flex flex-row gap-40 justify-center">
+              <Stage1Section />
+              <Stage2Section />
+              <Stage3Section />
+            </div>
+          </>
+        )}
+      </div>
     </div>
   );
 };
