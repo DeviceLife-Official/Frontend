@@ -32,9 +32,10 @@ const TAG_IMAGE_MAP: Record<Tag, string> = {
 const LifestylePage = () => {
   const [selectedLabel, setSelectedLabel] = useState<Tag>(TAGS[0]);
   const [isAutoRotate, setIsAutoRotate] = useState(true);
+  const [isPaused, setIsPaused] = useState(false);
 
   useEffect(() => {
-    if (!isAutoRotate) return;
+    if (!isAutoRotate || isPaused) return;
 
     const id = window.setInterval(() => {
       setSelectedLabel((prev) => {
@@ -44,15 +45,15 @@ const LifestylePage = () => {
     }, ROTATION_MS);
 
     return () => window.clearInterval(id);
-  }, [isAutoRotate]);
+  }, [isAutoRotate, isPaused]);
 
   const handleClickTag = (label: Tag) => {
-    setIsAutoRotate(false);
     setSelectedLabel(label);
+    setIsAutoRotate(true);
   };
 
   return (
-    <div className="w-full flex justify-center mt-100">
+    <div className="w-full flex justify-center mt-200">
       <div className="w-1140 flex items-stretch">
         <div className="flex flex-col gap-12">
           {TAGS.map((label) => (
@@ -64,7 +65,11 @@ const LifestylePage = () => {
             />
           ))}
         </div>
-        <div className="ml-auto w-660 h-408 relative">
+        <div
+          className="ml-auto w-660 h-408 relative"
+          onMouseEnter={() => setIsPaused(true)}
+          onMouseLeave={() => setIsPaused(false)}
+        >
           <div className="flex absolute bottom-24 left-1/2 -translate-x-1/2 gap-20">
             <DeviceSummaryCard />
             <DeviceSummaryCard />
