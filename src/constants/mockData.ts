@@ -1,3 +1,5 @@
+import { type UserCombination } from '@/types/devices';
+
 export interface Product {
   id: number;
   name: string;
@@ -27,3 +29,31 @@ export const MOCK_PRODUCTS: Product[] = Array.from({ length: 12 }, (_, i) => ({
     PRODUCT_COLOR_CHIPS.BLUE,
   ],
 }));
+
+// 사용자 조합 목록 (추후 API 연동)
+export const MOCK_COMBINATIONS: UserCombination[] = [
+  {
+    id: 1,
+    label: '조합 1',
+    name: 'iPhone 15 Pro 중심 조합',
+    isMain: true,
+    tags: [
+      { name: '연동성', status: '최적' },
+      { name: '편의성', status: '최적' },
+      { name: '라이프스타일', status: '최적' },
+      { name: '컬러 매칭', status: '최적' },
+    ],
+  },
+  {
+    id: 2,
+    label: '조합 2',
+    name: '사무실 세팅',
+    isMain: false,
+    tags: [
+      { name: '연동성', status: '최적' },
+      { name: '편의성', status: '최적' },
+      { name: '라이프스타일', status: '최적' },
+      { name: '컬러 매칭', status: '최적' },
+    ],
+  },
+];
