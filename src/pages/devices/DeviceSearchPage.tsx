@@ -27,7 +27,7 @@ const DeviceSearchPage = () => {
   const selectedProductId = searchParams.get('productId');
 
   // 추후 Zustand/Context에서 인증 상태 가져오기
-  const [authStatus] = useState<AuthStatus>('logout');
+  const [_authStatus] = useState<AuthStatus>('logout');
 
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
