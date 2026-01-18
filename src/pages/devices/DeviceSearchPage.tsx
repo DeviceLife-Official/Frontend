@@ -43,6 +43,7 @@ const DeviceSearchPage = () => {
   const [selectedBrand, setSelectedBrand] = useState<string | null>(null);
   const [isAtBottom, setIsAtBottom] = useState(false);
   const [showTopButton, setShowTopButton] = useState(false);
+  const [hoveredSortIndex, setHoveredSortIndex] = useState<number | null>(null);
 
   const productGridRef = useRef<HTMLDivElement>(null);
   const sortRef = useRef<HTMLDivElement>(null);
@@ -239,7 +240,7 @@ const DeviceSearchPage = () => {
               </button>
 
               {showPriceFilter && (
-                <div className="absolute left-0 top-full mt-8 bg-white rounded-button shadow-[0_2px_10px_rgba(0,0,0,0.25)] p-12 z-12 flex flex-col gap-16">
+                <div className="absolute left-0 top-full mt-8 bg-white rounded-button shadow-[0_2px_10px_rgba(0,0,0,0.25)] p-12 z-12 flex flex-col">
                   {PRICE_OPTIONS.map((option, index) => (
                     <button
                       key={option.value}
@@ -247,12 +248,18 @@ const DeviceSearchPage = () => {
                         setSelectedPrice(selectedPrice === option.value ? null : option.value);
                         setShowPriceFilter(false);
                       }}
-                      className={`flex items-center gap-12 justify-between pb-20 hover:bg-gray-100 transition-colors ${
+                      className={`group relative flex items-center gap-10 justify-between pb-10 ${
+                        index === 0 ? '' : 'pt-10'
+                      } ${
                         index < PRICE_OPTIONS.length - 1
                           ? 'border-b border-black'
                           : ''
                       }`}
                     >
+                      {/* 호버 시 회색 배경 - 구분선과 분리 */}
+                      <div className={`absolute inset-x-[-4px] bg-gray-100 rounded-button -z-10 opacity-0 group-hover:opacity-100 transition-opacity ${
+                        index === 0 ? 'top-[-4px] bottom-4' : 'inset-y-4'
+                      }`} />
                       <p className="font-body-1-r text-black whitespace-nowrap">{option.label}</p>
                       {selectedPrice === option.value ? (
                         <CheckboxOnIcon className="w-32 h-32 flex-shrink-0" />
@@ -302,7 +309,7 @@ const DeviceSearchPage = () => {
               </button>
 
               {showBrandFilter && (
-                <div className="absolute left-0 top-full mt-8 bg-white rounded-button shadow-[0_2px_10px_rgba(0,0,0,0.25)] p-12 z-10 flex flex-col gap-16">
+                <div className="absolute left-0 top-full mt-8 bg-white rounded-button shadow-[0_2px_10px_rgba(0,0,0,0.25)] p-12 z-10 flex flex-col">
                   {BRAND_OPTIONS.map((option, index) => (
                     <button
                       key={option.value}
@@ -310,12 +317,18 @@ const DeviceSearchPage = () => {
                         setSelectedBrand(selectedBrand === option.value ? null : option.value);
                         setShowBrandFilter(false);
                       }}
-                      className={`flex items-center gap-10 justify-between pb-10 hover:bg-gray-100 transition-colors ${
+                      className={`group relative flex items-center gap-10 justify-between pb-10 ${
+                        index === 0 ? '' : 'pt-10'
+                      } ${
                         index < BRAND_OPTIONS.length - 1
                           ? 'border-b border-black'
                           : ''
                       }`}
                     >
+                      {/* 호버 시 회색 배경 - 구분선과 분리 */}
+                      <div className={`absolute inset-x-[-4px] bg-gray-100 rounded-button -z-10 opacity-0 group-hover:opacity-100 transition-opacity ${
+                        index === 0 ? 'top-[-4px] bottom-4' : 'inset-y-4'
+                      }`} />
                       <p className="font-body-1-r text-black whitespace-nowrap">{option.label}</p>
                       {selectedBrand === option.value ? (
                         <CheckboxOnIcon className="w-32 h-32 flex-shrink-0" />
@@ -355,7 +368,10 @@ const DeviceSearchPage = () => {
               </button>
 
               {showSortDropdown && (
-                <div className="absolute right-0 top-full mt-8 bg-white rounded-button shadow-[0_2px_10px_rgba(0,0,0,0.25)] p-12 z-12 flex flex-col gap-16">
+                <div
+                  className="absolute right-0 top-full mt-8 bg-white rounded-button shadow-[0_2px_10px_rgba(0,0,0,0.25)] px-8 z-12 flex flex-col"
+                  onMouseLeave={() => setHoveredSortIndex(null)}
+                >
                   {SORT_OPTIONS.map((option, index) => (
                     <button
                       key={option.value}
@@ -363,18 +379,17 @@ const DeviceSearchPage = () => {
                         setSortOption(option.value);
                         setShowSortDropdown(false);
                       }}
-                      className={`font-body-1-sm text-black text-left pb-8 whitespace-nowrap hover:bg-gray-100 transition-colors ${
-                        sortOption === option.value
-                          ? 'bg-gray-100'
-                          : ''
-                      } ${
+                      onMouseEnter={() => setHoveredSortIndex(index)}
+                      className={`relative font-body-1-sm text-black text-left py-12 whitespace-nowrap ${
                         index < SORT_OPTIONS.length - 1
-                          ? sortOption === option.value
-                            ? 'border-b border-black'
-                            : 'border-b border-black/50'
+                          ? 'border-b border-black/50'
                           : ''
                       }`}
                     >
+                      {/* 회색 배경 (선택 또는 호버 시) - 구분선과 분리 */}
+                      {((hoveredSortIndex === null && sortOption === option.value) || hoveredSortIndex === index) && (
+                        <div className="absolute inset-x-[-4px] inset-y-4 bg-gray-100 rounded-button -z-10" />
+                      )}
                       {option.label}
                     </button>
                   ))}
@@ -420,12 +435,12 @@ const DeviceSearchPage = () => {
         <>
           {/* Background Overlay - HomeIndicator보다 높게 설정 */}
           <div
-            className="fixed inset-0 bg-black/50 z-[60]"
+            className="fixed inset-0 bg-black/50 z-60"
             onClick={handleCloseModal}
           />
 
           {/* Modal */}
-          <div className="fixed inset-0 flex justify-center items-center z-[72] pointer-events-none">
+          <div className="fixed inset-0 flex justify-center items-center z-72 pointer-events-none">
             {/* Device Info Modal */}
             {modalView === 'device' && (
               <div className="flex flex-col items-end gap-20 pointer-events-auto">
@@ -462,7 +477,7 @@ const DeviceSearchPage = () => {
 
                       {/* Image Section */}
                       <div className="flex flex-col gap-8">
-                        <div className="w-full h-[360px] bg-gray-200 relative">
+                        <div className="w-full h-360 bg-gray-200 relative">
                           {/* Color Chip Dropdown */}
                           <div className="absolute left-20 top-20 bg-white rounded-button shadow-[0_0_4px_rgba(0,0,0,0.25)] px-8 py-4 flex items-center gap-4">
                             <div
