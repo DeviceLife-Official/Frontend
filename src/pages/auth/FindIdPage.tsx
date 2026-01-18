@@ -31,7 +31,7 @@ const FindIdPage = () => {
       {/* 전체 컨테이너 */}
       <div className="flex flex-col items-center gap-20">
         {/* 메인 폼 영역 */}
-        <div className="flex flex-col items-center gap-28">
+        <div className="flex flex-col items-center gap-56">
           {/* 로고 */}
           <p className="font-service-name text-black">Device Life</p>
 
@@ -54,7 +54,7 @@ const FindIdPage = () => {
                   <PrimaryInput
                     {...register('phone')}
                     type="tel"
-                    placeholder="휴대폰 번호 (- 없이 입력)"
+                    placeholder="휴대폰 번호"
                     maxLength={11}
                   />
                   {errors.phone && (

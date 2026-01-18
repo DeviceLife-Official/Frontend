@@ -31,7 +31,7 @@ const FindPasswordPage = () => {
       {/* 전체 컨테이너 */}
       <div className="flex flex-col items-center gap-20">
         {/* 메인 폼 영역 */}
-        <div className="flex flex-col items-center gap-28">
+        <div className="flex flex-col items-center gap-56">
           {/* 로고 */}
           <p className="font-service-name text-black">Device Life</p>
 
@@ -44,7 +44,7 @@ const FindPasswordPage = () => {
             <div className="flex flex-col gap-20 w-full">
               {/* 입력창들 */}
               <div className="flex flex-col gap-8">
-                <PrimaryInput {...register('email')} type="email" placeholder="이메일" />
+                <PrimaryInput {...register('email')} type="email" placeholder="이메일(ID)" />
               </div>
               {/* 인증번호 받기 버튼 */}
               <PrimaryButton
