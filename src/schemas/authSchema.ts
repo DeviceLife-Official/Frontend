@@ -17,3 +17,24 @@ export const loginSchema = z.object({
 });
 
 export type LoginFormData = z.infer<typeof loginSchema>;
+
+// 아이디 찾기 스키마
+export const findIdSchema = z.object({
+  name: z.string().min(1, '이름을 입력해주세요'),
+  phone: z
+    .string()
+    .min(1, '휴대폰 번호를 입력해주세요')
+    .refine(
+      (value) => /^[0-9]+$/.test(value) && value.length >= 10 && value.length <= 11,
+      '휴대폰 번호 형식을 확인해주세요'
+    ),
+});
+
+export type FindIdFormData = z.infer<typeof findIdSchema>;
+
+// 비밀번호 찾기 스키마
+export const findPasswordSchema = z.object({
+  email: emailSchema,
+});
+
+export type FindPasswordFormData = z.infer<typeof findPasswordSchema>;

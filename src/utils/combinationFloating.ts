@@ -67,11 +67,13 @@ export const animateDrop = ({
   duration: number;
   easing: string;
 }) => {
-  el.animate(
+  const anim = el.animate(
     [{ transform: 'translate3d(0,0,0)' }, { transform: `translate3d(${dx}px, ${dy}px, 0)` }],
     { duration, easing, fill: 'forwards' }
   );
+  return anim;
 };
+
 
 export const fadeOutAndRemove = (el: HTMLElement, ms = 240) => {
   el.style.transition = `opacity ${ms}ms ease-out`;
