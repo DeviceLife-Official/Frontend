@@ -10,11 +10,11 @@ const brandLinkClass = 'font-service-name-sm text-black hover:text-blue-500 acti
 const navTextClass = 'font-body-1-sm text-black hover:text-blue-500 active:text-blue-600';
 type AuthStatus = 'logout' | 'login';
 
-interface HomeIndicatorProps {
+interface GNBProps {
   paddingRight?: number;
 }
 
-const HomeIndicator = ({ paddingRight = 0 }: HomeIndicatorProps) => {
+const GNB = ({ paddingRight = 0 }: GNBProps) => {
   const [authStatus] = useState<AuthStatus>('login');
 
   const navClass = ({ isActive }: { isActive: boolean }) =>
@@ -99,4 +99,4 @@ const HomeIndicator = ({ paddingRight = 0 }: HomeIndicatorProps) => {
   );
 };
 
-export default HomeIndicator;
+export default GNB;

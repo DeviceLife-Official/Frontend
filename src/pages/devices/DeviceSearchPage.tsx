@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import HomeIndicator from '@/components/Home/HomeIndicator';
+import GNB from '@/components/Home/GNB';
 import ProductCard from '@/components/ProductCard/ProductCard';
 import PrimaryButton from '@/components/Button/PrimaryButton';
 import CheckboxIcon from '@/assets/icons/checkbox.svg?react';
@@ -118,7 +118,7 @@ const DeviceSearchPage = () => {
 
   return (
     <div className={`min-h-screen bg-white relative ${isAtBottom ? 'bg-effect-fade-bottom' : ''}`}>
-      <HomeIndicator />
+      <GNB />
 
       {/* Main Content */}
       {/* <div className="pt-108"> */}
