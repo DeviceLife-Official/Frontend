@@ -24,9 +24,10 @@ export const findIdSchema = z.object({
   phone: z
     .string()
     .min(1, '휴대폰 번호를 입력해주세요')
-    .regex(/^[0-9]+$/, '숫자만 입력해주세요')
-    .min(10, '휴대폰 번호는 10자리 이상이어야 합니다')
-    .max(11, '휴대폰 번호는 11자리 이하여야 합니다'),
+    .refine(
+      (value) => /^[0-9]+$/.test(value) && value.length >= 10 && value.length <= 11,
+      '휴대폰 번호 형식을 확인해주세요'
+    ),
 });
 
 export type FindIdFormData = z.infer<typeof findIdSchema>;

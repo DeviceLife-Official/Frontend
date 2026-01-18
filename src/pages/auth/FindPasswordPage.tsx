@@ -14,10 +14,10 @@ const FindPasswordPage = () => {
   const {
     register,
     handleSubmit,
-    formState: { errors, isValid },
+    formState: { errors, isSubmitted },
   } = useForm<FindPasswordFormData>({
     resolver: zodResolver(findPasswordSchema),
-    mode: 'onChange',
+    mode: 'onSubmit', // 제출 시에만 검사
   });
 
   // 인증번호 받기 제출 핸들러
@@ -38,6 +38,7 @@ const FindPasswordPage = () => {
           {/* 폼 컨테이너 */}
           <form
             onSubmit={handleSubmit(onSubmit)}
+            noValidate
             className="flex flex-col items-center gap-24 w-400"
           >
             {/* 입력 + 버튼 영역 */}
@@ -45,13 +46,13 @@ const FindPasswordPage = () => {
               {/* 입력창들 */}
               <div className="flex flex-col gap-8">
                 <PrimaryInput {...register('email')} type="email" placeholder="이메일(ID)" />
+                {/* 에러 메시지 - 제출 시에만 표시 */}
+                {isSubmitted && errors.email && (
+                  <p className="font-body-3-r text-warning">{errors.email.message}</p>
+                )}
               </div>
               {/* 인증번호 받기 버튼 */}
-              <PrimaryButton
-                text="인증번호 받기"
-                className="w-full bg-blue-600"
-                disabled={!isValid}
-              />
+              <PrimaryButton text="인증번호 받기" className="w-full bg-blue-600" />
             </div>
 
             {/* 아이디/비밀번호 찾기 */}
