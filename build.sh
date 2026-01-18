@@ -1,4 +1,4 @@
 cd ../
-mkdir -p output
+mkdir output
 cp -R ./Frontend/* ./output
-cp ./vercel.json ./output/
+cp -R ./output ./Frontend/
