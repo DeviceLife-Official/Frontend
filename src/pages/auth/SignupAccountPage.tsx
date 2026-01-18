@@ -5,7 +5,7 @@ import PrimaryButton from '@/components/Button/PrimaryButton';
 import DuplicateCheckButton from '@/components/Button/DuplicateCheckButton';
 import InputLabel from '@/components/Auth/Label/InputLabel';
 
-const SignupFormPage = () => {
+const SignupAccountPage = () => {
   return (
     <div className="flex flex-col items-center justify-center h-[calc(100vh-80px)]">
       {/* 전체 컨테이너 */}
@@ -34,7 +34,7 @@ const SignupFormPage = () => {
             
             {/* 비밀번호 입력창 */}
             <div className="relative w-400">
-              <InputLabel text="비밀번호" className="absolute right-full mr-95 top-1/2 -translate-y-1/2" />
+              <InputLabel text="비밀번호" className="absolute right-full mr-96 top-1/2 -translate-y-1/2" />
             <PrimaryInput type="password" placeholder="비밀번호" />
             </div>
 
@@ -54,4 +54,4 @@ const SignupFormPage = () => {
   );
 };
 
-export default SignupFormPage;
+export default SignupAccountPage;

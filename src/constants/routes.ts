@@ -11,7 +11,8 @@ export const ROUTES = {
     findId: '/auth/find/id',
     findPassword: '/auth/find/password',
     signup: '/auth/signup',
-    signupForm: '/auth/signup/form',
+    signupForm: '/auth/signup/account',
+    signupProfile: '/auth/signup/profile',
     onboarding: {
       lifestyle: '/auth/onboarding/lifestyle',
       combination: '/auth/onboarding/combination',
