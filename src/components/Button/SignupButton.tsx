@@ -32,8 +32,10 @@ const SignupButton = ({
       {/* 아이콘/로고 - 왼쪽 끝 고정 */}
       <div className="absolute left-24 size-36 flex items-center justify-center">{icon}</div>
 
-      {/* 텍스트 - 나머지 공간의 가로 중심 */}
-      <span className="flex-1 font-body-2-r text-black text-center">{text}</span>
+      {/* 텍스트 영역 - 아이콘 제외한 나머지 공간 (60px부터 끝까지) */}
+      <div className="absolute left-60 right-0 flex items-center justify-center">
+        <span className="font-body-2-r text-black">{text}</span>
+      </div>
     </button>
   );
 };
