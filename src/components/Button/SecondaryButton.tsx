@@ -1,26 +1,28 @@
-type DuplicateCheckButtonProps = {
+type SecondaryButtonProps = {
+  text: string;
   onClick?: () => void;
   className?: string;
 };
 
-const DuplicateCheckButton = ({ onClick, className = '' }: DuplicateCheckButtonProps) => {
+const SecondaryButton = ({ text, onClick, className = '' }: SecondaryButtonProps) => {
   return (
     <button
       type="button"
       onClick={onClick}
       className={`
         flex items-center justify-center
-        h-72 w-148
+        h-72
         bg-blue-100 border border-blue-600
         rounded-button
         font-body-2-sm text-blue-600
         cursor-pointer
+        hover:bg-blue-200
         ${className}
       `}
     >
-      중복확인
+      {text}
     </button>
   );
 };
 
-export default DuplicateCheckButton;
+export default SecondaryButton;

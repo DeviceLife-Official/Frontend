@@ -6,7 +6,7 @@ import EllipseBlack from '@/assets/icons/ellipse_black.svg?react';
 import EllipseGray from '@/assets/icons/ellipse_gray.svg?react';
 import PrimaryInput from '@/components/Input/PrimaryInput';
 import PrimaryButton from '@/components/Button/PrimaryButton';
-import DuplicateCheckButton from '@/components/Button/DuplicateCheckButton';
+import SecondaryButton from '@/components/Button/SecondaryButton';
 import InputLabel from '@/components/Auth/Label/InputLabel';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '@/constants/routes';
@@ -88,9 +88,10 @@ const SignupAccountPage = () => {
                   placeholder="이메일"
                   disabled={isEmailVerified}
                 />
-                <DuplicateCheckButton 
+                <SecondaryButton 
+                  text="중복확인"
                   onClick={handleCheckDuplicate}
-                  className="absolute top-1/2 -translate-y-1/2 left-[calc(100%+12px)]" 
+                  className="w-148 absolute top-1/2 -translate-y-1/2 left-[calc(100%+12px)]" 
                 />
               </div>
               {errors.email && (

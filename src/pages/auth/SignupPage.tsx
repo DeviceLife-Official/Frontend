@@ -1,4 +1,4 @@
-import DeviceLifeLogo from '@/assets/logos/deviceLife.svg?react';
+import DeviceLifeLogo from '@/assets/logos/logo_circle.svg?react';
 import GoogleLogo from '@/assets/logos/google.svg?react';
 import AppleLogo from '@/assets/logos/apple.svg?react';
 import SignupButton from '@/components/Button/SignupButton';
