@@ -19,7 +19,6 @@ const SignupAccountPage = () => {
     register,
     handleSubmit,
     watch,
-    getValues,
     formState: { errors, isValid },
   } = useForm<SignupAccountFormData>({
     resolver: zodResolver(signupAccountSchema),
