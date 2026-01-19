@@ -14,7 +14,7 @@ interface GNBProps {
   paddingRight?: number;
 }
 
-const GNB = ({ paddingRight = 0 }: GNBProps) => {
+const GNB = ({ paddingRight: _paddingRight = 0 }: GNBProps) => {
   const [authStatus] = useState<AuthStatus>('login');
 
   const navClass = ({ isActive }: { isActive: boolean }) =>
