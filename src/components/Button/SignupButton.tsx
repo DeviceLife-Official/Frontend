@@ -6,6 +6,9 @@ type SignupButtonProps = {
   onClick?: () => void;
   disabled?: boolean;
   className?: string;
+
+  /** Figma spacing: 124 / 146 */
+  textStart?: number;
 };
 
 const SignupButton = ({
@@ -14,6 +17,7 @@ const SignupButton = ({
   onClick,
   disabled = false,
   className = '',
+  textStart = 146,
 }: SignupButtonProps) => {
   return (
     <button
@@ -21,22 +25,25 @@ const SignupButton = ({
       onClick={onClick}
       disabled={disabled}
       className={`
-        relative flex items-center
-        w-full h-72
+        relative w-400 h-72
         bg-white border border-black rounded-button
-        outline-none
-        transition-all duration-200
+        outline-none transition-all duration-200
         ${disabled ? 'bg-gray-100 cursor-not-allowed' : 'cursor-pointer hover:bg-gray-100 hover:border-gray-700'}
         ${className}
       `}
     >
-      {/* 아이콘/로고 - 왼쪽 끝 고정 */}
-      <div className="absolute left-24 size-36 flex items-center justify-center">{icon}</div>
-
-      {/* 텍스트 영역 - 아이콘 제외한 나머지 공간 (60px부터 끝까지) */}
-      <div className="absolute left-35 right-0 flex items-center justify-center">
-        <span className="font-body-2-r text-black">{text}</span>
+      {/* 아이콘: 항상 고정 */}
+      <div className="absolute left-24 top-1/2 -translate-y-1/2 size-36 flex items-center justify-center">
+        {icon}
       </div>
+
+      {/* 텍스트: left spacing만 다르게 */}
+      <span
+        className="absolute top-1/2 -translate-y-1/2 font-body-2-r text-black"
+        style={{ left: `${textStart}px` }}
+      >
+        {text}
+      </span>
     </button>
   );
 };
