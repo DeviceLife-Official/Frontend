@@ -25,7 +25,8 @@ const SignupButton = ({
         w-full h-72 px-24 py-24
         bg-white border border-black rounded-button
         outline-none
-        ${disabled ? 'bg-gray-100 cursor-not-allowed' : 'cursor-pointer'}
+        transition-all duration-200
+        ${disabled ? 'bg-gray-100 cursor-not-allowed' : 'cursor-pointer hover:bg-gray-100 hover:border-gray-700'}
         ${className}
       `}
     >
