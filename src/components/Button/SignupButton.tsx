@@ -21,8 +21,8 @@ const SignupButton = ({
       onClick={onClick}
       disabled={disabled}
       className={`
-        relative flex items-center justify-center
-        w-full h-72 px-24 py-24
+        relative flex items-center
+        w-full h-72
         bg-white border border-black rounded-button
         outline-none
         transition-all duration-200
@@ -34,7 +34,7 @@ const SignupButton = ({
       <div className="absolute left-24 size-36 flex items-center justify-center">{icon}</div>
 
       {/* 텍스트 영역 - 아이콘 제외한 나머지 공간 (60px부터 끝까지) */}
-      <div className="absolute left-60 right-0 flex items-center justify-center">
+      <div className="absolute left-35 right-0 flex items-center justify-center">
         <span className="font-body-2-r text-black">{text}</span>
       </div>
     </button>
