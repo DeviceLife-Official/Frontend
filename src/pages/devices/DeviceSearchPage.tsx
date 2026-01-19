@@ -4,6 +4,7 @@ import GNB from '@/components/Home/GNB';
 import ProductCard from '@/components/ProductCard/ProductCard';
 import PrimaryButton from '@/components/Button/PrimaryButton';
 import CombinationTag from '@/components/Combination/CombinationTag';
+import RoundedLifestyleTag from '@/components/Lifestyle/RoundedLifestyleTag';
 import CheckboxIcon from '@/assets/icons/checkbox.svg?react';
 import CheckboxOnIcon from '@/assets/icons/checkbox_on.svg?react';
 import SearchIcon from '@/assets/icons/search.svg?react';
@@ -22,7 +23,7 @@ import {
   BRAND_OPTIONS,
   SCROLL_CONSTANTS,
 } from '@/constants/devices';
-import { MOCK_PRODUCTS, MOCK_COMBINATIONS } from '@/constants/mockData';
+import { MOCK_PRODUCTS, MOCK_COMBINATIONS, MOCK_COMBINATION_DEVICES } from '@/constants/mockData';
 import { type AuthStatus, type ModalView } from '@/types/devices';
 
 const DeviceSearchPage = () => {
@@ -44,6 +45,8 @@ const DeviceSearchPage = () => {
   const [isAtBottom, setIsAtBottom] = useState(false);
   const [showTopButton, setShowTopButton] = useState(false);
   const [hoveredSortIndex, setHoveredSortIndex] = useState<number | null>(null);
+  const [selectedCombinationId, setSelectedCombinationId] = useState<number | null>(null);
+  const [showAllDevices, setShowAllDevices] = useState(false);
 
   const productGridRef = useRef<HTMLDivElement>(null);
   const sortRef = useRef<HTMLDivElement>(null);
@@ -60,6 +63,8 @@ const DeviceSearchPage = () => {
     searchParams.delete('productId');
     setSearchParams(searchParams);
     setModalView('device');
+    setSelectedCombinationId(null);
+    setShowAllDevices(false);
   };
 
   /* 내 조합에 담기 */
@@ -80,12 +85,39 @@ const DeviceSearchPage = () => {
     setModalView('combination');
   };
 
-  /* 조합 선택 */
+  /* 조합 선택 - 기기 리스트 보기 */
   const handleSelectCombination = (combinationId: number) => {
-    // API 호출 - 선택한 조합에 기기 추가
-    console.log('조합에 기기 추가:', combinationId);
-    handleCloseModal();
+    setSelectedCombinationId(combinationId);
+    setShowAllDevices(false);
+    setModalView('combinationDetail');
   };
+
+  /* 조합에 기기 담기 */
+  const handleAddDeviceToCombination = () => {
+    if (selectedCombinationId) {
+      // API 호출 - 선택한 조합에 기기 추가
+      console.log('조합에 기기 추가:', selectedCombinationId);
+      handleCloseModal();
+    }
+  };
+
+  /* 선택된 조합 정보 */
+  const selectedCombination = selectedCombinationId
+    ? MOCK_COMBINATIONS.find(c => c.id === selectedCombinationId)
+    : null;
+
+  /* 선택된 조합의 기기 리스트 */
+  const combinationDevices = selectedCombinationId
+    ? MOCK_COMBINATION_DEVICES[selectedCombinationId] || []
+    : [];
+
+  /* 기기 3줄 초과 여부 (3열 × 3줄 = 9개) */
+  const hasMoreThanThreeRows = combinationDevices.length > 9;
+
+  /* 표시할 기기 리스트 */
+  const displayedDevices = showAllDevices
+    ? combinationDevices
+    : combinationDevices.slice(0, 9);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -479,9 +511,9 @@ const DeviceSearchPage = () => {
                       <div className="flex flex-col gap-8">
                         <div className="w-full h-360 bg-gray-200 relative">
                           {/* Color Chip Dropdown */}
-                          <div className="absolute left-20 top-20 bg-white rounded-button shadow-[0_0_4px_rgba(0,0,0,0.25)] px-8 py-4 flex items-center gap-4">
+                          <div className="absolute left-20 top-20 bg-white rounded-button shadow-[0_0_4px_rgba(0,0,0,0.25)] p-2 flex items-center">
                             <div
-                              className="w-40 h-40 rounded-full"
+                              className="w-28 h-28 rounded-full"
                               style={{ backgroundColor: selectedProduct.colors[0] }}
                             />
                             <DropdownIcon className="w-28 h-14 text-gray-400" />
@@ -543,12 +575,8 @@ const DeviceSearchPage = () => {
 
                       {/* Hashtags */}
                       <div className="flex items-center gap-16">
-                        <div className="bg-blue-100 rounded-tag px-20 py-8">
-                          <p className="font-body-1-r text-black">#office</p>
-                        </div>
-                        <div className="bg-blue-100 rounded-tag px-20 py-8">
-                          <p className="font-body-1-r text-black">#portability</p>
-                        </div>
+                        <RoundedLifestyleTag label="office" />
+                        <RoundedLifestyleTag label="portability" />
                       </div>
                     </div>
                   </div>
@@ -616,6 +644,108 @@ const DeviceSearchPage = () => {
                         <MoreIcon className="w-20 h-36 text-gray-400" />
                       </button>
                     ))}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Combination Detail Modal - 기기 리스트 */}
+            {modalView === 'combinationDetail' && selectedCombination && (
+              <div className="flex flex-col items-start gap-20 pointer-events-auto">
+                {/* Header: Back + X 버튼 */}
+                <div className="flex items-center justify-between w-full">
+                  <button
+                    onClick={() => setModalView('combination')}
+                    className="w-48 h-48 flex items-center justify-center cursor-pointer hover:opacity-80 transition-opacity"
+                    aria-label="뒤로가기"
+                  >
+                    <BackIcon className="w-48 h-48" />
+                  </button>
+                  <button
+                    onClick={handleCloseModal}
+                    className="w-48 h-48 flex items-center justify-center cursor-pointer hover:opacity-80 transition-opacity"
+                    aria-label="닫기"
+                  >
+                    <XIcon className="w-48 h-48 text-white" />
+                  </button>
+                </div>
+
+                {/* Card */}
+                <div
+                  className="bg-white rounded-card shadow-[0_0_10px_rgba(0,0,0,0.25)] flex flex-col"
+                  style={{
+                    width: 'clamp(903px, calc(903px + (100vw - 1440px) * 0.245833), 1021px)',
+                    height: showAllDevices ? '850px' : '697px',
+                    transition: 'height 0.3s ease',
+                  }}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {/* 조합 정보 */}
+                  <div className="px-56 pt-40">
+                    <div className="flex flex-col gap-24 pl-20 py-24">
+                      {/* 조합 번호 + 조합명 */}
+                      <div className="flex flex-col gap-8">
+                        <p className="font-body-3-r text-gray-400">{selectedCombination.label}</p>
+                        <div className="flex items-center gap-8">
+                          <p className="font-body-1-sm text-black">{selectedCombination.name}</p>
+                          {selectedCombination.isMain && <StarIcon className="w-27 h-27" />}
+                        </div>
+                      </div>
+                      {/* Tags */}
+                      <div className="flex gap-12">
+                        {selectedCombination.tags.map((tag) => (
+                          <CombinationTag key={tag.name} name={tag.name} status={tag.status} />
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* 기기 그리드 */}
+                    <div className="pl-8 relative">
+                      <div className="grid grid-cols-3 gap-x-28 gap-y-12">
+                        {displayedDevices.map((device) => (
+                          <div
+                            key={device.id}
+                            className="bg-white rounded-card shadow-[0_0_4px_rgba(0,0,0,0.1)] p-12 w-244 flex items-center gap-12"
+                          >
+                            <div className="w-64 h-64 bg-gray-200 flex-shrink-0" />
+                            <div className="flex flex-col gap-4">
+                              <p className="font-body-3-sm text-black">{device.name}</p>
+                              <p className="font-body-4-r text-gray-300">{device.chargingType}</p>
+                              <p className="font-body-3-r text-gray-300">{device.color}</p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* 그라데이션 (3줄 초과 + 전체보기 아닐 때만) */}
+                      {hasMoreThanThreeRows && !showAllDevices && (
+                        <div
+                          className="absolute right-0 bottom-0 w-244 h-80 rounded-card pointer-events-none"
+                          style={{
+                            background: 'linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 70%)',
+                          }}
+                        />
+                      )}
+                    </div>
+
+                    {/* 기기 전체보기 - 기기 그리드 바로 아래 */}
+                    {hasMoreThanThreeRows && !showAllDevices && (
+                      <button
+                        onClick={() => setShowAllDevices(true)}
+                        className="mt-16 pl-12 font-body-2-r text-gray-500 underline cursor-pointer hover:opacity-80"
+                      >
+                        기기 전체보기
+                      </button>
+                    )}
+                  </div>
+
+                  {/* 담기 버튼 - 하단 고정 */}
+                  <div className="pt-30 px-56 pb-40 flex justify-end flex-shrink-0">
+                    <PrimaryButton
+                      text={`${selectedCombination.label} 에 담기`}
+                      onClick={handleAddDeviceToCombination}
+                      className="w-280 bg-blue-600 hover:bg-blue-500"
+                    />
                   </div>
                 </div>
               </div>
