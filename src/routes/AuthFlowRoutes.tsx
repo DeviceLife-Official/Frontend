@@ -18,9 +18,16 @@ export const AuthFlowRoutes = [
       { path: 'login', element: <LoginPage /> },
       { path: 'find/id', element: <FindIdPage /> },
       { path: 'find/password', element: <FindPasswordPage /> },
-      { path: 'signup', element: <SignupPage /> },
-      { path: 'signup/account', element: <SignupAccountPage /> },
-      { path: 'signup/profile', element: <SignupProfilePage /> },
+
+      // signup
+      {
+        path: 'signup',
+        children: [
+          { index: true, element: <SignupPage /> },
+          { path: 'account', element: <SignupAccountPage /> },
+          { path: 'profile', element: <SignupProfilePage /> },
+        ],
+      },
 
       // onboarding
       {

@@ -10,9 +10,11 @@ export const ROUTES = {
     login: '/auth/login',
     findId: '/auth/find/id',
     findPassword: '/auth/find/password',
-    signup: '/auth/signup',
-    signupForm: '/auth/signup/account',
-    signupProfile: '/auth/signup/profile',
+    signup: {
+      base: '/auth/signup',
+      account: '/auth/signup/account',
+      profile: '/auth/signup/profile',
+    },
     onboarding: {
       lifestyle: '/auth/onboarding/lifestyle',
       combination: '/auth/onboarding/combination',
