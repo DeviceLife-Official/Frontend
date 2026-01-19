@@ -39,11 +39,11 @@ const SignupProfilePage = () => {
         {/* 페이지네이션 인디케이터 */}
         <StepIndicator currentStep={2} onStepClick={handleStepClick} className="mb-24" />
 
-        {/* 로고 */}
-        <p className="font-service-name text-black mb-40">Device Life</p>
 
         {/* 폼 컨테이너 */}
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-40 items-center w-full">
+          {/* 로고 */}
+          <p className="font-service-name text-black ">Device Life</p>
           {/* 폼 필드 영역 */}
           <div className="flex flex-col gap-8">
             {/* 이름 필드 */}
