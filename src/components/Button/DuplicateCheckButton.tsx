@@ -6,6 +6,7 @@ type DuplicateCheckButtonProps = {
 const DuplicateCheckButton = ({ onClick, className = '' }: DuplicateCheckButtonProps) => {
   return (
     <button
+      type="button"
       onClick={onClick}
       className={`
         flex items-center justify-center
