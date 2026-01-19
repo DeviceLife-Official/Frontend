@@ -16,6 +16,7 @@ const SecondaryButton = ({ text, onClick, className = '' }: SecondaryButtonProps
         rounded-button
         font-body-2-sm text-blue-600
         cursor-pointer
+        hover:bg-blue-200
         ${className}
       `}
     >
