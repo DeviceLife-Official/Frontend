@@ -2,12 +2,11 @@ import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { signupAccountSchema, type SignupAccountFormData } from '@/schemas/authSchema';
-import EllipseBlack from '@/assets/icons/ellipse_black.svg?react';
-import EllipseGray from '@/assets/icons/ellipse_gray.svg?react';
 import PrimaryInput from '@/components/Input/PrimaryInput';
 import PrimaryButton from '@/components/Button/PrimaryButton';
 import SecondaryButton from '@/components/Button/SecondaryButton';
 import InputLabel from '@/components/Auth/Label/InputLabel';
+import StepIndicator from '@/components/Auth/Indicator/StepIndicator';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '@/constants/routes';
 
@@ -64,12 +63,7 @@ const SignupAccountPage = () => {
       {/* 전체 컨테이너 */}
       <div className="flex flex-col items-center">
         {/* 페이지네이션 인디케이터 */}
-        <div className="flex items-center justify-center p-8 gap-24 mb-24">
-          <EllipseBlack className="size-10" />
-          <EllipseGray className="size-10" />
-          <EllipseGray className="size-10" />
-          <EllipseGray className="size-10" />
-        </div>
+        <StepIndicator currentStep={1} className="mb-24" />
 
         {/* 로고 */}
         <p className="font-service-name text-black mb-40">Device Life</p>
