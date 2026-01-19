@@ -248,7 +248,7 @@ const DeviceSearchPage = () => {
                         setSelectedPrice(selectedPrice === option.value ? null : option.value);
                         setShowPriceFilter(false);
                       }}
-                      className={`group relative flex items-center gap-10 justify-between pb-10 ${
+                      className={`group relative flex items-center gap-10 justify-between pb-10 cursor-pointer ${
                         index === 0 ? '' : 'pt-10'
                       } ${
                         index < PRICE_OPTIONS.length - 1
@@ -257,8 +257,8 @@ const DeviceSearchPage = () => {
                       }`}
                     >
                       {/* 호버 시 회색 배경 - 구분선과 분리 */}
-                      <div className={`absolute inset-x-[-4px] bg-gray-100 rounded-button -z-10 opacity-0 group-hover:opacity-100 transition-opacity ${
-                        index === 0 ? 'top-[-4px] bottom-4' : 'inset-y-4'
+                      <div className={`absolute -inset-x-4 bg-gray-100 rounded-button -z-10 opacity-0 group-hover:opacity-100 transition-opacity ${
+                        index === 0 ? '-top-4 bottom-4' : 'inset-y-4'
                       }`} />
                       <p className="font-body-1-r text-black whitespace-nowrap">{option.label}</p>
                       {selectedPrice === option.value ? (
@@ -317,7 +317,7 @@ const DeviceSearchPage = () => {
                         setSelectedBrand(selectedBrand === option.value ? null : option.value);
                         setShowBrandFilter(false);
                       }}
-                      className={`group relative flex items-center gap-10 justify-between pb-10 ${
+                      className={`group relative flex items-center gap-10 justify-between pb-10 cursor-pointer ${
                         index === 0 ? '' : 'pt-10'
                       } ${
                         index < BRAND_OPTIONS.length - 1
@@ -326,8 +326,8 @@ const DeviceSearchPage = () => {
                       }`}
                     >
                       {/* 호버 시 회색 배경 - 구분선과 분리 */}
-                      <div className={`absolute inset-x-[-4px] bg-gray-100 rounded-button -z-10 opacity-0 group-hover:opacity-100 transition-opacity ${
-                        index === 0 ? 'top-[-4px] bottom-4' : 'inset-y-4'
+                      <div className={`absolute -inset-x-4 bg-gray-100 rounded-button -z-10 opacity-0 group-hover:opacity-100 transition-opacity ${
+                        index === 0 ? '-top-4 bottom-4' : 'inset-y-4'
                       }`} />
                       <p className="font-body-1-r text-black whitespace-nowrap">{option.label}</p>
                       {selectedBrand === option.value ? (
@@ -380,7 +380,7 @@ const DeviceSearchPage = () => {
                         setShowSortDropdown(false);
                       }}
                       onMouseEnter={() => setHoveredSortIndex(index)}
-                      className={`relative font-body-1-sm text-black text-left py-12 whitespace-nowrap ${
+                      className={`relative font-body-1-sm text-black text-left py-12 whitespace-nowrap cursor-pointer ${
                         index < SORT_OPTIONS.length - 1
                           ? 'border-b border-black/50'
                           : ''
@@ -388,7 +388,7 @@ const DeviceSearchPage = () => {
                     >
                       {/* 회색 배경 (선택 또는 호버 시) - 구분선과 분리 */}
                       {((hoveredSortIndex === null && sortOption === option.value) || hoveredSortIndex === index) && (
-                        <div className="absolute inset-x-[-4px] inset-y-4 bg-gray-100 rounded-button -z-10" />
+                        <div className="absolute -inset-x-4 inset-y-4 bg-gray-100 rounded-button -z-10" />
                       )}
                       {option.label}
                     </button>
