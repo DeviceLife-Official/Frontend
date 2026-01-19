@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import GNB from '@/components/Home/GNB';
 import ProductCard from '@/components/ProductCard/ProductCard';
 import PrimaryButton from '@/components/Button/PrimaryButton';
+import CombinationTag from '@/components/Combination/CombinationTag';
 import CheckboxIcon from '@/assets/icons/checkbox.svg?react';
 import CheckboxOnIcon from '@/assets/icons/checkbox_on.svg?react';
 import SearchIcon from '@/assets/icons/search.svg?react';
@@ -10,6 +11,9 @@ import DropdownIcon from '@/assets/icons/dropdown.svg?react';
 import FilterIcon from '@/assets/icons/filter.svg?react';
 import TopIcon from '@/assets/icons/top.svg?react';
 import XIcon from '@/assets/icons/X.svg?react';
+import BackIcon from '@/assets/icons/back.svg?react';
+import StarIcon from '@/assets/icons/star.svg?react';
+import MoreIcon from '@/assets/icons/more.svg?react';
 
 import {
   DEVICE_CATEGORIES,
@@ -18,16 +22,16 @@ import {
   BRAND_OPTIONS,
   SCROLL_CONSTANTS,
 } from '@/constants/devices';
-import { MOCK_PRODUCTS } from '@/constants/mockData';
-
-type AuthStatus = 'logout' | 'login' | 'guest';
+import { MOCK_PRODUCTS, MOCK_COMBINATIONS } from '@/constants/mockData';
+import { type AuthStatus, type ModalView } from '@/types/devices';
 
 const DeviceSearchPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const selectedProductId = searchParams.get('productId');
 
   // 추후 Zustand/Context에서 인증 상태 가져오기
-  const [_authStatus] = useState<AuthStatus>('logout');
+  const [authStatus] = useState<AuthStatus>('login'); // 테스트로 login으로 변경. 추후 logout으로 변경.
+  const [modalView, setModalView] = useState<ModalView>('device');
 
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
@@ -39,6 +43,7 @@ const DeviceSearchPage = () => {
   const [selectedBrand, setSelectedBrand] = useState<string | null>(null);
   const [isAtBottom, setIsAtBottom] = useState(false);
   const [showTopButton, setShowTopButton] = useState(false);
+  const [hoveredSortIndex, setHoveredSortIndex] = useState<number | null>(null);
 
   const productGridRef = useRef<HTMLDivElement>(null);
   const sortRef = useRef<HTMLDivElement>(null);
@@ -54,6 +59,32 @@ const DeviceSearchPage = () => {
   const handleCloseModal = () => {
     searchParams.delete('productId');
     setSearchParams(searchParams);
+    setModalView('device');
+  };
+
+  /* 내 조합에 담기 */
+  const handleAddToCombination = () => {
+    if (authStatus === 'logout') {
+      // 로그인 페이지로 이동
+      return;
+    }
+
+    // 조합이 1개면 바로 저장
+    if (MOCK_COMBINATIONS.length === 1) {
+      // API 호출 - 바로 저장
+      console.log('바로 저장:', MOCK_COMBINATIONS[0].id);
+      return;
+    }
+
+    // 조합이 2개 이상이면 선택 모달 표시
+    setModalView('combination');
+  };
+
+  /* 조합 선택 */
+  const handleSelectCombination = (combinationId: number) => {
+    // API 호출 - 선택한 조합에 기기 추가
+    console.log('조합에 기기 추가:', combinationId);
+    handleCloseModal();
   };
 
   useEffect(() => {
@@ -163,7 +194,7 @@ const DeviceSearchPage = () => {
         <div className="w-full h-8 opacity-50 bg-gradient-to-t from-[#EEEEF0] to-[#E4E4E7] mt-88" />
 
         {/* Filter Section */}
-        <div className="max-w-1600 mx-auto px-160 pt-68">
+        <div className="mx-auto px-200 pt-68">
           
           {/* Filters */}
           <div className="flex items-center gap-0 pt-8">
@@ -209,7 +240,7 @@ const DeviceSearchPage = () => {
               </button>
 
               {showPriceFilter && (
-                <div className="absolute left-0 top-full mt-8 bg-white rounded-button shadow-[0_2px_10px_rgba(0,0,0,0.25)] p-12 z-12 flex flex-col gap-16">
+                <div className="absolute left-0 top-full mt-8 bg-white rounded-button shadow-[0_2px_10px_rgba(0,0,0,0.25)] p-12 z-12 flex flex-col">
                   {PRICE_OPTIONS.map((option, index) => (
                     <button
                       key={option.value}
@@ -217,12 +248,18 @@ const DeviceSearchPage = () => {
                         setSelectedPrice(selectedPrice === option.value ? null : option.value);
                         setShowPriceFilter(false);
                       }}
-                      className={`flex items-center gap-12 justify-between pb-20 hover:bg-gray-100 transition-colors ${
+                      className={`group relative flex items-center gap-10 justify-between pb-10 cursor-pointer ${
+                        index === 0 ? '' : 'pt-10'
+                      } ${
                         index < PRICE_OPTIONS.length - 1
                           ? 'border-b border-black'
                           : ''
                       }`}
                     >
+                      {/* 호버 시 회색 배경 - 구분선과 분리 */}
+                      <div className={`absolute -inset-x-4 bg-gray-100 rounded-button -z-10 opacity-0 group-hover:opacity-100 transition-opacity ${
+                        index === 0 ? '-top-4 bottom-4' : 'inset-y-4'
+                      }`} />
                       <p className="font-body-1-r text-black whitespace-nowrap">{option.label}</p>
                       {selectedPrice === option.value ? (
                         <CheckboxOnIcon className="w-32 h-32 flex-shrink-0" />
@@ -272,7 +309,7 @@ const DeviceSearchPage = () => {
               </button>
 
               {showBrandFilter && (
-                <div className="absolute left-0 top-full mt-8 bg-white rounded-button shadow-[0_2px_10px_rgba(0,0,0,0.25)] p-12 z-10 flex flex-col gap-16">
+                <div className="absolute left-0 top-full mt-8 bg-white rounded-button shadow-[0_2px_10px_rgba(0,0,0,0.25)] p-12 z-10 flex flex-col">
                   {BRAND_OPTIONS.map((option, index) => (
                     <button
                       key={option.value}
@@ -280,12 +317,18 @@ const DeviceSearchPage = () => {
                         setSelectedBrand(selectedBrand === option.value ? null : option.value);
                         setShowBrandFilter(false);
                       }}
-                      className={`flex items-center gap-10 justify-between pb-10 hover:bg-gray-100 transition-colors ${
+                      className={`group relative flex items-center gap-10 justify-between pb-10 cursor-pointer ${
+                        index === 0 ? '' : 'pt-10'
+                      } ${
                         index < BRAND_OPTIONS.length - 1
                           ? 'border-b border-black'
                           : ''
                       }`}
                     >
+                      {/* 호버 시 회색 배경 - 구분선과 분리 */}
+                      <div className={`absolute -inset-x-4 bg-gray-100 rounded-button -z-10 opacity-0 group-hover:opacity-100 transition-opacity ${
+                        index === 0 ? '-top-4 bottom-4' : 'inset-y-4'
+                      }`} />
                       <p className="font-body-1-r text-black whitespace-nowrap">{option.label}</p>
                       {selectedBrand === option.value ? (
                         <CheckboxOnIcon className="w-32 h-32 flex-shrink-0" />
@@ -325,7 +368,10 @@ const DeviceSearchPage = () => {
               </button>
 
               {showSortDropdown && (
-                <div className="absolute right-0 top-full mt-8 bg-white rounded-button shadow-[0_2px_10px_rgba(0,0,0,0.25)] p-12 z-12 flex flex-col gap-16">
+                <div
+                  className="absolute right-0 top-full mt-8 bg-white rounded-button shadow-[0_2px_10px_rgba(0,0,0,0.25)] px-8 z-12 flex flex-col"
+                  onMouseLeave={() => setHoveredSortIndex(null)}
+                >
                   {SORT_OPTIONS.map((option, index) => (
                     <button
                       key={option.value}
@@ -333,18 +379,17 @@ const DeviceSearchPage = () => {
                         setSortOption(option.value);
                         setShowSortDropdown(false);
                       }}
-                      className={`font-body-1-sm text-black text-left pb-8 whitespace-nowrap hover:bg-gray-100 transition-colors ${
-                        sortOption === option.value
-                          ? 'bg-gray-100'
-                          : ''
-                      } ${
+                      onMouseEnter={() => setHoveredSortIndex(index)}
+                      className={`relative font-body-1-sm text-black text-left py-12 whitespace-nowrap cursor-pointer ${
                         index < SORT_OPTIONS.length - 1
-                          ? sortOption === option.value
-                            ? 'border-b border-black'
-                            : 'border-b border-black/50'
+                          ? 'border-b border-black/50'
                           : ''
                       }`}
                     >
+                      {/* 회색 배경 (선택 또는 호버 시) - 구분선과 분리 */}
+                      {((hoveredSortIndex === null && sortOption === option.value) || hoveredSortIndex === index) && (
+                        <div className="absolute -inset-x-4 inset-y-4 bg-gray-100 rounded-button -z-10" />
+                      )}
                       {option.label}
                     </button>
                   ))}
@@ -355,7 +400,7 @@ const DeviceSearchPage = () => {
         </div>
 
         {/* Product Grid */}
-        <div ref={productGridRef} className="max-w-1600 mx-auto px-160 pt-68">
+        <div ref={productGridRef} className="mx-auto px-160 pt-68">
           <div className="grid grid-cols-4 gap-x-28 gap-y-164">
             {MOCK_PRODUCTS.map((product) => (
               <ProductCard
@@ -388,124 +433,193 @@ const DeviceSearchPage = () => {
       {/* Device Detail Modal */}
       {selectedProduct && (
         <>
-          {/* Background Overlay - HomeIndicator(z-50)보다 높게 설정 */}
+          {/* Background Overlay - HomeIndicator보다 높게 설정 */}
           <div
-            className="fixed inset-0 bg-black/50 z-[60]"
+            className="fixed inset-0 bg-black/50 z-60"
             onClick={handleCloseModal}
           />
 
           {/* Modal */}
-          <div className="fixed inset-0 flex justify-center items-center z-[72] pointer-events-none">
-            <div className="flex flex-col items-end gap-20 pointer-events-auto">
-              {/* Close Button - 카드 바깥 */}
-              <button
-                onClick={handleCloseModal}
-                className="w-48 h-48 flex items-center justify-center cursor-pointer hover:opacity-80 transition-opacity"
-                aria-label="닫기"
-              >
-                <XIcon className="w-48 h-48 text-white" />
-              </button>
-
-              {/* Card */}
-              <div
-                className="bg-white rounded-card px-56 py-40"
-                style={{ width: 'clamp(903px, calc(903px + (100vw - 1440px) * 0.245833), 1021px)' }}
-                onClick={(e) => e.stopPropagation()}
-              >
-                {/* Content */}
-                <div
-                  className="flex items-start justify-between"
-                  style={{ gap: 'clamp(88px, calc(88px + (100vw - 1440px) * 0.245833), 206px)' }}
+          <div className="fixed inset-0 flex justify-center items-center z-72 pointer-events-none">
+            {/* Device Info Modal */}
+            {modalView === 'device' && (
+              <div className="flex flex-col items-end gap-20 pointer-events-auto">
+                {/* Close Button - 카드 바깥 */}
+                <button
+                  onClick={handleCloseModal}
+                  className="w-48 h-48 flex items-center justify-center cursor-pointer hover:opacity-80 transition-opacity"
+                  aria-label="닫기"
                 >
-                  {/* Left Section */}
-                  <div className="w-400 flex flex-col gap-20">
-                    {/* Name & Price */}
-                    <div className="flex flex-col gap-12">
-                      <p className="font-heading-1 text-black">{selectedProduct.name}</p>
-                      <div className="flex items-center gap-8 font-heading-2 text-blue-600">
-                        <p>₩</p>
-                        <p>{selectedProduct.price.toLocaleString()}</p>
-                      </div>
-                    </div>
+                  <XIcon className="w-48 h-48 text-white" />
+                </button>
 
-                    {/* Image Section */}
-                    <div className="flex flex-col gap-8">
-                      <div className="w-full h-[360px] bg-gray-200 relative">
-                        {/* Color Chip Dropdown */}
-                        <div className="absolute left-20 top-20 bg-white rounded-button shadow-[0_0_4px_rgba(0,0,0,0.25)] px-8 py-4 flex items-center gap-4">
-                          <div
-                            className="w-40 h-40 rounded-full"
-                            style={{ backgroundColor: selectedProduct.colors[0] }}
-                          />
-                          <DropdownIcon className="w-28 h-14 text-gray-400" />
-                        </div>
-                      </div>
-
-                      {/* Page Control (dots) */}
-                      <div className="flex items-center justify-center gap-24 py-8">
-                        <div className="w-12 h-12 rounded-full bg-black" />
-                        <div className="w-12 h-12 rounded-full bg-gray-300" />
-                        <div className="w-12 h-12 rounded-full bg-gray-300" />
-                      </div>
-                    </div>
-
-                    {/* Button */}
-                    <PrimaryButton
-                      text="로그인하고 내 조합에 담기"
-                      className="w-full bg-blue-500 hover:bg-blue-400 transition-colors"
-                    />
-                  </div>
-
-                  {/* Right Section */}
-                  <div className="w-302 flex flex-col gap-58 pt-127">
-                    {/* Product Info Table */}
-                    <div className="flex flex-col justify-between h-360 pl-16">
-                      <div className="flex items-center gap-80">
-                        <p className="font-body-1-r text-gray-400">모델명</p>
-                        <p className="font-body-1-r text-black">{selectedProduct.name}</p>
-                      </div>
-                      <div className="flex items-center gap-58">
-                        <p className="font-body-1-r text-gray-400">카테고리</p>
-                        <p className="font-body-1-r text-black">{selectedProduct.category}</p>
-                      </div>
-                      <div className="flex items-center gap-78">
-                        <p className="font-body-1-r text-gray-400">브랜드</p>
-                        <p className="font-body-1-r text-black">Apple</p>
-                      </div>
-                      <div className="flex items-center gap-100">
-                        <p className="font-body-1-r text-gray-400">색상</p>
-                        <p className="font-body-1-r text-black">내추럴 티타늄</p>
-                      </div>
-                      <div className="flex items-center gap-100">
-                        <p className="font-body-1-r text-gray-400">가격</p>
-                        <div className="flex items-center gap-4 font-body-1-r text-black">
+                {/* Card */}
+                <div
+                  className="bg-white rounded-card px-56 py-40"
+                  style={{ width: 'clamp(903px, calc(903px + (100vw - 1440px) * 0.245833), 1021px)' }}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {/* Content */}
+                  <div
+                    className="flex items-start justify-between"
+                    style={{ gap: 'clamp(88px, calc(88px + (100vw - 1440px) * 0.245833), 206px)' }}
+                  >
+                    {/* Left Section */}
+                    <div className="w-400 flex flex-col gap-20">
+                      {/* Name & Price */}
+                      <div className="flex flex-col gap-12">
+                        <p className="font-heading-1 text-black">{selectedProduct.name}</p>
+                        <div className="flex items-center gap-8 font-heading-2 text-blue-600">
+                          <p>₩</p>
                           <p>{selectedProduct.price.toLocaleString()}</p>
-                          <p>원</p>
                         </div>
                       </div>
-                      <div className="flex items-center gap-56">
-                        <p className="font-body-1-r text-gray-400">충전방식</p>
-                        <p className="font-body-1-r text-black">USB-C</p>
+
+                      {/* Image Section */}
+                      <div className="flex flex-col gap-8">
+                        <div className="w-full h-360 bg-gray-200 relative">
+                          {/* Color Chip Dropdown */}
+                          <div className="absolute left-20 top-20 bg-white rounded-button shadow-[0_0_4px_rgba(0,0,0,0.25)] px-8 py-4 flex items-center gap-4">
+                            <div
+                              className="w-40 h-40 rounded-full"
+                              style={{ backgroundColor: selectedProduct.colors[0] }}
+                            />
+                            <DropdownIcon className="w-28 h-14 text-gray-400" />
+                          </div>
+                        </div>
+
+                        {/* Page Control (dots) */}
+                        <div className="flex items-center justify-center gap-24 py-8">
+                          <div className="w-12 h-12 rounded-full bg-black" />
+                          <div className="w-12 h-12 rounded-full bg-gray-300" />
+                          <div className="w-12 h-12 rounded-full bg-gray-300" />
+                        </div>
                       </div>
-                      <div className="flex items-center gap-80">
-                        <p className="font-body-1-r text-gray-400">출시일</p>
-                        <p className="font-body-1-r text-black">2023년 9월</p>
-                      </div>
+
+                      {/* Button */}
+                      <PrimaryButton
+                        text={authStatus === 'logout' ? '로그인하고 내 조합에 담기' : '내 조합에 담기'}
+                        onClick={handleAddToCombination}
+                        className="w-full bg-blue-500 hover:bg-blue-400 transition-colors"
+                      />
                     </div>
 
-                    {/* Hashtags */}
-                    <div className="flex items-center gap-16">
-                      <div className="bg-blue-100 rounded-tag px-20 py-8">
-                        <p className="font-body-1-r text-black">#office</p>
+                    {/* Right Section */}
+                    <div className="w-302 flex flex-col gap-58 pt-127">
+                      {/* Product Info Table */}
+                      <div className="flex flex-col justify-between h-360 pl-16">
+                        <div className="flex items-center gap-80">
+                          <p className="font-body-1-r text-gray-400">모델명</p>
+                          <p className="font-body-1-r text-black">{selectedProduct.name}</p>
+                        </div>
+                        <div className="flex items-center gap-58">
+                          <p className="font-body-1-r text-gray-400">카테고리</p>
+                          <p className="font-body-1-r text-black">{selectedProduct.category}</p>
+                        </div>
+                        <div className="flex items-center gap-78">
+                          <p className="font-body-1-r text-gray-400">브랜드</p>
+                          <p className="font-body-1-r text-black">Apple</p>
+                        </div>
+                        <div className="flex items-center gap-100">
+                          <p className="font-body-1-r text-gray-400">색상</p>
+                          <p className="font-body-1-r text-black">내추럴 티타늄</p>
+                        </div>
+                        <div className="flex items-center gap-100">
+                          <p className="font-body-1-r text-gray-400">가격</p>
+                          <div className="flex items-center gap-4 font-body-1-r text-black">
+                            <p>{selectedProduct.price.toLocaleString()}</p>
+                            <p>원</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-56">
+                          <p className="font-body-1-r text-gray-400">충전방식</p>
+                          <p className="font-body-1-r text-black">USB-C</p>
+                        </div>
+                        <div className="flex items-center gap-80">
+                          <p className="font-body-1-r text-gray-400">출시일</p>
+                          <p className="font-body-1-r text-black">2023년 9월</p>
+                        </div>
                       </div>
-                      <div className="bg-blue-100 rounded-tag px-20 py-8">
-                        <p className="font-body-1-r text-black">#portability</p>
+
+                      {/* Hashtags */}
+                      <div className="flex items-center gap-16">
+                        <div className="bg-blue-100 rounded-tag px-20 py-8">
+                          <p className="font-body-1-r text-black">#office</p>
+                        </div>
+                        <div className="bg-blue-100 rounded-tag px-20 py-8">
+                          <p className="font-body-1-r text-black">#portability</p>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
+            )}
+
+            {/* Combination Selection Modal */}
+            {modalView === 'combination' && (
+              <div className="flex flex-col items-end gap-20 pointer-events-auto">
+                <div className="flex items-center justify-between w-full">
+                  <button
+                    onClick={() => setModalView('device')}
+                    className="w-48 h-48 flex items-center justify-center cursor-pointer hover:opacity-80 transition-opacity"
+                    aria-label="뒤로가기"
+                  >
+                    <BackIcon className="w-48 h-48" />
+                  </button>
+                  <button
+                    onClick={handleCloseModal}
+                    className="w-48 h-48 flex items-center justify-center cursor-pointer hover:opacity-80 transition-opacity"
+                    aria-label="닫기"
+                  >
+                    <XIcon className="w-48 h-48 text-white" />
+                  </button>
+                </div>
+
+                {/* Card */}
+                <div
+                  className="bg-white rounded-card shadow-[0_0_10px_rgba(0,0,0,0.25)]"
+                  style={{
+                    width: 'clamp(903px, calc(903px + (100vw - 1440px) * 0.245833), 1021px)',
+                    height: '697px',
+                  }}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {/* Combination List */}
+                  <div className="flex flex-col mx-20">
+                    {MOCK_COMBINATIONS.map((combo) => (
+                      <button
+                        key={combo.id}
+                        onClick={() => handleSelectCombination(combo.id)}
+                        className="flex items-center justify-between pl-20 pr-36 py-24 hover:bg-gray-50 transition-colors border-b border-gray-200"
+                      >
+                        {/* 좌측: 조합 정보 */}
+                        <div className="flex flex-col gap-24 items-start">
+                          {/* 조합 번호 + 조합명 */}
+                          <div className="flex flex-col gap-8 items-start">
+                            <p className="font-body-3-r text-gray-400">{combo.label}</p>
+                            {/* 조합명 + 대표조합 star */}
+                            <div className="flex items-center gap-8">
+                              <p className="font-body-1-sm text-black">{combo.name}</p>
+                              {combo.isMain && <StarIcon className="w-27 h-27" />}
+                            </div>
+                          </div>
+                          {/* Tags */}
+                          <div className="flex gap-12">
+                            {combo.tags.map((tag) => (
+                              <CombinationTag key={tag.name} name={tag.name} status={tag.status} />
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* 우측: More 아이콘 */}
+                        <MoreIcon className="w-20 h-36 text-gray-400" />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </>
       )}
