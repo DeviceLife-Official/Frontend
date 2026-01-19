@@ -35,7 +35,7 @@ const SignupAccountPage = () => {
 
   // 중복확인 핸들러
   const handleCheckDuplicate = async () => {
-    const email = getValues('email');
+    // const email = getValues('email');
 
     // TODO: 이메일 중복확인 API 호출
     // try {
@@ -55,7 +55,7 @@ const SignupAccountPage = () => {
     alert('사용 가능한 이메일입니다');
   };
 
-  const onSubmit = (data: SignupAccountFormData) => {
+  const onSubmit = (_data: SignupAccountFormData) => {
     // TODO: 데이터 저장 (localStorage or state management)
     navigate(ROUTES.auth.signup.profile);
   };

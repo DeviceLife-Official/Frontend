@@ -21,7 +21,7 @@ const SignupProfilePage = () => {
     mode: 'onChange',
   });
 
-  const onSubmit = (data: SignupProfileFormData) => {
+  const onSubmit = (_data: SignupProfileFormData) => {
     // TODO: 회원가입 API 호출
     // TODO: 온보딩으로 이동
     navigate(ROUTES.auth.onboarding.lifestyle);

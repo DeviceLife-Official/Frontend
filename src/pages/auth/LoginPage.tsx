@@ -27,7 +27,7 @@ const LoginPage = () => {
 
   // 로그인 제출 핸들러
   // TODO: 로딩 상태 추가 (중복 클릭 방지)
-  const onSubmit = (data: LoginFormData) => {
+  const onSubmit = (_data: LoginFormData) => {
     // TODO: 로그인 API 호출
   };
 
