@@ -505,10 +505,12 @@ const DeviceSearchPage = () => {
                         <div className="w-full h-360 bg-gray-200 relative">
                           {/* Color Chip Dropdown */}
                           <div className="absolute left-20 top-20 bg-white rounded-button shadow-[0_0_4px_rgba(0,0,0,0.25)] p-2 flex items-center">
-                            <div
-                              className="w-28 h-28 rounded-full"
-                              style={{ backgroundColor: selectedProduct.colors[0] }}
-                            />
+                            <div className="w-40 h-40 flex items-center justify-center">
+                              <div
+                                className="w-32 h-32 rounded-full"
+                                style={{ backgroundColor: selectedProduct.colors[0] }}
+                              />
+                            </div>
                             <DropdownIcon className="w-28 h-14 text-gray-400" />
                           </div>
                         </div>
@@ -690,7 +692,7 @@ const DeviceSearchPage = () => {
                   />
 
                   {/* 담기 버튼 - 하단 고정 */}
-                  <div className="pt-30 px-56 pb-40 flex justify-end flex-shrink-0">
+                  <div className="mt-auto pt-30 px-56 pb-56 flex justify-end flex-shrink-0">
                     <PrimaryButton
                       text={`${selectedCombination.label} 에 담기`}
                       onClick={handleAddDeviceToCombination}
