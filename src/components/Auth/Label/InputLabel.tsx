@@ -16,7 +16,7 @@ const InputLabel = ({ text, required = true, className = '' }: InputLabelProps) 
       `}
     >
       {text}
-      {required && <span className="absolute right-[-1px] top-[2px] font-body-1-sm text-warning">*</span>}
+      {required && <span className="absolute right-[-1px] top-2 font-body-1-sm text-warning">*</span>}
     </label>
   );
 };
