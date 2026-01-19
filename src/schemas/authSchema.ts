@@ -38,3 +38,10 @@ export const findPasswordSchema = z.object({
 });
 
 export type FindPasswordFormData = z.infer<typeof findPasswordSchema>;
+
+// 조합명 스키마
+export const combinationSchema = z.object({
+  combinationName: z.string().min(1, '조합명을 입력해주세요'),
+});
+
+export type CombinationFormData = z.infer<typeof combinationSchema>;
