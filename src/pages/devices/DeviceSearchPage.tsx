@@ -5,7 +5,7 @@ import ProductCard from '@/components/ProductCard/ProductCard';
 import PrimaryButton from '@/components/Button/PrimaryButton';
 import CombinationTag from '@/components/Combination/CombinationTag';
 import CombinationDeviceCard from '@/components/Combination/CombinationDeviceCard';
-import RoundedLifestyleTag from '@/components/Lifestyle/RoundedLifestyleTag';
+import ProductLife from '@/components/ProductCard/ProductLife';
 import CheckboxIcon from '@/assets/icons/checkbox.svg?react';
 import CheckboxOnIcon from '@/assets/icons/checkbox_on.svg?react';
 import SearchIcon from '@/assets/icons/search.svg?react';
@@ -568,8 +568,8 @@ const DeviceSearchPage = () => {
 
                       {/* Hashtags */}
                       <div className="flex items-center gap-16">
-                        <RoundedLifestyleTag label="office" />
-                        <RoundedLifestyleTag label="portability" />
+                        <ProductLife label="office" />
+                        <ProductLife label="portability" />
                       </div>
                     </div>
                   </div>
