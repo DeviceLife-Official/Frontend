@@ -188,8 +188,8 @@ const DeviceSearchPage = () => {
         </div>
 
         {/* Device Categories */}
-        <div className="w-full pt-56">
-          <div className="w-1100 mx-auto 2xl:w-full 2xl:px-328 flex items-center justify-between">
+        <div className="w-full pt-36 2xl:pt-56">
+          <div className="w-full px-268 2xl:px-328 flex items-center justify-between">
             {DEVICE_CATEGORIES.map((category) => {
               const { Icon } = category;
               return (
@@ -214,7 +214,7 @@ const DeviceSearchPage = () => {
         <div className="w-full h-8 opacity-50 bg-gradient-to-t from-[#EEEEF0] to-[#E4E4E7] mt-84" />
 
         {/* Filter Section */}
-        <div className="mx-auto px-200 pt-32">
+        <div className="mx-auto pl-200 pr-160 2xl:px-200 pt-32">
 
           {/* Filters */}
           <div className="flex items-center gap-0">
@@ -261,8 +261,8 @@ const DeviceSearchPage = () => {
         </div>
 
         {/* Product Grid */}
-        <div ref={productGridRef} className="mx-auto px-160">
-          <div className="grid grid-cols-4 gap-x-28 gap-y-164">
+        <div ref={productGridRef} className="mx-auto px-120 2xl:px-160">
+          <div className="grid grid-cols-3 2xl:grid-cols-4 gap-x-28 gap-y-164">
             {MOCK_PRODUCTS.map((product) => (
               <ProductCard
                 key={product.id}
