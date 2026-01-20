@@ -11,9 +11,9 @@ const OnboardingLifestylePage = () => {
   const [selectedUsages, setSelectedUsages] = useState<string[]>([]);
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
 
-  const priorities = ['가성비', '디자인', '성능', '휴대성', '호환성'];
-  const usages = ['업무', '게임', '영상편집', '코딩', '학습', '여행'];
-  const brands = ['Apple', 'Samsung', 'LG', 'Microsoft', 'Sony'];
+  const priorities = ['고성능', '가성비', '휴대성', '배터리 수명', '디자인/컬러'];
+  const usages = ['# Office', '# Study', '# Developer', '# Vidieo-editing', '# Game', '# Tour/portability'];
+  const brands = ['Apple', 'Samsung', 'Sony', 'Logitech', '상관없음'];
 
   const toggleSelection = (
     item: string,
