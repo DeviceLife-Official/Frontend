@@ -102,7 +102,7 @@ const FindIdPage = () => {
           <button
             type="button"
             className="underline underline-offset-4 cursor-pointer"
-            onClick={() => navigate(ROUTES.auth.signup)}
+            onClick={() => navigate(ROUTES.auth.signup.base)}
           >
             회원가입 하기
           </button>
