@@ -33,6 +33,8 @@ const ProfileEditPage = () => {
     return false;
   }, [nickname, lifestyles]);
 
+  const isValidNickname = nickname.trim().length >= 1;
+
   return (
     <div className="flex flex-col gap-72 mx-auto w-560 mt-92 mb-92">
       <p className="font-heading-2 text-black">프로필 수정</p>
@@ -46,7 +48,7 @@ const ProfileEditPage = () => {
         <PrimaryButton
           className="w-400 bg-blue-600 hover:bg-blue-500 disabled:hover:bg-gray-300"
           text="저장하기"
-          disabled={!isDirty}
+          disabled={!isDirty || !isValidNickname}
         />
       </div>
     </div>
