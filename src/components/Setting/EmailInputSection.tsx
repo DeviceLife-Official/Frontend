@@ -1,11 +1,8 @@
-import XGray from '@/assets/icons/x_gray.svg?react';
-
 type EmailInputSectionProps = {
   value: string;
-  onChange: (next: string) => void;
 };
 
-const EmailInputSection = ({ value, onChange }: EmailInputSectionProps) => {
+const EmailInputSection = ({ value }: EmailInputSectionProps) => {
   return (
     <div
       className="
@@ -20,10 +17,8 @@ const EmailInputSection = ({ value, onChange }: EmailInputSectionProps) => {
     >
       <div className="flex flex-col gap-10">
         <p className="font-body-3-sm text-black">이메일</p>
-
         <div
           className="
-            group
             relative
             flex items-center
             w-500 h-64
@@ -31,41 +26,23 @@ const EmailInputSection = ({ value, onChange }: EmailInputSectionProps) => {
             rounded-button
             bg-gray-100
             border-2 border-transparent
-            focus-within:border-blue-600
-            focus-within:bg-white
-            transition-colors cursor-text
+            cursor-default
           "
         >
           <input
             type="text"
             value={value}
-            onChange={(e) => onChange(e.target.value)}
+            disabled
+            readOnly
             className="
               w-full h-full
               bg-transparent
               outline-none
-              pr-40
               text-black
               font-body-1-r
+              cursor-default
             "
           />
-
-          <button
-            type="button"
-            onClick={() => onChange('')}
-            className="
-              absolute
-              right-16
-              flex items-center justify-center
-              size-24
-              opacity-0
-              group-focus-within:opacity-100
-              transition-opacity cursor-pointer
-            "
-            aria-label="이메일 지우기"
-          >
-            <XGray />
-          </button>
         </div>
       </div>
     </div>

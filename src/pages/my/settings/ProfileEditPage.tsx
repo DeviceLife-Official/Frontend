@@ -2,9 +2,8 @@ import { useMemo, useState } from 'react';
 import NicknameInputSection from '@/components/Setting/NicknameInputSection';
 import EmailInputSection from '@/components/Setting/EmailInputSection';
 import PasswordSettingSection from '@/components/Setting/PasswordSettingSection';
-import LifestyleSelectSection from '@/components/Setting/LifeStyleSelectSection';
+import LifestyleSelectSection from '@/components/Setting/LifestyleSelectSection';
 import PrimaryButton from '@/components/Button/PrimaryButton';
-
 
 const ProfileEditPage = () => {
   // TODO : API 연동
@@ -23,22 +22,20 @@ const ProfileEditPage = () => {
   type Tag = (typeof TAGS)[number];
 
   const [nickname, setNickname] = useState(initialNickname);
-  const [email, setEmail] = useState(initialEmail);
   const [lifestyles, setLifestyles] = useState<Tag[]>([]);
 
   const isDirty = useMemo(() => {
     if (nickname !== initialNickname) return true;
-    if (email !== initialEmail) return true;
     if (lifestyles.join(',') !== initialLifestyles.join(',')) return true;
     return false;
-  }, [nickname, email, lifestyles]);
+  }, [nickname, lifestyles]);
 
   return (
     <div className="flex flex-col gap-72 mx-auto w-560 mt-92 mb-92">
       <p className="font-heading-2 text-black">프로필 수정</p>
       <div className="flex flex-col gap-20 w-560">
         <NicknameInputSection value={nickname} onChange={setNickname} />
-        <EmailInputSection value={email} onChange={setEmail} />
+        <EmailInputSection value={initialEmail} />
         <PasswordSettingSection />
         <LifestyleSelectSection value={lifestyles} onChange={setLifestyles} />
       </div>
@@ -51,7 +48,6 @@ const ProfileEditPage = () => {
       </div>
     </div>
   );
-
 };
 
 export default ProfileEditPage;
