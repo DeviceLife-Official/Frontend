@@ -1,15 +1,18 @@
 import { useMemo, useState } from 'react';
 import NicknameEditSection from '@/components/Setting/NicknameEditSection';
-import EmailSection from '@/components/Setting/EmailSection'
+import EmailSection from '@/components/Setting/EmailSection';
 import PasswordSettingSection from '@/components/Setting/PasswordSettingSection';
 import LifestyleSelectSection from '@/components/Setting/LifestyleSelectSection';
 import PrimaryButton from '@/components/Button/PrimaryButton';
 
+type AuthProvider = 'GENERAL' | 'HYBRID' | 'APPLE/GOOGLE';
+
 const ProfileEditPage = () => {
-  // TODO : API 연동
+  // TODO: API 연동
   const initialNickname = '000';
   const initialEmail = 'example@devicelife.com';
   const initialLifestyles: string[] = [];
+  const [authProvider] = useState<AuthProvider>('GENERAL'); 
 
   const TAGS = [
     'Office',
@@ -36,7 +39,7 @@ const ProfileEditPage = () => {
       <div className="flex flex-col gap-20 w-560">
         <NicknameEditSection value={nickname} onChange={setNickname} />
         <EmailSection value={initialEmail} />
-        <PasswordSettingSection />
+        {(authProvider === 'GENERAL' || authProvider === 'HYBRID') && <PasswordSettingSection />}
         <LifestyleSelectSection value={lifestyles} onChange={setLifestyles} />
       </div>
       <div className="flex justify-center">
