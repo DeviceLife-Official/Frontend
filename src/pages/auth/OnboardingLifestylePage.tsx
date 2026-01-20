@@ -27,6 +27,12 @@ const OnboardingLifestylePage = () => {
     }
   };
 
+  // 각 섹션별 최소 1개씩 선택 여부 확인
+  const isAllSelected =
+    selectedPriorities.length > 0 &&
+    selectedUsages.length > 0 &&
+    selectedBrands.length > 0;
+
   const handleNext = () => {
     // TODO: 선택한 라이프스타일 저장 (Context/API)
     console.log({
@@ -118,6 +124,7 @@ const OnboardingLifestylePage = () => {
           {/* 다음 버튼 */}
           <PrimaryButton
             text="다음"
+            disabled={!isAllSelected}
             className="w-280 bg-blue-600 hover:bg-blue-500"
             onClick={handleNext}
           />
