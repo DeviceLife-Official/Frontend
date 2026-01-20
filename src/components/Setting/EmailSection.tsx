@@ -1,8 +1,8 @@
-type EmailInputSectionProps = {
+type EmailSectionProps = {
   value: string;
 };
 
-const EmailInputSection = ({ value }: EmailInputSectionProps) => {
+const EmailSection = ({ value }: EmailSectionProps) => {
   return (
     <div
       className="
@@ -49,4 +49,4 @@ const EmailInputSection = ({ value }: EmailInputSectionProps) => {
   );
 };
 
-export default EmailInputSection;
+export default EmailSection;

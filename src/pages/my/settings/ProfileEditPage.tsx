@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
-import NicknameInputSection from '@/components/Setting/NicknameInputSection';
-import EmailInputSection from '@/components/Setting/EmailInputSection';
+import NicknameEditSection from '@/components/Setting/NicknameEditSection';
+import EmailSection from '@/components/Setting/EmailSection'
 import PasswordSettingSection from '@/components/Setting/PasswordSettingSection';
 import LifestyleSelectSection from '@/components/Setting/LifestyleSelectSection';
 import PrimaryButton from '@/components/Button/PrimaryButton';
@@ -34,8 +34,8 @@ const ProfileEditPage = () => {
     <div className="flex flex-col gap-72 mx-auto w-560 mt-92 mb-92">
       <p className="font-heading-2 text-black">프로필 수정</p>
       <div className="flex flex-col gap-20 w-560">
-        <NicknameInputSection value={nickname} onChange={setNickname} />
-        <EmailInputSection value={initialEmail} />
+        <NicknameEditSection value={nickname} onChange={setNickname} />
+        <EmailSection value={initialEmail} />
         <PasswordSettingSection />
         <LifestyleSelectSection value={lifestyles} onChange={setLifestyles} />
       </div>

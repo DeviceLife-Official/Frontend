@@ -1,12 +1,12 @@
 import XGray from '@/assets/icons/x_gray.svg?react';
 
-type NicknameInputSectionProps = {
+type NicknameEditSectionProps = {
   value: string;
   onChange: (next: string) => void;
-  defaultValue?: string; // 선택: placeholder용
+  defaultValue?: string; 
 };
 
-const NicknameInputSection = ({ value, onChange }: NicknameInputSectionProps) => {
+const NicknameEditSection = ({ value, onChange }: NicknameEditSectionProps) => {
   return (
     <div
       className="
@@ -73,4 +73,4 @@ const NicknameInputSection = ({ value, onChange }: NicknameInputSectionProps) =>
   );
 };
 
-export default NicknameInputSection;
+export default NicknameEditSection;
