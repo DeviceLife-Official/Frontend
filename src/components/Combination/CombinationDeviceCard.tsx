@@ -44,7 +44,8 @@ const CombinationDeviceCard = ({
   };
 
   const gridColsClass = columns === 4 ? 'grid-cols-4' : 'grid-cols-3';
-  const deviceCardWidth = columns === 4 ? 'w-200' : 'w-244';
+  const deviceCardWidth = columns === 4 ? 'w-255' : 'w-244';
+  const deviceImageSize = columns === 4 ? 'w-100 h-100' : 'w-64 h-64';
 
   return (
     <div className={className}>
@@ -74,7 +75,7 @@ const CombinationDeviceCard = ({
               key={device.id}
               className={`bg-white rounded-card shadow-[0_0_4px_rgba(0,0,0,0.1)] p-12 ${deviceCardWidth} flex items-center gap-12`}
             >
-              <div className="w-64 h-64 bg-gray-200 flex-shrink-0" />
+              <div className={`${deviceImageSize} bg-gray-200 flex-shrink-0`} />
               <div className="flex flex-col gap-4">
                 <p className="font-body-3-sm text-black">{device.name}</p>
                 <p className="font-body-4-r text-gray-300">{device.chargingType}</p>
