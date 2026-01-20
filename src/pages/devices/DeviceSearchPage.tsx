@@ -16,6 +16,7 @@ import XIcon from '@/assets/icons/X.svg?react';
 import BackIcon from '@/assets/icons/back.svg?react';
 import StarIcon from '@/assets/icons/star.svg?react';
 import MoreIcon from '@/assets/icons/more.svg?react';
+import SaveIcon from '@/assets/icons/save.svg?react';
 
 import {
   DEVICE_CATEGORIES,
@@ -48,6 +49,7 @@ const DeviceSearchPage = () => {
   const [hoveredSortIndex, setHoveredSortIndex] = useState<number | null>(null);
   const [selectedCombinationId, setSelectedCombinationId] = useState<number | null>(null);
   const [showAllDevices, setShowAllDevices] = useState(false);
+  const [showSaveCompleteModal, setShowSaveCompleteModal] = useState(false);
 
   const productGridRef = useRef<HTMLDivElement>(null);
   const sortRef = useRef<HTMLDivElement>(null);
@@ -79,6 +81,7 @@ const DeviceSearchPage = () => {
     if (MOCK_COMBINATIONS.length === 1) {
       // API 호출 - 바로 저장
       console.log('바로 저장:', MOCK_COMBINATIONS[0].id);
+      setShowSaveCompleteModal(true);
       return;
     }
 
@@ -98,9 +101,21 @@ const DeviceSearchPage = () => {
     if (selectedCombinationId) {
       // API 호출 - 선택한 조합에 기기 추가
       console.log('조합에 기기 추가:', selectedCombinationId);
-      handleCloseModal();
+      setModalView('device'); // combinationDetail 모달 숨김
+      setShowSaveCompleteModal(true);
     }
   };
+
+  /* 저장 완료 모달 자동 닫기 */
+  useEffect(() => {
+    if (showSaveCompleteModal) {
+      const timer = setTimeout(() => {
+        setShowSaveCompleteModal(false);
+        handleCloseModal();
+      }, 800); // 0.8초
+      return () => clearTimeout(timer);
+    }
+  }, [showSaveCompleteModal]);
 
   /* 선택된 조합 정보 */
   const selectedCombination = selectedCombinationId
@@ -111,6 +126,13 @@ const DeviceSearchPage = () => {
   const combinationDevices = selectedCombinationId
     ? MOCK_COMBINATION_DEVICES[selectedCombinationId] || []
     : [];
+
+  /* 모든 조합에서 이미 담긴 기기인지 확인 */
+  const isAlreadyInAnyCombination = selectedProductId
+    ? Object.values(MOCK_COMBINATION_DEVICES).some(devices =>
+        devices.some(device => device.id === Number(selectedProductId))
+      )
+    : false;
 
   useEffect(() => {
     const handleScroll = () => {
@@ -456,7 +478,7 @@ const DeviceSearchPage = () => {
       {/* </div> */}
 
       {/* Device Detail Modal */}
-      {selectedProduct && (
+      {selectedProduct && !showSaveCompleteModal && (
         <>
           {/* Background Overlay - HomeIndicator보다 높게 설정 */}
           <div
@@ -694,14 +716,29 @@ const DeviceSearchPage = () => {
                   {/* 담기 버튼 - 하단 고정 */}
                   <div className="mt-auto pt-30 px-56 pb-56 flex justify-end flex-shrink-0">
                     <PrimaryButton
-                      text={`${selectedCombination.label} 에 담기`}
+                      text={isAlreadyInAnyCombination ? '이미 담은 상품입니다.' : `${selectedCombination.label} 에 담기`}
                       onClick={handleAddDeviceToCombination}
-                      className="w-280 bg-blue-600 hover:bg-blue-500"
+                      disabled={isAlreadyInAnyCombination}
+                      className={`w-280 ${isAlreadyInAnyCombination ? '' : 'bg-blue-600 hover:bg-blue-500'}`}
                     />
                   </div>
                 </div>
               </div>
             )}
+
+          </div>
+        </>
+      )}
+
+      {/* 저장 완료 모달 - 독립적으로 표시 */}
+      {showSaveCompleteModal && (
+        <>
+          <div className="fixed inset-0 bg-black/50 z-60" />
+          <div className="fixed inset-0 flex items-center justify-center z-80">
+            <div className="w-300 h-300 bg-white rounded-card shadow-[0_0_10px_rgba(0,0,0,0.25)] relative animate-fade-in">
+              <SaveIcon className="w-100 h-100 text-blue-600 absolute left-1/2 -translate-x-1/2 top-64" />
+              <p className="font-heading-3 text-blue-600 absolute left-1/2 -translate-x-1/2 top-206">저장 완료!</p>
+            </div>
           </div>
         </>
       )}
