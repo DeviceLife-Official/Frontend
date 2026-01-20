@@ -17,7 +17,6 @@ import CombinationCreatePage from '@/pages/combination/CombinationCreatePage';
 // my
 import MyPage from '@/pages/my/MyPage';
 import MyCombinationDetailPage from '@/pages/my/MyCombinationDetailPage';
-import MySettingsPage from '@/pages/my/settings/SettingPage';
 import MySettingsProfilePage from '@/pages/my/settings/ProfileEditPage';
 import MySettingsPasswordPage from '@/pages/my/settings/PasswordEditPage';
 import MyTrashPage from '@/pages/my/MyTrashPage';
@@ -27,6 +26,8 @@ import NoticesPage from '@/pages/support/NoticesPage';
 import TermsPage from '@/pages/support/TermsPage';
 import PrivacyPolicyPage from '@/pages/support/PrivacyPolicyPage';
 import NotFoundPage from '@/pages/NotFoundPage';
+
+import { Navigate } from 'react-router-dom';
 
 export const AppRoutes = [
   {
@@ -66,7 +67,7 @@ export const AppRoutes = [
           {
             path: 'settings',
             children: [
-              { index: true, element: <MySettingsPage /> },
+              { index: true, element: <Navigate to="profile" replace /> },
               { path: 'profile', element: <MySettingsProfilePage /> },
               { path: 'password', element: <MySettingsPasswordPage /> },
             ],

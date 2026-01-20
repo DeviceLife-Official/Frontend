@@ -41,7 +41,6 @@ export const ROUTES = {
     combinationDetail: (id: string) => `/my/combinations/${id}`,
     // navigate(ROUTES.my.combinationDetail(id)); 이런식으로 사용 가능
     settings: {
-      base: '/my/settings',
       profile: '/my/settings/profile',
       password: '/my/settings/password',
     },
