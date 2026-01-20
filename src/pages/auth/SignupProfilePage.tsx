@@ -57,10 +57,10 @@ const SignupProfilePage = () => {
               )}
             </div>
 
-            {/* 휴대폰폰번호 필드 */}
+            {/* 휴대폰 번호 필드 */}
             <div className="flex flex-col gap-4">
               <div className="relative w-400">
-                <InputLabel text="전화번호" className="absolute right-full mr-96 top-1/2 -translate-y-1/2" />
+                <InputLabel text="휴대폰 번호" className="absolute right-full mr-96 top-1/2 -translate-y-1/2" />
                 <PrimaryInput {...register('phone')} type="tel" placeholder="휴대폰 번호" maxLength={11} />
               </div>
               {errors.phone && (
