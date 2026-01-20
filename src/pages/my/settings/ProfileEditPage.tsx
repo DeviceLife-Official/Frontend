@@ -4,6 +4,7 @@ import EmailSection from '@/components/Setting/EmailSection';
 import PasswordSettingSection from '@/components/Setting/PasswordSettingSection';
 import LifestyleSelectSection from '@/components/Setting/LifestyleSelectSection';
 import PrimaryButton from '@/components/Button/PrimaryButton';
+import { validateNickname } from '@/utils/validateNickname';
 
 type AuthProvider = 'GENERAL' | 'HYBRID' | 'APPLE/GOOGLE';
 
@@ -12,7 +13,8 @@ const ProfileEditPage = () => {
   const initialNickname = '000';
   const initialEmail = 'example@devicelife.com';
   const initialLifestyles: string[] = [];
-  const [authProvider] = useState<AuthProvider>('GENERAL'); 
+
+  const [authProvider] = useState<AuthProvider>('GENERAL');
 
   const TAGS = [
     'Office',
@@ -33,13 +35,13 @@ const ProfileEditPage = () => {
     return false;
   }, [nickname, lifestyles]);
 
-  const isValidNickname = nickname.trim().length >= 1;
+  const nicknameError = validateNickname(nickname);
 
   return (
     <div className="flex flex-col gap-72 mx-auto w-560 mt-92 mb-92">
       <p className="font-heading-2 text-black">프로필 수정</p>
       <div className="flex flex-col gap-20 w-560">
-        <NicknameEditSection value={nickname} onChange={setNickname} />
+        <NicknameEditSection value={nickname} onChange={setNickname} errorMessage={nicknameError} />
         <EmailSection value={initialEmail} />
         {(authProvider === 'GENERAL' || authProvider === 'HYBRID') && <PasswordSettingSection />}
         <LifestyleSelectSection value={lifestyles} onChange={setLifestyles} />
@@ -48,7 +50,7 @@ const ProfileEditPage = () => {
         <PrimaryButton
           className="w-400 bg-blue-600 hover:bg-blue-500 disabled:hover:bg-gray-300"
           text="저장하기"
-          disabled={!isDirty || !isValidNickname}
+          disabled={!isDirty || !!nicknameError}
         />
       </div>
     </div>

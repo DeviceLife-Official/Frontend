@@ -3,10 +3,10 @@ import XGray from '@/assets/icons/x_gray.svg?react';
 type NicknameEditSectionProps = {
   value: string;
   onChange: (next: string) => void;
-  defaultValue?: string; 
+  errorMessage?: string;
 };
 
-const NicknameEditSection = ({ value, onChange }: NicknameEditSectionProps) => {
+const NicknameEditSection = ({ value, onChange, errorMessage }: NicknameEditSectionProps) => {
   return (
     <div
       className="
@@ -21,21 +21,19 @@ const NicknameEditSection = ({ value, onChange }: NicknameEditSectionProps) => {
     >
       <div className="flex flex-col gap-10">
         <p className="font-body-3-sm text-black">닉네임</p>
-
         <div
-          className="
-            group
-            relative
+          className={`
+            group relative
             flex items-center
             w-500 h-64
             px-16
             rounded-button
             bg-gray-100
-            border-2 border-transparent
-            focus-within:border-blue-600
-            focus-within:bg-white
-            transition-colors cursor-text
-          "
+            border-2
+            transition-colors
+            cursor-text
+            ${errorMessage ? 'border-warning' : 'border-transparent focus-within:border-blue-600 focus-within:bg-white'}
+          `}
         >
           <input
             type="text"
@@ -50,24 +48,24 @@ const NicknameEditSection = ({ value, onChange }: NicknameEditSectionProps) => {
               font-body-1-r
             "
           />
-
           <button
             type="button"
             onClick={() => onChange('')}
             className="
-              absolute
-              right-16
+              absolute right-16
               flex items-center justify-center
               size-24
               opacity-0
               group-focus-within:opacity-100
-              transition-opacity cursor-pointer
+              transition-opacity
+              cursor-pointer
             "
             aria-label="닉네임 지우기"
           >
             <XGray />
           </button>
         </div>
+        {errorMessage && <p className="font-body-3-sm text-warning">{errorMessage}</p>}
       </div>
     </div>
   );
