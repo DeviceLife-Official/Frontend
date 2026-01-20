@@ -5,7 +5,8 @@ import LoginPage from '@/pages/auth/LoginPage';
 import OnboardingCombinationPage from '@/pages/auth/OnboardingCombinationPage';
 import OnboardingCompletePage from '@/pages/auth/OnboardingCompletePage';
 import OnboardingLifestylePage from '@/pages/auth/OnboardingLifestylePage';
-import SignupFormPage from '@/pages/auth/SignupFormPage';
+import SignupAccountPage from '@/pages/auth/SignupAccountPage';
+import SignupProfilePage from '@/pages/auth/SignupProfilePage';
 import SignupPage from '@/pages/auth/SignupPage';
 import NotFoundPage from '@/pages/NotFoundPage';
 
@@ -17,8 +18,16 @@ export const AuthFlowRoutes = [
       { path: 'login', element: <LoginPage /> },
       { path: 'find/id', element: <FindIdPage /> },
       { path: 'find/password', element: <FindPasswordPage /> },
-      { path: 'signup', element: <SignupPage /> },
-      { path: 'signup/form', element: <SignupFormPage /> },
+
+      // signup
+      {
+        path: 'signup',
+        children: [
+          { index: true, element: <SignupPage /> },
+          { path: 'account', element: <SignupAccountPage /> },
+          { path: 'profile', element: <SignupProfilePage /> },
+        ],
+      },
 
       // onboarding
       {
