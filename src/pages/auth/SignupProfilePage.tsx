@@ -23,7 +23,7 @@ const SignupProfilePage = () => {
   const onSubmit = (_data: SignupProfileFormData) => {
     // TODO: 회원가입 API 호출
     // TODO: 온보딩으로 이동
-    navigate(ROUTES.auth.onboarding.lifestyle);
+    navigate(ROUTES.auth.onboarding.lifestyle, { replace: true });
   };
 
   return (

@@ -32,7 +32,7 @@ const OnboardingCombinationPage = () => {
   const handleSelectCombination = () => {
     // TODO: 조합명 저장 (Context/API)
     console.log('선택한 조합명:', combinationName);
-    navigate(ROUTES.auth.onboarding.complete);
+    navigate(ROUTES.auth.onboarding.complete, { replace: true });
   };
 
   return (

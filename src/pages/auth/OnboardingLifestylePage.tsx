@@ -40,7 +40,7 @@ const OnboardingLifestylePage = () => {
       usages: selectedUsages,
       brands: selectedBrands,
     });
-    navigate(ROUTES.auth.onboarding.combination);
+    navigate(ROUTES.auth.onboarding.combination, { replace: true });
   };
 
   return (
