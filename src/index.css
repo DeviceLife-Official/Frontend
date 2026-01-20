@@ -130,6 +130,10 @@
   .border-shadow-blue-double {
     box-shadow: 0 0 16px 0 var(--color-blue-400);
   }
+
+  .border-shadow-blue-welcome {
+    box-shadow: 0 0 10px 0 var(--color-blue-600);
+  }
 }
 
 @font-face {

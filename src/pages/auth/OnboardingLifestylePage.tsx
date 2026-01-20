@@ -1,7 +1,7 @@
 const OnboardingLifestylePage = () => {
   return (
     <div>OnboardingLifestylePage</div>
-  )
-}
+  );
+};
 
-export default OnboardingLifestylePage
+export default OnboardingLifestylePage;
