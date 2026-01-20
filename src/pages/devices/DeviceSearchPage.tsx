@@ -280,7 +280,7 @@ const DeviceSearchPage = () => {
         {showTopButton && (
           <button
             onClick={handleScrollToTop}
-            className="fixed right-48 top-184 w-48 h-48 flex items-center justify-center cursor-pointer hover:opacity-80 transition-all duration-300"
+            className="fixed right-48 bottom-48 w-48 h-48 flex items-center justify-center cursor-pointer hover:opacity-80 transition-all duration-300"
             aria-label="맨 위로 이동"
           >
             <TopIcon className="w-48 h-48 text-gray-300" />
