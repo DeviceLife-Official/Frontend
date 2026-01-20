@@ -45,6 +45,7 @@ export const MOCK_COMBINATIONS: UserCombination[] = [
     label: '조합 1',
     name: 'iPhone 15 Pro 중심 조합',
     isMain: true,
+    createdAt: '2025.11.01',
     tags: [
       { name: '연동성', status: '최적' },
       { name: '편의성', status: '최적' },
@@ -55,8 +56,22 @@ export const MOCK_COMBINATIONS: UserCombination[] = [
   {
     id: 2,
     label: '조합 2',
+    name: 'M3 MacBook Air 중심 조합',
+    isMain: false,
+    createdAt: '2025.10.25',
+    tags: [
+      { name: '연동성', status: '최적' },
+      { name: '편의성', status: '최적' },
+      { name: '라이프스타일', status: '최적' },
+      { name: '컬러 매칭', status: '최적' },
+    ],
+  },
+  {
+    id: 3,
+    label: '조합 3',
     name: '사무실 세팅',
     isMain: false,
+    createdAt: '2025.10.15',
     tags: [
       { name: '연동성', status: '최적' },
       { name: '편의성', status: '최적' },
@@ -81,13 +96,25 @@ export const MOCK_COMBINATION_DEVICES: Record<number, DeviceSummary[]> = {
     { id: 109, name: 'AirPods Pro 2세대', chargingType: 'USB-C', color: '화이트', image: null },
     { id: 110, name: 'iPhone 15 pro', chargingType: 'USB-C', color: '내추럴 티타늄', image: null },
   ],
-  // 조합2: 상품 id 7~12와 동일 → "이미 담은 상품입니다." 테스트용
+  // 조합2: 상품 id 1~6과 동일 → "이미 담은 상품입니다." 테스트용
   2: [
-    { id: 7, name: 'iPhone 15 pro', chargingType: 'USB-C', color: '내추럴 티타늄', image: null },
+    { id: 1, name: 'iPhone 15 pro', chargingType: 'USB-C', color: '내추럴 티타늄', image: null },
+    { id: 2, name: 'AirPods Pro 2세대', chargingType: 'USB-C', color: '화이트', image: null },
+    { id: 3, name: 'AirPods Pro 2세대', chargingType: 'USB-C', color: '화이트', image: null },
+    { id: 4, name: 'iPhone 15 pro', chargingType: 'USB-C', color: '내추럴 티타늄', image: null },
+    { id: 5, name: 'AirPods Pro 2세대', chargingType: 'USB-C', color: '화이트', image: null },
+    { id: 6, name: 'AirPods Pro 2세대', chargingType: 'USB-C', color: '화이트', image: null },
+    { id: 7, name: 'AirPods Pro 2세대', chargingType: 'USB-C', color: '화이트', image: null },
     { id: 8, name: 'AirPods Pro 2세대', chargingType: 'USB-C', color: '화이트', image: null },
-    { id: 9, name: 'AirPods Pro 2세대', chargingType: 'USB-C', color: '화이트', image: null },
-    { id: 10, name: 'iPhone 15 pro', chargingType: 'USB-C', color: '내추럴 티타늄', image: null },
-    { id: 11, name: 'AirPods Pro 2세대', chargingType: 'USB-C', color: '화이트', image: null },
-    { id: 12, name: 'AirPods Pro 2세대', chargingType: 'USB-C', color: '화이트', image: null },
+  ],
+  3: [
+    { id: 201, name: 'iPhone 15 pro', chargingType: 'USB-C', color: '내추럴 티타늄', image: null },
+    { id: 202, name: 'AirPods Pro 2세대', chargingType: 'USB-C', color: '화이트', image: null },
+    { id: 203, name: 'AirPods Pro 2세대', chargingType: 'USB-C', color: '화이트', image: null },
+    { id: 204, name: 'AirPods Pro 2세대', chargingType: 'USB-C', color: '화이트', image: null },
+    { id: 205, name: 'AirPods Pro 2세대', chargingType: 'USB-C', color: '화이트', image: null },
+    { id: 206, name: 'AirPods Pro 2세대', chargingType: 'USB-C', color: '화이트', image: null },
+    { id: 207, name: 'AirPods Pro 2세대', chargingType: 'USB-C', color: '화이트', image: null },
+    { id: 208, name: 'AirPods Pro 2세대', chargingType: 'USB-C', color: '화이트', image: null },
   ],
 };

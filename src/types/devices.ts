@@ -13,5 +13,6 @@ export type UserCombination = {
   label: string;
   name: string;
   isMain: boolean;
+  createdAt?: string;
   tags: CombinationTagType[];
 };
