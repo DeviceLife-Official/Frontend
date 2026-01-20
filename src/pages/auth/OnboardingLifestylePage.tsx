@@ -12,7 +12,7 @@ const OnboardingLifestylePage = () => {
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
 
   const priorities = ['고성능', '가성비', '휴대성', '배터리 수명', '디자인/컬러'];
-  const usages = ['# Office', '# Study', '# Developer', '# Vidieo-editing', '# Game', '# Tour/portability'];
+  const usages = ['# Office', '# Study', '# Developer', '# Video-editing', '# Game', '# Tour/portability'];
   const brands = ['Apple', 'Samsung', 'Sony', 'Logitech', '상관없음'];
 
   const toggleSelection = (
@@ -71,7 +71,7 @@ const OnboardingLifestylePage = () => {
               <p className="font-body-1-sm text-blue-800 text-center w-full">
                 중요하게 생각하는 것은?
               </p>
-              <div className="flex flex-col gap-12 w-full">
+              <div className="flex flex-col gap-8 w-full">
                 {priorities.map((priority) => (
                   <OnboardingLifestyleTag
                     key={priority}
@@ -87,9 +87,9 @@ const OnboardingLifestylePage = () => {
             </div>
 
             {/* 중간 컬럼: 주된 용도 */}
-            <div className="flex flex-col gap-28 items-center">
+            <div className="flex flex-col gap-28 items-center w-544 h-339">
               <p className="font-body-1-sm text-blue-800 text-center">나의 주된 용도는?</p>
-              <div className="grid grid-cols-2 gap-12 w-full">
+              <div className="grid grid-cols-2 gap-x-16 place-content-between flex-1 w-full">
                 {usages.map((usage) => (
                   <OnboardingLifestyleTag
                     key={usage}
@@ -107,7 +107,7 @@ const OnboardingLifestylePage = () => {
               <p className="font-body-1-sm text-blue-800 text-center w-full">
                 선호하는 브랜드는?
               </p>
-              <div className="flex flex-col gap-12 w-full">
+              <div className="flex flex-col gap-8 w-full">
                 {brands.map((brand) => (
                   <OnboardingLifestyleTag
                     key={brand}
