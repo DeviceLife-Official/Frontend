@@ -9,6 +9,14 @@ export interface Product {
   colors: string[];
 }
 
+export interface DeviceSummary {
+  id: number;
+  name: string;
+  chargingType: string;
+  color: string;
+  image: string | null;
+}
+
 // 디자인 토큰 색상 사용 (중앙 관리)
 export const PRODUCT_COLOR_CHIPS = {
   BLACK: '#000000',
@@ -57,3 +65,27 @@ export const MOCK_COMBINATIONS: UserCombination[] = [
     ],
   },
 ];
+
+// 조합별 기기 목록 (추후 API 연동)
+export const MOCK_COMBINATION_DEVICES: Record<number, DeviceSummary[]> = {
+  1: [
+    { id: 1, name: 'iPhone 15 pro', chargingType: 'USB-C', color: '내추럴 티타늄', image: null },
+    { id: 2, name: 'AirPods Pro 2세대', chargingType: 'USB-C', color: '화이트', image: null },
+    { id: 3, name: 'AirPods Pro 2세대', chargingType: 'USB-C', color: '화이트', image: null },
+    { id: 4, name: 'iPhone 15 pro', chargingType: 'USB-C', color: '내추럴 티타늄', image: null },
+    { id: 5, name: 'AirPods Pro 2세대', chargingType: 'USB-C', color: '화이트', image: null },
+    { id: 6, name: 'AirPods Pro 2세대', chargingType: 'USB-C', color: '화이트', image: null },
+    { id: 7, name: 'iPhone 15 pro', chargingType: 'USB-C', color: '내추럴 티타늄', image: null },
+    { id: 8, name: 'AirPods Pro 2세대', chargingType: 'USB-C', color: '화이트', image: null },
+    { id: 9, name: 'AirPods Pro 2세대', chargingType: 'USB-C', color: '화이트', image: null },
+    { id: 10, name: 'iPhone 15 pro', chargingType: 'USB-C', color: '내추럴 티타늄', image: null },
+  ],
+  2: [
+    { id: 1, name: 'iPhone 15 pro', chargingType: 'USB-C', color: '내추럴 티타늄', image: null },
+    { id: 2, name: 'AirPods Pro 2세대', chargingType: 'USB-C', color: '화이트', image: null },
+    { id: 3, name: 'AirPods Pro 2세대', chargingType: 'USB-C', color: '화이트', image: null },
+    { id: 4, name: 'iPhone 15 pro', chargingType: 'USB-C', color: '내추럴 티타늄', image: null },
+    { id: 5, name: 'AirPods Pro 2세대', chargingType: 'USB-C', color: '화이트', image: null },
+    { id: 6, name: 'AirPods Pro 2세대', chargingType: 'USB-C', color: '화이트', image: null },
+  ],
+};
