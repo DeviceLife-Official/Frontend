@@ -20,8 +20,8 @@ const OnboardingLifestyleTag = ({
         px-20 py-10 rounded-button bg-white cursor-pointer
         transition-all duration-150
         ${selected
-          ? 'border-shadow-blue font-heading-2 text-blue-700'
-          : 'border-shadow-black font-heading-2 text-black hover:text-blue-500'
+          ? 'border-shadow-blue font-body-1-sm text-blue-700'
+          : 'border-shadow-black font-body-1-sm text-black hover:text-blue-500'
         }
         ${className}
       `}
