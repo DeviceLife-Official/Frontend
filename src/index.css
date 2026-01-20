@@ -332,3 +332,17 @@ html {
 body {
   overflow-x: hidden;
 }
+
+/* 온보딩 완료 애니메이션 */
+@keyframes linesAppear {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.animate-lines-appear {
+  animation: linesAppear 2s ease-out forwards;
+}
