@@ -2,9 +2,8 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigate } from 'react-router-dom';
-import EllipseBlack from '@/assets/icons/ellipse_black.svg?react';
-import EllipseGray from '@/assets/icons/ellipse_gray.svg?react';
 import PrimaryButton from '@/components/Button/PrimaryButton';
+import StepIndicator from '@/components/Auth/Indicator/StepIndicator';
 import {
   onboardingCombinationSchema,
   type OnboardingCombinationFormData,
@@ -44,12 +43,7 @@ const OnboardingCombinationPage = () => {
           {/* 상단 영역 (페이지네이션 + 텍스트) */}
           <div className="flex flex-col items-center gap-24 w-540">
             {/* 페이지네이션 인디케이터 */}
-            <div className="flex items-center justify-center p-8 gap-24">
-              <EllipseGray className="size-10" />
-              <EllipseGray className="size-10" />
-              <EllipseGray className="size-10" />
-              <EllipseBlack className="size-10" />
-            </div>
+            <StepIndicator currentStep={4} totalSteps={4} />
             {/* 메인 타이틀 */}
             <p className="font-body-1-sm text-blue-600 text-center">
               나의 첫 기기 조합을 생성해 주세요.

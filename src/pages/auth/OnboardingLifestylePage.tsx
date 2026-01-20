@@ -1,19 +1,48 @@
-import EllipseBlack from '@/assets/icons/ellipse_black.svg?react';
-import EllipseGray from '@/assets/icons/ellipse_gray.svg?react';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import PrimaryButton from '@/components/Button/PrimaryButton';
+import OnboardingLifestyleTag from '@/components/Lifestyle/OnboardingLifestyleTag';
+import StepIndicator from '@/components/Auth/Indicator/StepIndicator';
+import { ROUTES } from '@/constants/routes';
 
 const OnboardingLifestylePage = () => {
+  const navigate = useNavigate();
+  const [selectedPriorities, setSelectedPriorities] = useState<string[]>([]);
+  const [selectedUsages, setSelectedUsages] = useState<string[]>([]);
+  const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
+
+  const priorities = ['가성비', '디자인', '성능', '휴대성', '호환성'];
+  const usages = ['업무', '게임', '영상편집', '코딩', '학습', '여행'];
+  const brands = ['Apple', 'Samsung', 'LG', 'Microsoft', 'Sony'];
+
+  const toggleSelection = (
+    item: string,
+    selectedItems: string[],
+    setSelectedItems: React.Dispatch<React.SetStateAction<string[]>>
+  ) => {
+    if (selectedItems.includes(item)) {
+      setSelectedItems(selectedItems.filter((i) => i !== item));
+    } else {
+      setSelectedItems([...selectedItems, item]);
+    }
+  };
+
+  const handleNext = () => {
+    // TODO: 선택한 라이프스타일 저장 (Context/API)
+    console.log({
+      priorities: selectedPriorities,
+      usages: selectedUsages,
+      brands: selectedBrands,
+    });
+    navigate(ROUTES.auth.onboarding.combination);
+  };
+
   return (
     <div className="flex flex-col items-center justify-center h-[calc(100vh-80px)]">
       {/* 메인 컨테이너 */}
       <div className="flex flex-col items-center gap-24 w-1400">
         {/* 페이지네이션 인디케이터 */}
-        <div className="flex items-center justify-center p-8 gap-24">
-          <EllipseGray className="size-10" />
-          <EllipseGray className="size-10" />
-          <EllipseBlack className="size-10" />
-          <EllipseGray className="size-10" />
-        </div>
+        <StepIndicator currentStep={3} totalSteps={4} />
 
         {/* 콘텐츠 영역 */}
         <div className="flex flex-col items-center gap-56 w-full">
@@ -36,13 +65,35 @@ const OnboardingLifestylePage = () => {
               <p className="font-body-1-sm text-blue-800 text-center w-full">
                 중요하게 생각하는 것은?
               </p>
-              {/* TODO: 선택 옵션들 */}
+              <div className="flex flex-col gap-12 w-full">
+                {priorities.map((priority) => (
+                  <OnboardingLifestyleTag
+                    key={priority}
+                    label={priority}
+                    selected={selectedPriorities.includes(priority)}
+                    onClick={() =>
+                      toggleSelection(priority, selectedPriorities, setSelectedPriorities)
+                    }
+                    className="w-full h-50"
+                  />
+                ))}
+              </div>
             </div>
 
             {/* 중간 컬럼: 주된 용도 */}
             <div className="flex flex-col gap-28 items-center">
               <p className="font-body-1-sm text-blue-800 text-center">나의 주된 용도는?</p>
-              {/* TODO: 선택 옵션들 (2x3 그리드) */}
+              <div className="grid grid-cols-2 gap-12 w-full">
+                {usages.map((usage) => (
+                  <OnboardingLifestyleTag
+                    key={usage}
+                    label={usage}
+                    selected={selectedUsages.includes(usage)}
+                    onClick={() => toggleSelection(usage, selectedUsages, setSelectedUsages)}
+                    className="w-264 h-88"
+                  />
+                ))}
+              </div>
             </div>
 
             {/* 오른쪽 컬럼: 선호 브랜드 */}
@@ -50,12 +101,26 @@ const OnboardingLifestylePage = () => {
               <p className="font-body-1-sm text-blue-800 text-center w-full">
                 선호하는 브랜드는?
               </p>
-              {/* TODO: 선택 옵션들 */}
+              <div className="flex flex-col gap-12 w-full">
+                {brands.map((brand) => (
+                  <OnboardingLifestyleTag
+                    key={brand}
+                    label={brand}
+                    selected={selectedBrands.includes(brand)}
+                    onClick={() => toggleSelection(brand, selectedBrands, setSelectedBrands)}
+                    className="w-full h-50"
+                  />
+                ))}
+              </div>
             </div>
           </div>
 
           {/* 다음 버튼 */}
-          <PrimaryButton text="다음" className="w-280 bg-blue-600 hover:bg-blue-500" />
+          <PrimaryButton
+            text="다음"
+            className="w-280 bg-blue-600 hover:bg-blue-500"
+            onClick={handleNext}
+          />
         </div>
       </div>
     </div>

@@ -1,23 +1,24 @@
 import EllipseBlack from '@/assets/icons/ellipse_black.svg?react';
 import EllipseGray from '@/assets/icons/ellipse_gray.svg?react';
+import { useOnboardingNavigation } from '@/hooks/useOnboardingNavigation';
 
 type StepIndicatorProps = {
   currentStep: number;
   totalSteps?: number;
-  onStepClick?: (step: number) => void;
   className?: string;
 };
 
 const StepIndicator = ({
   currentStep,
   totalSteps = 4,
-  onStepClick,
   className = '',
 }: StepIndicatorProps) => {
+  const { handleStepClick: navigateToStep } = useOnboardingNavigation();
+
   const handleStepClick = (step: number) => {
     // 이전 step만 클릭 가능
-    if (step < currentStep && onStepClick) {
-      onStepClick(step);
+    if (step < currentStep) {
+      navigateToStep(step);
     }
   };
 

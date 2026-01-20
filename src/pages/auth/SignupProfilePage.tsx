@@ -26,18 +26,12 @@ const SignupProfilePage = () => {
     navigate(ROUTES.auth.onboarding.lifestyle);
   };
 
-  const handleStepClick = (step: number) => {
-    if (step === 1) {
-      navigate(ROUTES.auth.signup.account);
-    }
-  };
-
   return (
     <div className="flex flex-col items-center justify-center h-[calc(100vh-80px)]">
       {/* 전체 컨테이너 */}
       <div className="flex flex-col items-center">
         {/* 페이지네이션 인디케이터 */}
-        <StepIndicator currentStep={2} onStepClick={handleStepClick} className="mb-24" />
+        <StepIndicator currentStep={2} className="mb-24" />
 
 
         {/* 폼 컨테이너 */}
