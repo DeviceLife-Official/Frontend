@@ -1,4 +1,4 @@
-import XGray from '@/assets/icons/x_gray.svg?react';
+import Cancel from '@/assets/icons/cancel.svg?react';
 
 type NicknameEditSectionProps = {
   value: string;
@@ -62,7 +62,7 @@ const NicknameEditSection = ({ value, onChange, errorMessage }: NicknameEditSect
             "
             aria-label="닉네임 지우기"
           >
-            <XGray />
+            <Cancel />
           </button>
         </div>
         {errorMessage && <p className="font-body-3-sm text-warning">{errorMessage}</p>}
