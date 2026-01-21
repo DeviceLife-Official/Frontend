@@ -9,7 +9,6 @@ import ProductLife from '@/components/ProductCard/ProductLife';
 import FilterDropdown from '@/components/Filter/FilterDropdown';
 import SortDropdown from '@/components/Filter/SortDropdown';
 import SearchIcon from '@/assets/icons/search.svg?react';
-import DropdownIcon from '@/assets/icons/dropdown.svg?react';
 import FilterIcon from '@/assets/icons/filter.svg?react';
 import TopIcon from '@/assets/icons/top.svg?react';
 import XIcon from '@/assets/icons/X.svg?react';
