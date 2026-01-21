@@ -340,7 +340,7 @@ const DeviceSearchPage = () => {
                       <div className="flex flex-col gap-8">
                         <div className="w-full h-360 bg-gray-200 relative">
                           {/* Color Chip Dropdown */}
-                          <div className="absolute left-20 top-20 bg-white rounded-button shadow-[0_0_4px_rgba(0,0,0,0.25)] p-2 flex items-center">
+                          {/* <div className="absolute left-20 top-20 bg-white rounded-button shadow-[0_0_4px_rgba(0,0,0,0.25)] p-2 flex items-center">
                             <div className="w-40 h-40 flex items-center justify-center">
                               <div
                                 className="w-32 h-32 rounded-full"
@@ -349,15 +349,16 @@ const DeviceSearchPage = () => {
                             </div>
                             <DropdownIcon className="w-28 h-14 text-gray-400" />
                           </div>
-                        </div>
+                        </div> */}
 
                         {/* Page Control (dots) */}
-                        <div className="flex items-center justify-center gap-24 py-8">
+                        {/* <div className="flex items-center justify-center gap-24 py-8">
                           <div className="w-12 h-12 rounded-full bg-black" />
                           <div className="w-12 h-12 rounded-full bg-gray-300" />
                           <div className="w-12 h-12 rounded-full bg-gray-300" />
+                          */}
                         </div>
-                      </div>
+                      </div> 
 
                       {/* Button */}
                       <PrimaryButton
