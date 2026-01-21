@@ -44,8 +44,8 @@ const CombinationDeviceCard = ({
   };
 
   const gridColsClass = columns === 4 ? 'grid-cols-4' : 'grid-cols-3';
-  const deviceCardWidth = columns === 4 ? 'w-255' : 'w-244';
-  const deviceImageSize = columns === 4 ? 'w-100 h-100' : 'w-64 h-64';
+  const deviceCardWidth = columns === 4 ? 'w-244' : 'w-244';
+  const deviceImageSize = columns === 4 ? 'w-64 h-64' : 'w-64 h-64';
 
   return (
     <div className={className}>
