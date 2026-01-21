@@ -72,3 +72,22 @@ export const signupProfileSchema = z.object({
 });
 
 export type SignupProfileFormData = z.infer<typeof signupProfileSchema>;
+
+// 조합명 스키마
+export const combinationSchema = z.object({
+  combinationName: z.string().min(1, '조합명을 입력해주세요'),
+});
+
+export type CombinationFormData = z.infer<typeof combinationSchema>;
+
+// 온보딩 조합명 스키마
+export const onboardingCombinationSchema = z.object({
+  combinationName: z
+    .string()
+    .min(1, '조합명을 입력해주세요')
+    .max(20, '조합명은 최대 20자까지 입력 가능합니다.')
+    .regex(/^[가-힣a-zA-Z0-9 ]+$/, '특수문자나 이모지는 사용할 수 없습니다.')
+    .refine((val) => val.trim().length > 0, '조합명을 한 글자 이상 입력해주세요.'),
+});
+
+export type OnboardingCombinationFormData = z.infer<typeof onboardingCombinationSchema>;

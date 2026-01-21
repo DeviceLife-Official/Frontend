@@ -23,13 +23,7 @@ const SignupProfilePage = () => {
   const onSubmit = (_data: SignupProfileFormData) => {
     // TODO: 회원가입 API 호출
     // TODO: 온보딩으로 이동
-    navigate(ROUTES.auth.onboarding.lifestyle);
-  };
-
-  const handleStepClick = (step: number) => {
-    if (step === 1) {
-      navigate(ROUTES.auth.signup.account);
-    }
+    navigate(ROUTES.auth.onboarding.lifestyle, { replace: true });
   };
 
   return (
@@ -37,7 +31,7 @@ const SignupProfilePage = () => {
       {/* 전체 컨테이너 */}
       <div className="flex flex-col items-center">
         {/* 페이지네이션 인디케이터 */}
-        <StepIndicator currentStep={2} onStepClick={handleStepClick} className="mb-24" />
+        <StepIndicator currentStep={2} className="mb-24" />
 
 
         {/* 폼 컨테이너 */}
