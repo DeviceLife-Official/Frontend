@@ -174,7 +174,7 @@ const DeviceSearchPage = () => {
       {/* Main Content */}
       {/* <div className="pt-108"> */}
         {/* Search Bar */}
-        <div className="flex justify-center pt-156">
+        <div className="flex justify-center pt-80">
           <div className="w-600 h-72 bg-blue-100 rounded-button px-12 py-20 flex items-center gap-12">
             <SearchIcon className="w-28 h-28 flex-shrink-0 text-black" />
             <input
@@ -189,7 +189,7 @@ const DeviceSearchPage = () => {
 
         {/* Device Categories */}
         <div className="w-full pt-36 2xl:pt-56">
-          <div className="w-1100 mx-auto 2xl:w-full 2xl:px-328 flex items-center justify-between">
+          <div className="w-full px-268 2xl:px-328 flex items-center justify-between">
             {DEVICE_CATEGORIES.map((category) => {
               const { Icon } = category;
               return (
@@ -211,13 +211,13 @@ const DeviceSearchPage = () => {
         </div>
 
         {/* Divider */}
-        <div className="w-full h-8 opacity-50 bg-gradient-to-t from-[#EEEEF0] to-[#E4E4E7] mt-88" />
+        <div className="w-full h-8 opacity-50 bg-gradient-to-t from-[#EEEEF0] to-[#E4E4E7] mt-84" />
 
         {/* Filter Section */}
-        <div className="mx-auto px-200 pt-68">
-          
+        <div className="mx-auto pl-200 pr-160 2xl:px-200 pt-32">
+
           {/* Filters */}
-          <div className="flex items-center gap-0 pt-8">
+          <div className="flex items-center gap-0">
             {/* Filter Icon */}
             <button className="w-48 h-48 flex items-center justify-center">
               <FilterIcon className="w-48 h-48 text-black" />
@@ -261,8 +261,8 @@ const DeviceSearchPage = () => {
         </div>
 
         {/* Product Grid */}
-        <div ref={productGridRef} className="mx-auto px-160 pt-68">
-          <div className="grid grid-cols-4 gap-x-28 gap-y-164">
+        <div ref={productGridRef} className="mx-auto px-120 2xl:px-160">
+          <div className="grid grid-cols-3 2xl:grid-cols-4 gap-x-28 gap-y-164">
             {MOCK_PRODUCTS.map((product) => (
               <ProductCard
                 key={product.id}
@@ -280,7 +280,7 @@ const DeviceSearchPage = () => {
         {showTopButton && (
           <button
             onClick={handleScrollToTop}
-            className="fixed right-48 top-184 w-48 h-48 flex items-center justify-center cursor-pointer hover:opacity-80 transition-all duration-300"
+            className="fixed right-48 bottom-48 w-48 h-48 flex items-center justify-center cursor-pointer hover:opacity-80 transition-all duration-300"
             aria-label="맨 위로 이동"
           >
             <TopIcon className="w-48 h-48 text-gray-300" />
