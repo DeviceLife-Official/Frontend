@@ -78,6 +78,7 @@
   --spacing-204: 204px;
   --spacing-268: 268px;
   --spacing-280: 280px;
+  --spacing-300: 300px;
 
   /* Typography */
   --font-service: 'KIMM_Bold', system-ui, sans-serif;
@@ -133,6 +134,10 @@
 
   .border-shadow-blue-welcome {
     box-shadow: 0 0 10px 0 var(--color-blue-600);
+  }
+    
+  .animate-fade-in {
+    animation: fadeIn 0.6s ease-out;
   }
 }
 
@@ -308,6 +313,18 @@
 
 .link-underline:hover::after {
   transform: scaleX(1);
+}
+
+/* 저장 완료 모달 fade-in 애니메이션 */
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 /* device summary card: hover 시 marquee animation */
