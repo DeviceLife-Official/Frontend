@@ -135,6 +135,10 @@
     box-shadow: 0 0 16px 0 var(--color-blue-400);
   }
 
+  .border-shadow-blue-welcome {
+    box-shadow: 0 0 10px 0 var(--color-blue-600);
+  }
+    
   .animate-fade-in {
     animation: fadeIn 0.6s ease-out;
   }
@@ -347,4 +351,18 @@ html {
 }
 body {
   overflow-x: hidden;
+}
+
+/* 온보딩 완료 애니메이션 */
+@keyframes linesAppear {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.animate-lines-appear {
+  animation: linesAppear 2s ease-out forwards;
 }
