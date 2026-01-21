@@ -61,12 +61,14 @@
   --spacing-72: 72px;
   --spacing-76: 76px;
   --spacing-80: 80px;
+  --spacing-84: 84px;
   --spacing-88: 88px;
   --spacing-96: 96px;
   --spacing-100: 100px;
   --spacing-104: 104px;
   --spacing-108: 108px;
   --spacing-116: 116px;
+  --spacing-120: 120px;
   --spacing-124: 124px;
   --spacing-132: 132px;
   --spacing-146: 146px;
@@ -76,8 +78,10 @@
   --spacing-184: 184px;
   --spacing-196: 196px;
   --spacing-204: 204px;
+  --spacing-228: 228px;
   --spacing-268: 268px;
   --spacing-280: 280px;
+  --spacing-300: 300px;
 
   /* Typography */
   --font-service: 'KIMM_Bold', system-ui, sans-serif;
@@ -129,6 +133,14 @@
 
   .border-shadow-blue-double {
     box-shadow: 0 0 16px 0 var(--color-blue-400);
+  }
+
+  .border-shadow-blue-welcome {
+    box-shadow: 0 0 10px 0 var(--color-blue-600);
+  }
+    
+  .animate-fade-in {
+    animation: fadeIn 0.6s ease-out;
   }
 }
 
@@ -306,6 +318,18 @@
   transform: scaleX(1);
 }
 
+/* 저장 완료 모달 fade-in 애니메이션 */
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
 /* device summary card: hover 시 marquee animation */
 @keyframes device-marquee {
   0% {
@@ -327,4 +351,18 @@ html {
 }
 body {
   overflow-x: hidden;
+}
+
+/* 온보딩 완료 애니메이션 */
+@keyframes linesAppear {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.animate-lines-appear {
+  animation: linesAppear 2s ease-out forwards;
 }

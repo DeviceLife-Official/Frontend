@@ -6,8 +6,8 @@ import PrimaryButton from '@/components/Button/PrimaryButton';
 import CombinationTag from '@/components/Combination/CombinationTag';
 import CombinationDeviceCard from '@/components/Combination/CombinationDeviceCard';
 import ProductLife from '@/components/ProductCard/ProductLife';
-import CheckboxIcon from '@/assets/icons/checkbox.svg?react';
-import CheckboxOnIcon from '@/assets/icons/checkbox_on.svg?react';
+import FilterDropdown from '@/components/Filter/FilterDropdown';
+import SortDropdown from '@/components/Filter/SortDropdown';
 import SearchIcon from '@/assets/icons/search.svg?react';
 import DropdownIcon from '@/assets/icons/dropdown.svg?react';
 import FilterIcon from '@/assets/icons/filter.svg?react';
@@ -16,6 +16,7 @@ import XIcon from '@/assets/icons/X.svg?react';
 import BackIcon from '@/assets/icons/back.svg?react';
 import StarIcon from '@/assets/icons/star.svg?react';
 import MoreIcon from '@/assets/icons/more.svg?react';
+import SaveIcon from '@/assets/icons/save.svg?react';
 
 import {
   DEVICE_CATEGORIES,
@@ -38,21 +39,15 @@ const DeviceSearchPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
   const [sortOption, setSortOption] = useState('latest');
-  const [showSortDropdown, setShowSortDropdown] = useState(false);
-  const [showPriceFilter, setShowPriceFilter] = useState(false);
-  const [showBrandFilter, setShowBrandFilter] = useState(false);
   const [selectedPrice, setSelectedPrice] = useState<string | null>(null);
   const [selectedBrand, setSelectedBrand] = useState<string | null>(null);
   const [isAtBottom, setIsAtBottom] = useState(false);
   const [showTopButton, setShowTopButton] = useState(false);
-  const [hoveredSortIndex, setHoveredSortIndex] = useState<number | null>(null);
   const [selectedCombinationId, setSelectedCombinationId] = useState<number | null>(null);
   const [showAllDevices, setShowAllDevices] = useState(false);
+  const [showSaveCompleteModal, setShowSaveCompleteModal] = useState(false);
 
   const productGridRef = useRef<HTMLDivElement>(null);
-  const sortRef = useRef<HTMLDivElement>(null);
-  const priceRef = useRef<HTMLDivElement>(null);
-  const brandRef = useRef<HTMLDivElement>(null);
 
   /* 선택된 제품 찾기 */
   const selectedProduct = selectedProductId
@@ -79,6 +74,7 @@ const DeviceSearchPage = () => {
     if (MOCK_COMBINATIONS.length === 1) {
       // API 호출 - 바로 저장
       console.log('바로 저장:', MOCK_COMBINATIONS[0].id);
+      setShowSaveCompleteModal(true);
       return;
     }
 
@@ -98,9 +94,21 @@ const DeviceSearchPage = () => {
     if (selectedCombinationId) {
       // API 호출 - 선택한 조합에 기기 추가
       console.log('조합에 기기 추가:', selectedCombinationId);
-      handleCloseModal();
+      setModalView('device'); // combinationDetail 모달 숨김
+      setShowSaveCompleteModal(true);
     }
   };
+
+  /* 저장 완료 모달 자동 닫기 */
+  useEffect(() => {
+    if (showSaveCompleteModal) {
+      const timer = setTimeout(() => {
+        setShowSaveCompleteModal(false);
+        handleCloseModal();
+      }, 800); // 0.8초
+      return () => clearTimeout(timer);
+    }
+  }, [showSaveCompleteModal]);
 
   /* 선택된 조합 정보 */
   const selectedCombination = selectedCombinationId
@@ -111,6 +119,11 @@ const DeviceSearchPage = () => {
   const combinationDevices = selectedCombinationId
     ? MOCK_COMBINATION_DEVICES[selectedCombinationId] || []
     : [];
+
+  /* 선택된 조합에 이미 담긴 기기인지 확인 */
+  const isAlreadyInSelectedCombination = selectedCombinationId && selectedProductId
+    ? combinationDevices.some(device => device.id === Number(selectedProductId))
+    : false;
 
   useEffect(() => {
     const handleScroll = () => {
@@ -138,24 +151,6 @@ const DeviceSearchPage = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  /* 드롭다운 외부 클릭 처리 */
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (sortRef.current && !sortRef.current.contains(event.target as Node)) {
-        setShowSortDropdown(false);
-      }
-      if (priceRef.current && !priceRef.current.contains(event.target as Node)) {
-        setShowPriceFilter(false);
-      }
-      if (brandRef.current && !brandRef.current.contains(event.target as Node)) {
-        setShowBrandFilter(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
   /* 모달 열렸을 때 y 스크롤 방지 */
   useEffect(() => {
     if (selectedProduct) {
@@ -179,7 +174,7 @@ const DeviceSearchPage = () => {
       {/* Main Content */}
       {/* <div className="pt-108"> */}
         {/* Search Bar */}
-        <div className="flex justify-center pt-156">
+        <div className="flex justify-center pt-80">
           <div className="w-600 h-72 bg-blue-100 rounded-button px-12 py-20 flex items-center gap-12">
             <SearchIcon className="w-28 h-28 flex-shrink-0 text-black" />
             <input
@@ -194,7 +189,7 @@ const DeviceSearchPage = () => {
 
         {/* Device Categories */}
         <div className="w-full pt-36 2xl:pt-56">
-          <div className="w-1100 mx-auto 2xl:w-full 2xl:px-328 flex items-center justify-between">
+          <div className="w-full px-268 2xl:px-328 flex items-center justify-between">
             {DEVICE_CATEGORIES.map((category) => {
               const { Icon } = category;
               return (
@@ -216,154 +211,36 @@ const DeviceSearchPage = () => {
         </div>
 
         {/* Divider */}
-        <div className="w-full h-8 opacity-50 bg-gradient-to-t from-[#EEEEF0] to-[#E4E4E7] mt-88" />
+        <div className="w-full h-8 opacity-50 bg-gradient-to-t from-[#EEEEF0] to-[#E4E4E7] mt-84" />
 
         {/* Filter Section */}
-        <div className="mx-auto px-200 pt-68">
-          
+        <div className="mx-auto pl-200 pr-160 2xl:px-200 pt-32">
+
           {/* Filters */}
-          <div className="flex items-center gap-0 pt-8">
+          <div className="flex items-center gap-0">
             {/* Filter Icon */}
             <button className="w-48 h-48 flex items-center justify-center">
               <FilterIcon className="w-48 h-48 text-black" />
             </button>
 
             {/* Price Filter */}
-            <div ref={priceRef} className="relative flex flex-col gap-16 ml-72">
-              <button
-                onClick={() => setShowPriceFilter(!showPriceFilter)}
-                className={`flex items-center justify-center gap-16 pl-16 pr-8 py-8 rounded-button cursor-pointer ${
-                  selectedPrice
-                    ? 'border-2 border-blue-600'
-                    : showPriceFilter
-                    ? 'border border-gray-400'
-                    : 'border border-black'
-                }`}
-              >
-                <p className={`font-body-1-sm whitespace-nowrap ${
-                  selectedPrice
-                    ? 'text-blue-600'
-                    : showPriceFilter
-                    ? 'text-gray-400'
-                    : 'text-black'
-                }`}>
-                  {selectedPrice ? PRICE_OPTIONS.find(opt => opt.value === selectedPrice)?.label : '가격대'}
-                </p>
-                <div className="flex items-center justify-center">
-                  <DropdownIcon
-                    className={`w-40 h-40 transition-transform ${
-                      showPriceFilter ? 'rotate-180' : 'rotate-0'
-                    } ${
-                      selectedPrice
-                        ? 'text-blue-600'
-                        : showPriceFilter
-                        ? 'text-gray-400'
-                        : 'text-black'
-                    }`}
-                  />
-                </div>
-              </button>
-
-              {showPriceFilter && (
-                <div className="absolute left-0 top-full mt-8 bg-white rounded-button shadow-[0_2px_10px_rgba(0,0,0,0.25)] p-12 z-12 flex flex-col">
-                  {PRICE_OPTIONS.map((option, index) => (
-                    <button
-                      key={option.value}
-                      onClick={() => {
-                        setSelectedPrice(selectedPrice === option.value ? null : option.value);
-                        setShowPriceFilter(false);
-                      }}
-                      className={`group relative flex items-center gap-10 justify-between pb-10 cursor-pointer ${
-                        index === 0 ? '' : 'pt-10'
-                      } ${
-                        index < PRICE_OPTIONS.length - 1
-                          ? 'border-b border-black'
-                          : ''
-                      }`}
-                    >
-                      {/* 호버 시 회색 배경 - 구분선과 분리 */}
-                      <div className={`absolute -inset-x-4 bg-gray-100 rounded-button -z-10 opacity-0 group-hover:opacity-100 transition-opacity ${
-                        index === 0 ? '-top-4 bottom-4' : 'inset-y-4'
-                      }`} />
-                      <p className="font-body-1-r text-black whitespace-nowrap">{option.label}</p>
-                      {selectedPrice === option.value ? (
-                        <CheckboxOnIcon className="w-32 h-32 flex-shrink-0" />
-                      ) : (
-                        <CheckboxIcon className="w-32 h-32 flex-shrink-0" />
-                      )}
-                    </button>
-                  ))}
-                </div>
-              )}
+            <div className="ml-72">
+              <FilterDropdown
+                label="가격대"
+                options={PRICE_OPTIONS}
+                selectedValue={selectedPrice}
+                onSelect={setSelectedPrice}
+              />
             </div>
 
             {/* Brand Filter */}
-            <div ref={brandRef} className="relative flex flex-col gap-16 ml-32">
-              <button
-                onClick={() => setShowBrandFilter(!showBrandFilter)}
-                className={`flex items-center justify-center gap-16 pl-16 pr-8 py-8 rounded-button cursor-pointer ${
-                  selectedBrand
-                    ? 'border-2 border-blue-600'
-                    : showBrandFilter
-                    ? 'border border-gray-400'
-                    : 'border border-black'
-                }`}
-              >
-                <p className={`font-body-1-sm whitespace-nowrap ${
-                  selectedBrand
-                    ? 'text-blue-600'
-                    : showBrandFilter
-                    ? 'text-gray-400'
-                    : 'text-black'
-                }`}>
-                  {selectedBrand ? BRAND_OPTIONS.find(opt => opt.value === selectedBrand)?.label : '브랜드'}
-                </p>
-                <div className="flex items-center justify-center">
-                  <DropdownIcon
-                    className={`w-40 h-40 transition-transform ${
-                      showBrandFilter ? 'rotate-180' : 'rotate-0'
-                    } ${
-                      selectedBrand
-                        ? 'text-blue-600'
-                        : showBrandFilter
-                        ? 'text-gray-400'
-                        : 'text-black'
-                    }`}
-                  />
-                </div>
-              </button>
-
-              {showBrandFilter && (
-                <div className="absolute left-0 top-full mt-8 bg-white rounded-button shadow-[0_2px_10px_rgba(0,0,0,0.25)] p-12 z-10 flex flex-col">
-                  {BRAND_OPTIONS.map((option, index) => (
-                    <button
-                      key={option.value}
-                      onClick={() => {
-                        setSelectedBrand(selectedBrand === option.value ? null : option.value);
-                        setShowBrandFilter(false);
-                      }}
-                      className={`group relative flex items-center gap-10 justify-between pb-10 cursor-pointer ${
-                        index === 0 ? '' : 'pt-10'
-                      } ${
-                        index < BRAND_OPTIONS.length - 1
-                          ? 'border-b border-black'
-                          : ''
-                      }`}
-                    >
-                      {/* 호버 시 회색 배경 - 구분선과 분리 */}
-                      <div className={`absolute -inset-x-4 bg-gray-100 rounded-button -z-10 opacity-0 group-hover:opacity-100 transition-opacity ${
-                        index === 0 ? '-top-4 bottom-4' : 'inset-y-4'
-                      }`} />
-                      <p className="font-body-1-r text-black whitespace-nowrap">{option.label}</p>
-                      {selectedBrand === option.value ? (
-                        <CheckboxOnIcon className="w-32 h-32 flex-shrink-0" />
-                      ) : (
-                        <CheckboxIcon className="w-32 h-32 flex-shrink-0" />
-                      )}
-                    </button>
-                  ))}
-                </div>
-              )}
+            <div className="ml-32">
+              <FilterDropdown
+                label="브랜드"
+                options={BRAND_OPTIONS}
+                selectedValue={selectedBrand}
+                onSelect={setSelectedBrand}
+              />
             </div>
           </div>
 
@@ -375,58 +252,17 @@ const DeviceSearchPage = () => {
             </div>
 
             {/* Right side - Sort dropdown */}
-            <div ref={sortRef} className="relative flex flex-col items-end gap-16">
-              <button
-                onClick={() => setShowSortDropdown(!showSortDropdown)}
-                className="flex items-center gap-8 cursor-pointer"
-              >
-                <p className="font-body-1-sm text-black whitespace-nowrap">
-                  {SORT_OPTIONS.find(opt => opt.value === sortOption)?.label}
-                </p>
-                <div className="flex items-center justify-center">
-                  <DropdownIcon
-                    className={`w-40 h-40 transition-transform text-black ${
-                      showSortDropdown ? 'rotate-180' : 'rotate-0'
-                    }`}
-                  />
-                </div>
-              </button>
-
-              {showSortDropdown && (
-                <div
-                  className="absolute right-0 top-full mt-8 bg-white rounded-button shadow-[0_2px_10px_rgba(0,0,0,0.25)] px-8 z-12 flex flex-col"
-                  onMouseLeave={() => setHoveredSortIndex(null)}
-                >
-                  {SORT_OPTIONS.map((option, index) => (
-                    <button
-                      key={option.value}
-                      onClick={() => {
-                        setSortOption(option.value);
-                        setShowSortDropdown(false);
-                      }}
-                      onMouseEnter={() => setHoveredSortIndex(index)}
-                      className={`relative font-body-1-sm text-black text-left py-12 whitespace-nowrap cursor-pointer ${
-                        index < SORT_OPTIONS.length - 1
-                          ? 'border-b border-black/50'
-                          : ''
-                      }`}
-                    >
-                      {/* 회색 배경 (선택 또는 호버 시) - 구분선과 분리 */}
-                      {((hoveredSortIndex === null && sortOption === option.value) || hoveredSortIndex === index) && (
-                        <div className="absolute -inset-x-4 inset-y-4 bg-gray-100 rounded-button -z-10" />
-                      )}
-                      {option.label}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
+            <SortDropdown
+              options={SORT_OPTIONS}
+              selectedValue={sortOption}
+              onSelect={setSortOption}
+             />
           </div>
         </div>
 
         {/* Product Grid */}
-        <div ref={productGridRef} className="mx-auto px-160 pt-68">
-          <div className="grid grid-cols-4 gap-x-28 gap-y-164">
+        <div ref={productGridRef} className="mx-auto px-120 2xl:px-160">
+          <div className="grid grid-cols-3 2xl:grid-cols-4 gap-x-28 gap-y-164">
             {MOCK_PRODUCTS.map((product) => (
               <ProductCard
                 key={product.id}
@@ -444,7 +280,7 @@ const DeviceSearchPage = () => {
         {showTopButton && (
           <button
             onClick={handleScrollToTop}
-            className="fixed right-48 top-184 w-48 h-48 flex items-center justify-center cursor-pointer hover:opacity-80 transition-all duration-300"
+            className="fixed right-48 bottom-48 w-48 h-48 flex items-center justify-center cursor-pointer hover:opacity-80 transition-all duration-300"
             aria-label="맨 위로 이동"
           >
             <TopIcon className="w-48 h-48 text-gray-300" />
@@ -456,7 +292,7 @@ const DeviceSearchPage = () => {
       {/* </div> */}
 
       {/* Device Detail Modal */}
-      {selectedProduct && (
+      {selectedProduct && !showSaveCompleteModal && (
         <>
           {/* Background Overlay - HomeIndicator보다 높게 설정 */}
           <div
@@ -694,14 +530,29 @@ const DeviceSearchPage = () => {
                   {/* 담기 버튼 - 하단 고정 */}
                   <div className="mt-auto pt-30 px-56 pb-56 flex justify-end flex-shrink-0">
                     <PrimaryButton
-                      text={`${selectedCombination.label} 에 담기`}
+                      text={isAlreadyInSelectedCombination ? '이미 담은 상품입니다.' : `${selectedCombination.label} 에 담기`}
                       onClick={handleAddDeviceToCombination}
-                      className="w-280 bg-blue-600 hover:bg-blue-500"
+                      disabled={isAlreadyInSelectedCombination}
+                      className={`w-280 ${isAlreadyInSelectedCombination ? '' : 'bg-blue-600 hover:bg-blue-500'}`}
                     />
                   </div>
                 </div>
               </div>
             )}
+
+          </div>
+        </>
+      )}
+
+      {/* 저장 완료 모달 - 독립적으로 표시 */}
+      {showSaveCompleteModal && (
+        <>
+          <div className="fixed inset-0 bg-black/50 z-60" />
+          <div className="fixed inset-0 flex items-center justify-center z-80">
+            <div className="w-300 h-300 bg-white rounded-card shadow-[0_0_10px_rgba(0,0,0,0.25)] relative animate-fade-in">
+              <SaveIcon className="w-100 h-100 text-blue-600 absolute left-1/2 -translate-x-1/2 top-64" />
+              <p className="font-heading-3 text-blue-600 absolute left-1/2 -translate-x-1/2 top-206">저장 완료!</p>
+            </div>
           </div>
         </>
       )}
