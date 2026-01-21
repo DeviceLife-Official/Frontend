@@ -21,9 +21,9 @@ const OnboardingLifestylePage = () => {
     setSelectedItems: React.Dispatch<React.SetStateAction<string[]>>
   ) => {
     if (selectedItems.includes(item)) {
-      setSelectedItems(selectedItems.filter((i) => i !== item));
+      setSelectedItems([]); // 같은 항목 다시 클릭 시 선택 해제
     } else {
-      setSelectedItems([...selectedItems, item]);
+      setSelectedItems([item]); // 새로운 항목으로 대체 (단일 선택)
     }
   };
 
@@ -60,7 +60,7 @@ const OnboardingLifestylePage = () => {
             </p>
             {/* 서브 타이틀 */}
             <p className="font-body-2-r text-blue-600 w-full">
-              AI가 회원님의 조합을 평가할 때 이 기준을 참고합니다. (복수선택 가능)
+              AI가 회원님의 조합을 평가할 때 이 기준을 참고합니다.
             </p>
           </div>
 
@@ -125,7 +125,7 @@ const OnboardingLifestylePage = () => {
           <PrimaryButton
             text="다음"
             disabled={!isAllSelected}
-            className="w-280 bg-blue-600 hover:bg-blue-500"
+            className={`w-280 ${isAllSelected ? 'bg-blue-600 hover:bg-blue-500' : ''}`}
             onClick={handleNext}
           />
         </div>
