@@ -28,11 +28,11 @@ const NicknameEditSection = ({ value, onChange, errorMessage }: NicknameEditSect
             w-500 h-64
             px-16
             rounded-button
-            bg-gray-100
             border-2
-            transition-colors
+           transition-colors
             cursor-text
-            ${errorMessage ? 'border-warning' : 'border-transparent focus-within:border-blue-600 focus-within:bg-white'}
+           ${errorMessage ? 'bg-white border-warning' : 'bg-gray-100 border-transparent'}
+            ${!errorMessage ? 'focus-within:border-blue-600 focus-within:bg-white' : ''}
           `}
         >
           <input
