@@ -47,6 +47,7 @@ const PasswordInputSection = ({
             cursor-text
             ${errorMessage ? 'border-warning bg-white' : 'border-transparent bg-gray-100'}
             ${!errorMessage ? 'focus-within:border-blue-600 focus-within:bg-white' : ''}
+            focus-within:[&_button]:opacity-100
           `}
         >
           <input
@@ -91,7 +92,6 @@ const PasswordInputSection = ({
               flex items-center justify-center
               size-24
               opacity-0
-              group-hover:opacity-100
               transition-opacity
               cursor-pointer
             "

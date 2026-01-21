@@ -40,7 +40,6 @@ const LifestyleSelectSection = ({ value, onChange }: LifestyleSelectSectionProps
     >
       <div className="flex flex-col gap-28 self-stretch">
         <p className="font-body-3-sm text-black">라이프스타일</p>
-
         <div className="flex flex-wrap items-center content-center gap-12 self-stretch">
           {TAGS.map((label) => (
             <RoundedLifestyleTag
