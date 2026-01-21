@@ -506,7 +506,7 @@ const DeviceSearchPage = () => {
 
                 {/* Card */}
                 <div
-                  className="bg-white rounded-card shadow-[0_0_10px_rgba(0,0,0,0.25)] flex flex-col"
+                  className="bg-white rounded-card shadow-[0_0_10px_rgba(0,0,0,0.25)] relative"
                   style={{
                     width: 'clamp(903px, calc(903px + (100vw - 1440px) * 0.245833), 1021px)',
                     height: showAllDevices
@@ -526,11 +526,11 @@ const DeviceSearchPage = () => {
                     onExpand={() => setShowAllDevices(true)}
                     showExpandButton={true}
                     showGradient={true}
-                    className="px-56 pt-40"
+                    className="px-56 pt-40 pb-158"
                   />
 
                   {/* 담기 버튼 - 하단 고정 */}
-                  <div className="mt-auto pt-30 px-56 pb-56 flex justify-end flex-shrink-0">
+                  <div className="absolute bottom-56 right-56">
                     <PrimaryButton
                       text={isAlreadyInSelectedCombination ? '이미 담은 상품입니다.' : `${selectedCombination.label} 에 담기`}
                       onClick={handleAddDeviceToCombination}
