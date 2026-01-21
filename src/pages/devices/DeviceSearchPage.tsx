@@ -509,7 +509,9 @@ const DeviceSearchPage = () => {
                   className="bg-white rounded-card shadow-[0_0_10px_rgba(0,0,0,0.25)] flex flex-col"
                   style={{
                     width: 'clamp(903px, calc(903px + (100vw - 1440px) * 0.245833), 1021px)',
-                    height: showAllDevices ? '730px' : '697px',
+                    height: showAllDevices
+                      ? 'clamp(700px, calc(700px + (100vw - 1440px) * 0.0625), 730px)'
+                      : '697px',
                     transition: 'height 0.3s ease',
                   }}
                   onClick={(e) => e.stopPropagation()}
