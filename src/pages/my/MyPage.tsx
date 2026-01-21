@@ -25,7 +25,7 @@ const MyPage = () => {
     <div className="min-h-screen bg-white">
       <GNB />
 
-      <div className="flex pt-108">
+      <div className="flex pt-52">
         {/* 좌측 사이드바 */}
         <aside className="flex-shrink-0 ml-160 pt-64 w-280">
           {/* MY Page 헤더 */}
