@@ -68,7 +68,7 @@ const CombinationDeviceCard = ({
       </div>
 
       {/* 기기 그리드 */}
-      <div className="pl-8 relative">
+      <div className="pl-8 mt-24 relative">
         <div className={`grid ${gridColsClass} gap-x-28 gap-y-12`}>
           {displayedDevices.map((device) => (
             <div
