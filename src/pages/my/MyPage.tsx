@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import GNB from '@/components/Home/GNB';
 import PrimaryButton from '@/components/Button/PrimaryButton';
+import SecondaryButton from '@/components/Button/SecondaryButton';
 import SortDropdown from '@/components/Filter/SortDropdown';
 import CombinationDeviceCard from '@/components/Combination/CombinationDeviceCard';
 import RoundedLifestyleTag from '@/components/Lifestyle/RoundedLifestyleTag';
@@ -67,9 +68,7 @@ const MyPage = () => {
           </div>
 
           {/* 휴지통 버튼 */}
-          <button className="mt-76 w-full h-72 rounded-button bg-blue-100 border border-blue-600 flex items-center justify-center cursor-pointer hover:bg-blue-50 transition-colors">
-            <p className="font-body-2-sm text-blue-600">휴지통</p>
-          </button>
+          <SecondaryButton text="휴지통" className="mt-76 w-full hover:!bg-blue-50 transition-colors" />
         </aside>
 
         {/* 우측 메인 콘텐츠 */}
