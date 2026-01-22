@@ -65,7 +65,7 @@ const SignupProfilePage = () => {
 
           {/* 다음 버튼 */}
           <PrimaryButton
-            text="다음"
+            text="가입하기"
             className={`w-280 bg-blue-600 ${isValid ? 'hover:bg-blue-500' : ''}`}
             disabled={!isValid}
           />
