@@ -322,44 +322,24 @@ const DeviceSearchPage = () => {
                   onClick={(e) => e.stopPropagation()}
                 >
                   {/* Content */}
-                  <div
-                    className="flex items-start justify-between"
-                    style={{ gap: 'clamp(88px, calc(88px + (100vw - 1440px) * 0.245833), 206px)' }}
-                  >
+                  <div className="flex items-start justify-between gap-56">
                     {/* Left Section */}
-                    <div className="w-400 flex flex-col gap-20">
-                      {/* Name & Price */}
-                      <div className="flex flex-col gap-12">
-                        <p className="font-heading-1 text-black">{selectedProduct.name}</p>
-                        <div className="flex items-center gap-8 font-heading-2 text-blue-600">
-                          <p>₩</p>
-                          <p>{selectedProduct.price.toLocaleString()}</p>
+                    <div className="w-400 flex flex-col gap-32">
+                      {/* Name & Price + Image */}
+                      <div className="flex flex-col gap-20">
+                        {/* Name & Price */}
+                        <div className="flex flex-col gap-12">
+                          <p className="font-heading-1 text-black">{selectedProduct.name}</p>
+                          <div className="flex items-center gap-8 font-heading-2 text-blue-600">
+                            <p>₩</p>
+                            <p>{selectedProduct.price.toLocaleString()}</p>
+                          </div>
+                        </div>
+
+                        {/* Image */}
+                        <div className="w-full h-360 bg-gray-200 relative">
                         </div>
                       </div>
-
-                      {/* Image Section */}
-                      <div className="flex flex-col gap-8">
-                        <div className="w-full h-360 bg-gray-200 relative">
-                          {/* Color Chip Dropdown */}
-                          {/* <div className="absolute left-20 top-20 bg-white rounded-button shadow-[0_0_4px_rgba(0,0,0,0.25)] p-2 flex items-center">
-                            <div className="w-40 h-40 flex items-center justify-center">
-                              <div
-                                className="w-32 h-32 rounded-full"
-                                style={{ backgroundColor: selectedProduct.colors[0] }}
-                              />
-                            </div>
-                            <DropdownIcon className="w-28 h-14 text-gray-400" />
-                          </div>
-                        </div> */}
-
-                        {/* Page Control (dots) */}
-                        {/* <div className="flex items-center justify-center gap-24 py-8">
-                          <div className="w-12 h-12 rounded-full bg-black" />
-                          <div className="w-12 h-12 rounded-full bg-gray-300" />
-                          <div className="w-12 h-12 rounded-full bg-gray-300" />
-                          */}
-                        </div>
-                      </div> 
 
                       {/* Button */}
                       <PrimaryButton
@@ -370,7 +350,7 @@ const DeviceSearchPage = () => {
                     </div>
 
                     {/* Right Section */}
-                    <div className="w-302 flex flex-col gap-58 pt-127">
+                    <div className="w-302 flex flex-col gap-56 pt-126">
                       {/* Product Info Table */}
                       <div className="flex flex-col justify-between h-360 pl-16">
                         <div className="flex items-center gap-80">
