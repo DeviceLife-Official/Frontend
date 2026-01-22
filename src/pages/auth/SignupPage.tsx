@@ -20,7 +20,6 @@ const SignupPage = () => {
           <div className="flex flex-col items-center gap-20 w-full">
             <SignupButton text="Device Life 계정 만들기" icon={<DeviceLifeLogo />} onClick={() => navigate(ROUTES.auth.signup.account)} textStart={124} />
             <SignupButton text="구글로 시작하기" icon={<GoogleLogo />} textStart={146} />
-            <SignupButton text="애플로 시작하기" icon={<AppleLogo />} textStart={146} />
           </div>
         </div>
 
