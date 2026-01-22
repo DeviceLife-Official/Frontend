@@ -6,7 +6,7 @@ import LifestyleSelectSection from '@/components/Setting/LifestyleSelectSection'
 import PrimaryButton from '@/components/Button/PrimaryButton';
 import { validateNickname } from '@/utils/validateNickname';
 
-type AuthProvider = 'GENERAL' | 'HYBRID' | 'APPLE/GOOGLE';
+type AuthProvider = 'GENERAL' | 'HYBRID' | 'GOOGLE';
 
 const ProfileEditPage = () => {
   // TODO: API 연동
@@ -36,6 +36,7 @@ const ProfileEditPage = () => {
   }, [nickname, lifestyles]);
 
   const nicknameError = validateNickname(nickname);
+  const isLifestyleValid = lifestyles.length === 1;
 
   return (
     <div className="flex flex-col gap-72 mx-auto w-560 mt-92 mb-92">
@@ -50,7 +51,7 @@ const ProfileEditPage = () => {
         <PrimaryButton
           className="w-400 bg-blue-600 hover:bg-blue-500 disabled:hover:bg-gray-300"
           text="저장하기"
-          disabled={!isDirty || !!nicknameError}
+          disabled={!isDirty || !!nicknameError || !isLifestyleValid}
         />
       </div>
     </div>
