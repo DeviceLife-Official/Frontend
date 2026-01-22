@@ -1,6 +1,5 @@
 import DeviceLifeLogo from '@/assets/logos/logo_circle.svg?react';
 import GoogleLogo from '@/assets/logos/google.svg?react';
-import AppleLogo from '@/assets/logos/apple.svg?react';
 import SignupButton from '@/components/Button/SignupButton';
 import { ROUTES } from '@/constants/routes';
 import { useNavigate } from 'react-router-dom';
