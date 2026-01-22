@@ -191,18 +191,21 @@ const DeviceSearchPage = () => {
             <div className="w-full flex items-center justify-between">
               {DEVICE_CATEGORIES.map((category) => {
                 const { Icon } = category;
+                const isSelected = selectedCategory === category.id;
                 return (
                   <button
                     key={category.id}
                     onClick={() => setSelectedCategory(category.id)}
                     className={`flex flex-col items-center gap-12 cursor-pointer transition-colors ${
-                      selectedCategory === category.id ? 'opacity-100' : 'opacity-60 hover:opacity-80'
+                      isSelected
+                        ? 'text-blue-600'
+                        : 'text-black hover:text-blue-500 active:text-blue-600'
                     }`}
                   >
                     <div className="w-50 h-50 2xl:w-60 2xl:h-60 flex items-center justify-center">
                       <Icon className="w-50 h-50 2xl:w-60 2xl:h-60" />
                     </div>
-                    <p className="font-body-3-sm 2xl:font-body-2-sm text-black whitespace-nowrap">{category.name}</p>
+                    <p className="font-body-3-sm 2xl:font-body-2-sm whitespace-nowrap">{category.name}</p>
                   </button>
                 );
               })}
