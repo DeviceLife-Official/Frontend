@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import GNB from '@/components/Home/GNB';
 import PrimaryButton from '@/components/Button/PrimaryButton';
+import SecondaryButton from '@/components/Button/SecondaryButton';
 import SortDropdown from '@/components/Filter/SortDropdown';
 import CombinationDeviceCard from '@/components/Combination/CombinationDeviceCard';
 import RoundedLifestyleTag from '@/components/Lifestyle/RoundedLifestyleTag';
@@ -19,14 +20,43 @@ const MYPAGE_SORT_OPTIONS = [
 
 const MyPage = () => {
   const [sortOption, setSortOption] = useState('latest');
+  const [isAtBottom, setIsAtBottom] = useState(false);
+  const [columns, setColumns] = useState<3 | 4>(4);
+
+  // 스크롤 감지 (하단 그라데이션용)
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollTop = window.scrollY;
+      const windowHeight = window.innerHeight;
+      const documentHeight = document.documentElement.scrollHeight;
+      setIsAtBottom(scrollTop + windowHeight >= documentHeight - 50);
+    };
+    window.addEventListener('scroll', handleScroll);
+    handleScroll();
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // 브레이크포인트 감지 (칼럼 수 반응형)
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(min-width: 1536px)');
+    const handleChange = (e: MediaQueryListEvent | MediaQueryList) => {
+      setColumns(e.matches ? 4 : 3);
+    };
+    handleChange(mediaQuery);
+    mediaQuery.addEventListener('change', handleChange);
+    return () => mediaQuery.removeEventListener('change', handleChange);
+  }, []);
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className={`min-h-screen bg-white relative ${isAtBottom ? 'bg-effect-fade-bottom' : ''}`}>
       <GNB />
 
-      <div className="flex pt-108">
+      <div className="flex pt-52">
         {/* 좌측 사이드바 */}
-        <aside className="flex-shrink-0 ml-160 pt-64 w-280">
+        <aside
+          className="flex-shrink-0 pt-64 w-280"
+          style={{ marginLeft: 'clamp(80px, calc(80px + (100vw - 1440px) * 0.166667), 160px)' }}
+        >
           {/* MY Page 헤더 */}
           <div className="flex items-center justify-between h-72">
             <h1 className="font-heading-2 text-black">MY Page</h1>
@@ -67,13 +97,17 @@ const MyPage = () => {
           </div>
 
           {/* 휴지통 버튼 */}
-          <button className="mt-76 w-full h-72 rounded-button bg-blue-100 border border-blue-600 flex items-center justify-center cursor-pointer hover:bg-blue-50 transition-colors">
-            <p className="font-body-2-sm text-blue-600">휴지통</p>
-          </button>
+          <SecondaryButton text="휴지통" className="mt-76 w-full hover:!bg-blue-50 transition-colors" />
         </aside>
 
         {/* 우측 메인 콘텐츠 */}
-        <main className="flex-1 pl-159 pr-160 pt-64">
+        <main
+          className="flex-1 pt-64"
+          style={{
+            paddingLeft: 'clamp(80px, calc(80px + (100vw - 1440px) * 0.166667), 160px)',
+            paddingRight: 'clamp(80px, calc(80px + (100vw - 1440px) * 0.166667), 160px)',
+          }}
+        >
           {/* 헤더: 내 조합 + 새 조합 추가하기 */}
           <div className="flex items-center justify-between h-72">
             <h2 className="font-heading-2 text-black">내 조합</h2>
@@ -109,14 +143,14 @@ const MyPage = () => {
                   {/* 조합 카드 */}
                   <div className="bg-white rounded-card shadow-[0_0_10px_rgba(0,0,0,0.1)] relative">
                     {/* Setting More 버튼 */}
-                    <button className="absolute right-36 top-36 cursor-pointer hover:opacity-80">
+                    <button className="absolute right-56 top-36 cursor-pointer hover:opacity-80">
                       <SettingMoreIcon className="w-36 h-36 text-gray-400" />
                     </button>
 
                     <CombinationDeviceCard
                       combination={combination}
                       devices={devices}
-                      columns={4}
+                      columns={columns}
                       defaultRows={2}
                       showExpandButton={false}
                       showGradient={false}
@@ -129,7 +163,7 @@ const MyPage = () => {
           </div>
 
           {/* 하단 여백 */}
-          <div className="h-100" />
+          <div className="h-268" />
         </main>
       </div>
     </div>

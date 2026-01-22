@@ -44,8 +44,8 @@ const CombinationDeviceCard = ({
   };
 
   const gridColsClass = columns === 4 ? 'grid-cols-4' : 'grid-cols-3';
-  const deviceCardWidth = columns === 4 ? 'w-255' : 'w-244';
-  const deviceImageSize = columns === 4 ? 'w-100 h-100' : 'w-64 h-64';
+  const deviceCardWidth = columns === 4 ? 'w-244' : 'w-244';
+  const deviceImageSize = columns === 4 ? 'w-64 h-64' : 'w-64 h-64';
 
   return (
     <div className={className}>
@@ -68,7 +68,7 @@ const CombinationDeviceCard = ({
       </div>
 
       {/* 기기 그리드 */}
-      <div className="pl-8 relative">
+      <div className="pl-8 mt-24 relative">
         <div className={`grid ${gridColsClass} gap-x-28 gap-y-12`}>
           {displayedDevices.map((device) => (
             <div
