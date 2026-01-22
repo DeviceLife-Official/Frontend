@@ -38,7 +38,7 @@ const DeviceSearchPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
   const [sortOption, setSortOption] = useState('latest');
-  const [selectedPrice, setSelectedPrice] = useState<string | null>(null);
+  const [selectedPrice, setSelectedPrice] = useState<string[]>([]);
   const [selectedBrand, setSelectedBrand] = useState<string | null>(null);
   const [isAtBottom, setIsAtBottom] = useState(false);
   const [showTopButton, setShowTopButton] = useState(false);
@@ -214,7 +214,7 @@ const DeviceSearchPage = () => {
         <div className="w-full h-8 opacity-50 bg-gradient-to-t from-[#EEEEF0] to-[#E4E4E7] mt-84" />
 
         {/* Filter Section */}
-        <div className="mx-auto pl-200 pr-160 2xl:px-200 pt-32">
+        <div className="mx-auto px-160 2xl:px-200 pt-32">
 
           {/* Filters */}
           <div className="flex items-center gap-0">
@@ -229,7 +229,8 @@ const DeviceSearchPage = () => {
                 label="가격대"
                 options={PRICE_OPTIONS}
                 selectedValue={selectedPrice}
-                onSelect={setSelectedPrice}
+                onSelect={(value) => setSelectedPrice(Array.isArray(value) ? value : [])}
+                multiple
               />
             </div>
 
