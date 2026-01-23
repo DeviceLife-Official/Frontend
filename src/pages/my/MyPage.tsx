@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import GNB from '@/components/Home/GNB';
 import PrimaryButton from '@/components/Button/PrimaryButton';
 import SortDropdown from '@/components/Filter/SortDropdown';
@@ -44,6 +45,7 @@ const MYPAGE_SORT_OPTIONS = [
 ];
 
 const MyPage = () => {
+  const navigate = useNavigate();
   const [sortOption, setSortOption] = useState('latest');
   const [isAtBottom, setIsAtBottom] = useState(false);
   const [columns, setColumns] = useState<3 | 4>(4);
@@ -165,7 +167,10 @@ const MyPage = () => {
               <button className="w-42 h-42 flex items-center justify-center cursor-pointer hover:opacity-80">
                 <SupportIcon className="w-42 h-42 text-black" />
               </button>
-              <button className="w-44 h-44 flex items-center justify-center cursor-pointer hover:opacity-80">
+              <button
+                onClick={() => navigate('/my/settings/profile')}
+                className="w-44 h-44 flex items-center justify-center cursor-pointer hover:opacity-80"
+              >
                 <SettingIcon className="w-44 h-44 text-black" />
               </button>
             </div>
