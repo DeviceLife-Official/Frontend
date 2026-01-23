@@ -401,7 +401,7 @@ const MyPage = () => {
                                   {MOCK_EVALUATION.connectivity.rating}
                                 </p>
                               </div>
-                              <p className="font-body-3-r text-black">
+                              <p className="font-body-3-r text-black leading-28">
                                 {MOCK_EVALUATION.connectivity.description}
                               </p>
                               <div className="flex gap-16">
@@ -424,7 +424,7 @@ const MyPage = () => {
                                   {MOCK_EVALUATION.convenience.rating}
                                 </p>
                               </div>
-                              <p className="font-body-3-r text-black">
+                              <p className="font-body-3-r text-black leading-28">
                                 {MOCK_EVALUATION.convenience.description}
                               </p>
                               <div className="flex gap-16">
@@ -447,7 +447,7 @@ const MyPage = () => {
                                   {MOCK_EVALUATION.lifestyle.rating}
                                 </p>
                               </div>
-                              <p className="font-body-3-r text-black">
+                              <p className="font-body-3-r text-black leading-28">
                                 {MOCK_EVALUATION.lifestyle.description}
                               </p>
                               <div className="flex gap-16">
