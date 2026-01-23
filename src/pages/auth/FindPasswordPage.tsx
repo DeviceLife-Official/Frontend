@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { findPasswordSchema, type FindPasswordFormData } from '@/schemas/authSchema';
 import PrimaryInput from '@/components/Input/PrimaryInput';
-import GoogleLoginButton from '@/components/Auth/GoogleLoginButton';
+import GoogleLoginButton from '@/components/Button/GoogleLoginButton';
 
 const FindPasswordPage = () => {
   const navigate = useNavigate();

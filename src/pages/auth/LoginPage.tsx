@@ -8,7 +8,7 @@ import Checkbox from '@/assets/icons/checkbox.svg?react';
 import CheckboxOn from '@/assets/icons/checkbox_on.svg?react';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '@/constants/routes';
-import GoogleLoginButton from '@/components/Auth/GoogleLoginButton';
+import GoogleLoginButton from '@/components/Button/GoogleLoginButton';
 
 const LoginPage = () => {
   const navigate = useNavigate();

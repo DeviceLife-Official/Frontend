@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { findIdSchema, type FindIdFormData } from '@/schemas/authSchema';
-import GoogleLoginButton from '@/components/Auth/GoogleLoginButton';
+import GoogleLoginButton from '@/components/Button/GoogleLoginButton';
 
 const FindIdPage = () => {
   const navigate = useNavigate();
