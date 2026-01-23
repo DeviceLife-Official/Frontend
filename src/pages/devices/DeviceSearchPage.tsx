@@ -435,7 +435,7 @@ const DeviceSearchPage = () => {
                       <button
                         key={combo.id}
                         onClick={() => handleSelectCombination(combo.id)}
-                        className="flex items-center justify-between pl-20 pr-36 py-24 hover:bg-gray-50 transition-colors border-b border-gray-200"
+                        className="flex items-center justify-between pl-20 pr-36 py-24 hover:bg-gray-50 transition-colors border-b border-gray-200 cursor-pointer"
                       >
                         {/* 좌측: 조합 정보 */}
                         <div className="flex flex-col gap-24 items-start">
