@@ -53,6 +53,7 @@ const MyPage = () => {
   const [selectedDevices, setSelectedDevices] = useState<number[]>([]);
   const [savedScrollPosition, setSavedScrollPosition] = useState<number>(0);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showCombinationDeleteModal, setShowCombinationDeleteModal] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
   // 스크롤 감지 (하단 그라데이션용)
@@ -125,8 +126,8 @@ const MyPage = () => {
 
   // 선택된 기기 삭제 핸들러
   const handleDeleteDevices = () => {
-    // TODO: API 연동 시 실제 삭제 로직 추가
-    console.log('삭제할 기기 IDs:', selectedDevices);
+    // API 연동 시 실제 삭제 로직 추가
+    console.log('Nove ==== 삭제할 기기 ID:', selectedDevices);
     setSelectedDevices([]);
     setShowDeleteModal(false);
   };
@@ -136,6 +137,15 @@ const MyPage = () => {
     if (selectedDevices.length > 0) {
       setShowDeleteModal(true);
     }
+  };
+
+  // 조합 삭제 핸들러
+  const handleDeleteCombination = () => {
+    // API 연동 시 실제 삭제 로직 추가
+    console.log('Nove ===== 삭제할 조합 index:', detailViewIndex);
+    setShowCombinationDeleteModal(false);
+    setDetailViewIndex(null);
+    setSelectedDevices([]);
   };
 
   return (
@@ -201,7 +211,10 @@ const MyPage = () => {
           <div className="flex items-center justify-between h-72">
             <h2 className="font-heading-2 text-black">내 조합</h2>
             {detailViewIndex !== null ? (
-              <button className="w-280 h-72 border-2 border-red-500 rounded-button flex items-center justify-center cursor-pointer hover:bg-red-50 transition-colors">
+              <button
+                onClick={() => setShowCombinationDeleteModal(true)}
+                className="w-280 h-72 border-2 border-red-500 rounded-button flex items-center justify-center cursor-pointer hover:bg-red-50 transition-colors"
+              >
                 <span className="font-body-2-sm text-red-500">조합 삭제하기</span>
               </button>
             ) : (
@@ -589,7 +602,7 @@ const MyPage = () => {
         </main>
       </div>
 
-      {/* 삭제 확인 모달 */}
+      {/* 기기 삭제 확인 모달 */}
       {showDeleteModal && (
         <>
           {/* 배경 오버레이 */}
@@ -621,6 +634,48 @@ const MyPage = () => {
                 </button>
                 <button
                   onClick={() => setShowDeleteModal(false)}
+                  className="w-168 h-52 bg-gray-100 hover:bg-gray-200 rounded-button flex items-center justify-center cursor-pointer transition-colors"
+                >
+                  <span className="font-body-2-sm text-black">취소</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* 조합 삭제 확인 모달 */}
+      {showCombinationDeleteModal && detailViewIndex !== null && (
+        <>
+          {/* 배경 오버레이 */}
+          <div
+            className="fixed inset-0 bg-black/50 z-60"
+            onClick={() => setShowCombinationDeleteModal(false)}
+          />
+          {/* 모달 */}
+          <div className="fixed inset-0 flex items-center justify-center z-70 pointer-events-none">
+            <div
+              className="bg-white rounded-card w-460 px-36 py-44 flex flex-col items-center pointer-events-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* 아이콘 */}
+              <RemoveIcon className="w-58 h-58" />
+
+              {/* 텍스트 */}
+              <p className="font-body-2-r text-black mt-36">
+                '<span className="font-body-2-sm">{MOCK_COMBINATIONS[detailViewIndex].name}</span>'을 삭제하시겠습니까?
+              </p>
+
+              {/* 버튼 그룹 */}
+              <div className="flex gap-20 mt-60">
+                <button
+                  onClick={handleDeleteCombination}
+                  className="w-168 h-52 bg-red-500 hover:bg-red-400 rounded-button flex items-center justify-center cursor-pointer transition-colors"
+                >
+                  <span className="font-body-2-sm text-white">삭제</span>
+                </button>
+                <button
+                  onClick={() => setShowCombinationDeleteModal(false)}
                   className="w-168 h-52 bg-gray-100 hover:bg-gray-200 rounded-button flex items-center justify-center cursor-pointer transition-colors"
                 >
                   <span className="font-body-2-sm text-black">취소</span>
