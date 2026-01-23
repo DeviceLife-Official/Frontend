@@ -2,11 +2,9 @@ import Logo from '@/assets/logos/logo.svg?react';
 import UserBlack from '@/assets/icons/userblack.svg?react';
 import UserBlue500 from '@/assets/icons/userblue500.svg?react';
 import UserBlue600 from '@/assets/icons/userblue600.svg?react';
-
 import { NavLink } from 'react-router-dom';
 import { useState } from 'react';
 
-const brandLinkClass = 'font-service-name-sm text-black hover:text-blue-500 active:text-blue-600';
 const navTextClass = 'font-body-1-sm text-black hover:text-blue-500 active:text-blue-600';
 type AuthStatus = 'logout' | 'login';
 
@@ -16,12 +14,8 @@ interface GNBProps {
 
 const GNB = ({ paddingRight: _paddingRight = 0 }: GNBProps) => {
   const [authStatus] = useState<AuthStatus>('login');
-
   const navClass = ({ isActive }: { isActive: boolean }) =>
     `${navTextClass} ${isActive ? 'text-blue-600 hover:text-blue-500' : ''}`;
-
-  const brandClass = ({ isActive }: { isActive: boolean }) =>
-    `${brandLinkClass} ${isActive ? 'text-blue-600 hover:text-blue-500' : ''}`;
 
   return (
     <header className="fixed top-0 left-0 w-full z-50 bg-white h-80">
@@ -29,12 +23,10 @@ const GNB = ({ paddingRight: _paddingRight = 0 }: GNBProps) => {
         <div className="min-w-1440 h-full">
           <div className="flex items-center justify-between h-full pl-44 pr-[clamp(60px,calc(60px+(100vw-1440px)*0.208333),160px)]">
             <div className="flex items-center gap-108 shrink-0">
-              <div className="flex items-center gap-20">
+              <NavLink to="/" end className="flex items-center gap-20 cursor-pointer">
                 <Logo className="w-48 h-48" />
-                <NavLink to="/" end className={brandClass}>
-                  Device Life
-                </NavLink>
-              </div>
+                <span className="font-service-name-sm text-black">Device Life</span>
+              </NavLink>
               <NavLink to="/devices" className={navClass}>
                 기기검색
               </NavLink>

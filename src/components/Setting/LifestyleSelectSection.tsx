@@ -20,10 +20,13 @@ const LifestyleSelectSection = ({ value, onChange }: LifestyleSelectSectionProps
   const handleToggle = useCallback(
     (label: string, nextSelected: boolean) => {
       const tag = label as Tag;
-
-      onChange(nextSelected ? [...value, tag] : value.filter((t) => t !== tag));
+      if (nextSelected) {
+        onChange([tag]);
+        return;
+      }
+      onChange([]);
     },
-    [value, onChange]
+    [onChange]
   );
 
   return (

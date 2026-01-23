@@ -48,12 +48,12 @@ export const ROUTES = {
   },
 
   // support (footer / settings 공용)
-  support: {
-    base: '/support',
-    customerCenter: '/support/customer-center',
-    faq: '/support/faq',
-    notices: '/support/notices',
-    terms: '/support/terms',
-    privacyPolicy: '/support/privacy-policy',
-  },
+  // support: {
+  //   base: '/support',
+  //   customerCenter: '/support/customer-center',
+  //   faq: '/support/faq',
+  //   notices: '/support/notices',
+  //   terms: '/support/terms',
+  //   privacyPolicy: '/support/privacy-policy',
+  // },
 } as const;
