@@ -42,7 +42,7 @@ const SortDropdown = ({
         </p>
         <div className="flex items-center justify-center">
           <DropdownIcon
-            className={`w-40 h-40 transition-transform text-black ${
+            className={`w-40 h-40 transition-transform duration-600 text-black ${
               isOpen ? 'rotate-180' : 'rotate-0'
             }`}
           />

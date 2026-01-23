@@ -38,7 +38,7 @@ const DeviceSearchPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
   const [sortOption, setSortOption] = useState('latest');
-  const [selectedPrice, setSelectedPrice] = useState<string | null>(null);
+  const [selectedPrice, setSelectedPrice] = useState<string[]>([]);
   const [selectedBrand, setSelectedBrand] = useState<string | null>(null);
   const [isAtBottom, setIsAtBottom] = useState(false);
   const [showTopButton, setShowTopButton] = useState(false);
@@ -172,40 +172,44 @@ const DeviceSearchPage = () => {
 
       {/* Main Content */}
       {/* <div className="pt-108"> */}
-        {/* Search Bar */}
+        {/* Search + Categories Container */}
         <div className="flex justify-center pt-80">
-          <div className="w-600 h-72 bg-blue-100 rounded-button px-12 py-20 flex items-center gap-12">
-            <SearchIcon className="w-28 h-28 flex-shrink-0 text-black" />
-            <input
-              type="text"
-              placeholder="기기명으로 검색"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="flex-1 bg-transparent font-body-1-r text-gray-300 outline-none placeholder:text-gray-300"
-            />
-          </div>
-        </div>
+          <div className="w-860 2xl:w-1142 flex flex-col items-center gap-36 2xl:gap-56">
+            {/* Search Bar */}
+            <div className="w-600 h-72 bg-blue-100 rounded-button px-12 py-20 flex items-center gap-12">
+              <SearchIcon className="w-28 h-28 flex-shrink-0 text-black" />
+              <input
+                type="text"
+                placeholder="기기명으로 검색"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="flex-1 bg-transparent font-body-1-r text-gray-300 outline-none placeholder:text-gray-300"
+              />
+            </div>
 
-        {/* Device Categories */}
-        <div className="w-full pt-36 2xl:pt-56">
-          <div className="w-full px-268 2xl:px-328 flex items-center justify-between">
-            {DEVICE_CATEGORIES.map((category) => {
-              const { Icon } = category;
-              return (
-                <button
-                  key={category.id}
-                  onClick={() => setSelectedCategory(category.id)}
-                  className={`flex flex-col items-center gap-12 cursor-pointer transition-colors ${
-                    selectedCategory === category.id ? 'opacity-100' : 'opacity-60 hover:opacity-80'
-                  }`}
-                >
-                  <div className="w-50 h-50 2xl:w-60 2xl:h-60 flex items-center justify-center">
-                    <Icon className="w-50 h-50 2xl:w-60 2xl:h-60" />
-                  </div>
-                  <p className="font-body-3-sm 2xl:font-body-2-sm text-black whitespace-nowrap">{category.name}</p>
-                </button>
-              );
-            })}
+            {/* Device Categories */}
+            <div className="w-full flex items-center justify-between">
+              {DEVICE_CATEGORIES.map((category) => {
+                const { Icon } = category;
+                const isSelected = selectedCategory === category.id;
+                return (
+                  <button
+                    key={category.id}
+                    onClick={() => setSelectedCategory(category.id)}
+                    className={`flex flex-col items-center gap-12 cursor-pointer transition-colors ${
+                      isSelected
+                        ? 'text-blue-600'
+                        : 'text-black hover:text-blue-500 active:text-blue-600'
+                    }`}
+                  >
+                    <div className="w-50 h-50 2xl:w-60 2xl:h-60 flex items-center justify-center">
+                      <Icon className="w-50 h-50 2xl:w-60 2xl:h-60" />
+                    </div>
+                    <p className="font-body-3-sm 2xl:font-body-2-sm whitespace-nowrap">{category.name}</p>
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </div>
 
@@ -213,7 +217,7 @@ const DeviceSearchPage = () => {
         <div className="w-full h-8 opacity-50 bg-gradient-to-t from-[#EEEEF0] to-[#E4E4E7] mt-84" />
 
         {/* Filter Section */}
-        <div className="mx-auto pl-200 pr-160 2xl:px-200 pt-32">
+        <div className="mx-auto px-160 2xl:px-200 pt-32">
 
           {/* Filters */}
           <div className="flex items-center gap-0">
@@ -228,7 +232,8 @@ const DeviceSearchPage = () => {
                 label="가격대"
                 options={PRICE_OPTIONS}
                 selectedValue={selectedPrice}
-                onSelect={setSelectedPrice}
+                onSelect={(value) => setSelectedPrice(Array.isArray(value) ? value : [])}
+                multiple
               />
             </div>
 
@@ -238,7 +243,7 @@ const DeviceSearchPage = () => {
                 label="브랜드"
                 options={BRAND_OPTIONS}
                 selectedValue={selectedBrand}
-                onSelect={setSelectedBrand}
+                onSelect={(value) => setSelectedBrand(value as string | null)}
               />
             </div>
           </div>
@@ -320,44 +325,24 @@ const DeviceSearchPage = () => {
                   onClick={(e) => e.stopPropagation()}
                 >
                   {/* Content */}
-                  <div
-                    className="flex items-start justify-between"
-                    style={{ gap: 'clamp(88px, calc(88px + (100vw - 1440px) * 0.245833), 206px)' }}
-                  >
+                  <div className="flex items-start justify-between gap-56">
                     {/* Left Section */}
-                    <div className="w-400 flex flex-col gap-20">
-                      {/* Name & Price */}
-                      <div className="flex flex-col gap-12">
-                        <p className="font-heading-1 text-black">{selectedProduct.name}</p>
-                        <div className="flex items-center gap-8 font-heading-2 text-blue-600">
-                          <p>₩</p>
-                          <p>{selectedProduct.price.toLocaleString()}</p>
+                    <div className="w-400 flex flex-col gap-32">
+                      {/* Name & Price + Image */}
+                      <div className="flex flex-col gap-20">
+                        {/* Name & Price */}
+                        <div className="flex flex-col gap-12">
+                          <p className="font-heading-1 text-black">{selectedProduct.name}</p>
+                          <div className="flex items-center gap-8 font-heading-2 text-blue-600">
+                            <p>₩</p>
+                            <p>{selectedProduct.price.toLocaleString()}</p>
+                          </div>
+                        </div>
+
+                        {/* Image */}
+                        <div className="w-full h-360 bg-gray-200 relative">
                         </div>
                       </div>
-
-                      {/* Image Section */}
-                      <div className="flex flex-col gap-8">
-                        <div className="w-full h-360 bg-gray-200 relative">
-                          {/* Color Chip Dropdown */}
-                          {/* <div className="absolute left-20 top-20 bg-white rounded-button shadow-[0_0_4px_rgba(0,0,0,0.25)] p-2 flex items-center">
-                            <div className="w-40 h-40 flex items-center justify-center">
-                              <div
-                                className="w-32 h-32 rounded-full"
-                                style={{ backgroundColor: selectedProduct.colors[0] }}
-                              />
-                            </div>
-                            <DropdownIcon className="w-28 h-14 text-gray-400" />
-                          </div>
-                        </div> */}
-
-                        {/* Page Control (dots) */}
-                        {/* <div className="flex items-center justify-center gap-24 py-8">
-                          <div className="w-12 h-12 rounded-full bg-black" />
-                          <div className="w-12 h-12 rounded-full bg-gray-300" />
-                          <div className="w-12 h-12 rounded-full bg-gray-300" />
-                          */}
-                        </div>
-                      </div> 
 
                       {/* Button */}
                       <PrimaryButton
@@ -368,7 +353,7 @@ const DeviceSearchPage = () => {
                     </div>
 
                     {/* Right Section */}
-                    <div className="w-302 flex flex-col gap-58 pt-127">
+                    <div className="w-302 flex flex-col gap-56 pt-126">
                       {/* Product Info Table */}
                       <div className="flex flex-col justify-between h-360 pl-16">
                         <div className="flex items-center gap-80">
