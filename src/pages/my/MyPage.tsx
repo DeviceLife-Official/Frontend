@@ -1,14 +1,15 @@
 import { useState, useEffect } from 'react';
 import GNB from '@/components/Home/GNB';
 import PrimaryButton from '@/components/Button/PrimaryButton';
-import SecondaryButton from '@/components/Button/SecondaryButton';
 import SortDropdown from '@/components/Filter/SortDropdown';
-import CombinationDeviceCard from '@/components/Combination/CombinationDeviceCard';
+import CombinationTag from '@/components/Combination/CombinationTag';
 import RoundedLifestyleTag from '@/components/Lifestyle/RoundedLifestyleTag';
 import SettingIcon from '@/assets/icons/setting.svg?react';
 import SupportIcon from '@/assets/icons/support.svg?react';
 import SettingMoreIcon from '@/assets/icons/settingmore.svg?react';
 import AlarmIcon from '@/assets/icons/alarm.svg?react';
+import StarIcon from '@/assets/icons/star.svg?react';
+import PlusIcon from '@/assets/icons/plus.svg?react';
 import Logo from '@/assets/logos/logo.svg?react';
 import { MOCK_COMBINATIONS, MOCK_COMBINATION_DEVICES } from '@/constants/mockData';
 
@@ -128,13 +129,17 @@ const MyPage = () => {
           <div className="mt-28 flex flex-col gap-68">
             {MOCK_COMBINATIONS.map((combination) => {
               const devices = MOCK_COMBINATION_DEVICES[combination.id] || [];
+              const hasDevices = devices.length > 0;
+
               return (
                 <div key={combination.id}>
                   {/* 추천 메시지 */}
                   <div className="flex items-center gap-16 mb-24">
                     <AlarmIcon className="w-36 h-36 text-blue-600 flex-shrink-0" />
                     <p className="font-body-2-r text-blue-600">
-                      추천하는 조합입니다. 기기 간 호환성이 우수하며 만족도가 높을 것입니다.
+                      {hasDevices
+                        ? '추천하는 조합입니다. 기기 간 호환성이 우수하며 만족도가 높을 것입니다.'
+                        : '-'}
                     </p>
                   </div>
 
@@ -145,15 +150,89 @@ const MyPage = () => {
                       <SettingMoreIcon className="w-36 h-36 text-gray-400" />
                     </button>
 
-                    <CombinationDeviceCard
-                      combination={combination}
-                      devices={devices}
-                      columns={columns}
-                      defaultRows={2}
-                      showExpandButton={false}
-                      showGradient={false}
-                      className="px-36 pt-24 pb-36"
-                    />
+                    {hasDevices ? (
+                      <div className="px-36 pt-24 pb-36">
+                        {/* 조합 정보 (생성일 포함) */}
+                        <div className="flex flex-col gap-24 pl-20 py-24">
+                          {/* 조합 번호 + 생성일 + 조합명 */}
+                          <div className="flex flex-col gap-8">
+                            <div className="flex items-center gap-16">
+                              <p className="font-body-3-r text-gray-400">{combination.label}</p>
+                              {combination.createdAt && (
+                                <p className="font-body-3-r text-gray-400">
+                                  생성일: {combination.createdAt}
+                                </p>
+                              )}
+                            </div>
+                            <div className="flex items-center gap-8">
+                              <p className="font-body-1-sm text-black">{combination.name}</p>
+                              {combination.isMain && <StarIcon className="w-27 h-27" />}
+                            </div>
+                          </div>
+                          {/* Tags */}
+                          <div className="flex gap-12">
+                            {combination.tags.map((tag) => (
+                              <CombinationTag key={tag.name} name={tag.name} status={tag.status} />
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* 기기 그리드 */}
+                        <div className="pl-8 mt-24">
+                          <div
+                            className={`grid ${columns === 4 ? 'grid-cols-4' : 'grid-cols-3'} gap-x-28 gap-y-12`}
+                          >
+                            {devices.slice(0, columns * 2).map((device) => (
+                              <div
+                                key={device.id}
+                                className="bg-white rounded-card shadow-[0_0_4px_rgba(0,0,0,0.1)] p-12 w-244 flex items-center gap-12"
+                              >
+                                <div className="w-64 h-64 bg-gray-200 flex-shrink-0" />
+                                <div className="flex flex-col gap-4">
+                                  <p className="font-body-3-sm text-black">{device.name}</p>
+                                  <p className="font-body-4-r text-gray-300">{device.chargingType}</p>
+                                  <p className="font-body-3-r text-gray-300">{device.color}</p>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="px-36 pt-24 pb-36">
+                        {/* 조합 정보 (생성일 포함) */}
+                        <div className="flex flex-col gap-24 pl-20 py-24">
+                          {/* 조합 번호 + 생성일 + 조합명 */}
+                          <div className="flex flex-col gap-8">
+                            <div className="flex items-center gap-16">
+                              <p className="font-body-3-r text-gray-400">{combination.label}</p>
+                              {combination.createdAt && (
+                                <p className="font-body-3-r text-gray-400">
+                                  생성일: {combination.createdAt}
+                                </p>
+                              )}
+                            </div>
+                            <div className="flex items-center gap-8">
+                              <p className="font-body-1-sm text-black">{combination.name}</p>
+                              {combination.isMain && <StarIcon className="w-27 h-27" />}
+                            </div>
+                          </div>
+                          {/* Tags */}
+                          <div className="flex gap-12">
+                            {combination.tags.map((tag) => (
+                              <CombinationTag key={tag.name} name={tag.name} status={tag.status} />
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* 빈 조합: 기기 추가 버튼 */}
+                        <div className="pl-8 mt-24">
+                          <button className="cursor-pointer hover:opacity-80">
+                            <PlusIcon />
+                          </button>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               );
