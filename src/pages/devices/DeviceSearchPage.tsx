@@ -48,6 +48,11 @@ const DeviceSearchPage = () => {
 
   const productGridRef = useRef<HTMLDivElement>(null);
 
+  // 페이지 마운트 시 상단으로 스크롤
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   /* 선택된 제품 찾기 */
   const selectedProduct = selectedProductId
     ? MOCK_PRODUCTS.find(p => p.id === Number(selectedProductId))

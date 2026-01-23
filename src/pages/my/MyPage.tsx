@@ -421,7 +421,10 @@ const MyPage = () => {
                               </div>
                             ))}
                             {/* 기기 추가 버튼 */}
-                            <button className="cursor-pointer hover:opacity-80">
+                            <button
+                              onClick={() => navigate('/devices')}
+                              className="cursor-pointer hover:opacity-80"
+                            >
                               <PlusIcon />
                             </button>
                           </div>
@@ -601,7 +604,10 @@ const MyPage = () => {
 
                             {/* 빈 조합: 기기 추가 버튼 */}
                             <div className="pl-8 mt-24">
-                              <button className="cursor-pointer hover:opacity-80">
+                              <button
+                                onClick={() => navigate('/devices')}
+                                className="cursor-pointer hover:opacity-80"
+                              >
                                 <PlusIcon />
                               </button>
                             </div>
