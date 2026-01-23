@@ -15,6 +15,7 @@ const SignupProfilePage = () => {
   const [hasSubmitted, setHasSubmitted] = useState(false);
   const { setProfile } = useSignupStore();
 
+  // 프로필 정보 입력 폼 상태 관리
   const {
     register,
     handleSubmit,
@@ -26,6 +27,7 @@ const SignupProfilePage = () => {
     reValidateMode: 'onChange',
   });
 
+  // 프로필 정보 제출 성공 핸들러
   const onSubmitValid = (data: SignupProfileFormData) => {
     setHasSubmitted(true);
 
@@ -40,6 +42,7 @@ const SignupProfilePage = () => {
     navigate(ROUTES.auth.onboarding.lifestyle, { replace: true });
   };
 
+  // 프로필 정보 제출 실패 핸들러
   const onSubmitInvalid = () => {
     // 최초 submit 이후부터 에러를 노출 + 실시간 갱신
     setHasSubmitted(true);

@@ -14,15 +14,19 @@ import { useSignupStore } from '@/stores/signupStore';
 const SignupAccountPage = () => {
   const navigate = useNavigate();
   const [hasSubmitted, setHasSubmitted] = useState(false);
+  const [hasEmailSubmitted, setHasEmailSubmitted] = useState(false);
 
+  // zustand에서 가져온 계정 정보 관리 함수
   const { setAccount, isEmailVerified, setIsEmailVerified } = useSignupStore();
 
+  // 계정 정보 입력 폼 상태 관리
   const {
     register,
     handleSubmit,
     formState: { errors },
     setError,
     clearErrors,
+    trigger,
   } = useForm<SignupAccountFormData>({
     resolver: zodResolver(signupAccountSchema),
     // 최초에는 에러를 숨기고, submit 이후에는 onChange로 실시간 갱신되도록
@@ -32,19 +36,34 @@ const SignupAccountPage = () => {
 
   // 중복확인 핸들러
   const handleCheckDuplicate = async () => {
-    // const email = getValues('email');
+    // 이메일 유효성 먼저 검사
+    setHasEmailSubmitted(true);
+    const isEmailValid = await trigger('email');
+
+    if (!isEmailValid) {
+      // 이메일 형식/필수 요건이 맞지 않으면 중복확인 진행하지 않음
+      return;
+    }
 
     // TODO: 이메일 중복확인 API 호출
     // try {
     //   const { isDuplicate } = await checkEmailDuplicate(email);
     //   if (isDuplicate) {
-    //     alert('이미 사용 중인 이메일입니다');
+    //     setError('email', {
+    //       type: 'manual',
+    //       message: '이미 사용 중인 이메일입니다.',
+    //     });
     //     return;
     //   }
     //   setIsEmailVerified(true);
+    //   clearErrors('email');
     //   alert('사용 가능한 이메일입니다');
     // } catch (error) {
-    //   alert('중복확인에 실패했습니다');
+    //   setError('email', {
+    //     type: 'manual',
+    //     message: '이메일 중복확인에 실패했습니다. 잠시 후 다시 시도해주세요.',
+    //   });
+    //   return;
     // }
 
     // 임시: 중복확인 성공 처리
@@ -55,10 +74,11 @@ const SignupAccountPage = () => {
     clearErrors('email');
   };
 
+  // 계정 정보 제출 성공 핸들러
   const onSubmitValid = (data: SignupAccountFormData) => {
     setHasSubmitted(true);
 
-    // 이메일 형식은 유효하지만, 아직 중복확인이 완료되지 않은 경우
+    // 아직 중복확인이 완료되지 않은 경우
     if (!isEmailVerified) {
       setError('email', {
         type: 'manual',
@@ -77,6 +97,7 @@ const SignupAccountPage = () => {
     navigate(ROUTES.auth.signup.profile);
   };
 
+  // 계정 정보 제출 실패 핸들러
   const onSubmitInvalid = () => {
     // 최초 submit 이후부터 에러를 노출 + 실시간 갱신
     setHasSubmitted(true);
@@ -118,7 +139,7 @@ const SignupAccountPage = () => {
                   className="w-148 absolute top-1/2 -translate-y-1/2 left-[calc(100%+12px)]"
                 />
               </div>
-              {hasSubmitted && errors.email && (
+              {(hasSubmitted || hasEmailSubmitted) && errors.email && (
                 <p className="font-body-3-r text-warning">{errors.email.message}</p>
               )}
             </div>
