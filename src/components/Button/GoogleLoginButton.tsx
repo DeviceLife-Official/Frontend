@@ -14,7 +14,7 @@ const GoogleLoginButton = ({
       type="button"
       onClick={onClick}
       className={`
-        flex items-center gap-24 py-8 pl-0 pr-8 bg-white
+        flex items-center gap-24 py-8 pl-0 pr-8 bg-white cursor-pointer
         ${className}
       `}
       style={{ boxShadow: '0 0 4px 0 rgba(0, 0, 0, 0.20)' }}
