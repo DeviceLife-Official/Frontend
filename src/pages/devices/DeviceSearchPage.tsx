@@ -223,7 +223,7 @@ const DeviceSearchPage = () => {
           <div className="flex items-center gap-0">
             {/* Filter Icon */}
             <button className="w-48 h-48 flex items-center justify-center">
-              <FilterIcon className="w-48 h-48 text-black" />
+              <FilterIcon className={`w-48 h-48 ${selectedPrice.length > 0 || selectedBrand !== null ? 'text-blue-600' : 'text-black'}`} />
             </button>
 
             {/* Price Filter */}
@@ -435,7 +435,7 @@ const DeviceSearchPage = () => {
                       <button
                         key={combo.id}
                         onClick={() => handleSelectCombination(combo.id)}
-                        className="flex items-center justify-between pl-20 pr-36 py-24 hover:bg-gray-50 transition-colors border-b border-gray-200"
+                        className="flex items-center justify-between pl-20 pr-36 py-24 hover:bg-gray-50 transition-colors border-b border-gray-200 cursor-pointer"
                       >
                         {/* 좌측: 조합 정보 */}
                         <div className="flex flex-col gap-24 items-start">

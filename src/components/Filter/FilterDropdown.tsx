@@ -88,8 +88,8 @@ const FilterDropdown = ({
           hasSelection
             ? 'border-2 border-blue-600'
             : isOpen
-            ? 'border border-gray-400'
-            : 'border border-black'
+            ? 'border-2 border-gray-400'
+            : 'border-2 border-black'
         }`}
       >
         <p className={`font-body-1-sm whitespace-nowrap ${
