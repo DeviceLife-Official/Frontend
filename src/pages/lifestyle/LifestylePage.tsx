@@ -9,7 +9,7 @@ import VideoEditing from '@/assets/images/lifestyle/video-editing.jpg';
 import Tour from '@/assets/images/lifestyle/tour.jpg';
 import DeviceSummaryCard from '@/components/Lifestyle/DeviceSummaryCard';
 import { useAutoRotate } from '@/hooks/useAutoRotate';
-import { useCrossfadeImage } from '@/hooks/useCrossFadeImage';
+import { useCrossfadeImage } from '@/hooks/useCrossfadeImage';
 import { nextInArray } from '@/utils/nextInArray';
 
 const TAGS = [
