@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { signupAccountSchema, type SignupAccountFormData } from '@/schemas/authSchema';
@@ -9,30 +9,26 @@ import InputLabel from '@/components/Auth/Label/InputLabel';
 import StepIndicator from '@/components/Auth/Indicator/StepIndicator';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '@/constants/routes';
+import { useSignupStore } from '@/stores/signupStore';
 
 const SignupAccountPage = () => {
   const navigate = useNavigate();
-  const [isEmailVerified, setIsEmailVerified] = useState(false);
   const [hasSubmitted, setHasSubmitted] = useState(false);
+
+  const { setAccount, isEmailVerified, setIsEmailVerified } = useSignupStore();
 
   const {
     register,
     handleSubmit,
-    watch,
     formState: { errors },
+    setError,
+    clearErrors,
   } = useForm<SignupAccountFormData>({
     resolver: zodResolver(signupAccountSchema),
     // 최초에는 에러를 숨기고, submit 이후에는 onChange로 실시간 갱신되도록
     mode: 'onChange',
     reValidateMode: 'onChange',
   });
-
-  const watchEmail = watch('email');
-
-  // 이메일이 변경되면 중복확인 초기화
-  useEffect(() => {
-    setIsEmailVerified(false);
-  }, [watchEmail]);
 
   // 중복확인 핸들러
   const handleCheckDuplicate = async () => {
@@ -54,11 +50,30 @@ const SignupAccountPage = () => {
     // 임시: 중복확인 성공 처리
     setIsEmailVerified(true);
     alert('사용 가능한 이메일입니다');
+
+    // 중복확인 성공 시 이메일 에러 문구 즉시 제거
+    clearErrors('email');
   };
 
-  const onSubmitValid = (_data: SignupAccountFormData) => {
+  const onSubmitValid = (data: SignupAccountFormData) => {
     setHasSubmitted(true);
-    // TODO: 데이터 저장 (localStorage or state management)
+
+    // 이메일 형식은 유효하지만, 아직 중복확인이 완료되지 않은 경우
+    if (!isEmailVerified) {
+      setError('email', {
+        type: 'manual',
+        message: '이메일 중복확인을 확인해주세요.',
+      });
+      return;
+    }
+
+    // zustand에 계정 정보 저장 (API 호출 시 한 번에 사용)
+    setAccount({
+      email: data.email,
+      password: data.password,
+    });
+
+    // TODO: 회원가입 API에서 계정 정보와 프로필 정보를 함께 전송
     navigate(ROUTES.auth.signup.profile);
   };
 
@@ -88,7 +103,11 @@ const SignupAccountPage = () => {
               <div className="relative w-400">
                 <InputLabel text="이메일(ID)" className="absolute right-full mr-95 top-1/2 -translate-y-1/2" />
                 <PrimaryInput
-                  {...register('email')}
+                  {...register('email', {
+                    onChange: () => {
+                      setIsEmailVerified(false);
+                    },
+                  })}
                   type="email"
                   placeholder="이메일"
                   disabled={isEmailVerified}
