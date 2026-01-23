@@ -64,11 +64,7 @@ const SignupProfilePage = () => {
           </div>
 
           {/* 다음 버튼 */}
-          <PrimaryButton
-            text="가입하기"
-            className={`w-280 bg-blue-600 ${isValid ? 'hover:bg-blue-500' : ''}`}
-            disabled={!isValid}
-          />
+          <PrimaryButton text="다음" className="w-280 bg-blue-500" disabled={!isValid} />
         </form>
       </div>
     </div>

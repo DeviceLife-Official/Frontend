@@ -2,26 +2,7 @@ import OnboardingLines from '@/assets/icons/onboarding_lines.svg?react';
 
 const OnboardingCompletePage = () => {
   // TODO: 사용자 이름은 전역 상태 또는 API에서 받아오기
-  const userName = '안안안안안안';
-
-  // 한글과 영문 길이 체크 함수
-  const checkNameLength = (name: string) => {
-    let koreanCount = 0;
-    let englishCount = 0;
-
-    for (const char of name) {
-      // 한글 유니코드 범위: AC00-D7A3
-      if (char >= '\uAC00' && char <= '\uD7A3') {
-        koreanCount++;
-      } else if (/[a-zA-Z]/.test(char)) {
-        englishCount++;
-      }
-    }
-
-    return koreanCount >= 5 || englishCount >= 7;
-  };
-
-  const shouldUseTwoLines = checkNameLength(userName);
+  const userName = '000';
 
   return (
     <div className="relative flex items-center justify-center h-[calc(100vh-80px)] bg-white overflow-hidden">
@@ -33,17 +14,10 @@ const OnboardingCompletePage = () => {
       {/* 원형 컨테이너 (앞에 배치) */}
       <div className="relative z-10 flex items-center justify-center size-312 rounded-full bg-white border-shadow-blue-welcome">
         {/* 환영 메시지 */}
-        {shouldUseTwoLines ? (
-          <div className="flex flex-col items-center gap-6 font-heading-3 text-blue-600">
-            <span>{userName} 님,</span>
-            <span>어서오세요!</span>
-          </div>
-        ) : (
-            <div className="flex items-center gap-6 font-heading-3 text-blue-600">
-              <span>{userName} 님,</span>
-              <span>어서오세요!</span>
-            </div>
-        )}
+        <div className="flex items-center gap-6 font-heading-3 text-blue-600">
+          <span>{userName}</span>
+          <span>님, 어서오세요!</span>
+        </div>
       </div>
     </div>
   );

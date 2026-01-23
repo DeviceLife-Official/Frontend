@@ -1,11 +1,12 @@
 import PrimaryButton from '@/components/Button/PrimaryButton';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '@/constants/routes';
+import GoogleLogo from '@/assets/logos/google.svg?react';
+import AppleLogo from '@/assets/logos/apple.svg?react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { findPasswordSchema, type FindPasswordFormData } from '@/schemas/authSchema';
 import PrimaryInput from '@/components/Input/PrimaryInput';
-import GoogleLoginButton from '@/components/Auth/GoogleLoginButton';
 
 const FindPasswordPage = () => {
   const navigate = useNavigate();
@@ -76,7 +77,14 @@ const FindPasswordPage = () => {
         </div>
 
         {/* 소셜 로그인 */}
-        <GoogleLoginButton className="w-200 h-46" />
+        <div className="flex items-center gap-40">
+          <button type="button" className="cursor-pointer">
+            <GoogleLogo className="size-50" />
+          </button>
+          <button type="button" className="cursor-pointer">
+            <AppleLogo className="size-50" />
+          </button>
+        </div>
 
         {/* 회원가입 안내 */}
         <div className="flex items-center gap-16 font-body-2-r text-gray-400">

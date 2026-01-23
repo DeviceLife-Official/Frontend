@@ -60,7 +60,7 @@ const OnboardingLifestylePage = () => {
             </p>
             {/* 서브 타이틀 */}
             <p className="font-body-2-r text-blue-600 text-center w-full">
-              AI가 회원님의 조합을 평가할 때 이 기준을 참고합니다. (문항별 택1)
+              AI가 회원님의 조합을 평가할 때 이 기준을 참고합니다.
             </p>
           </div>
 

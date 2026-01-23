@@ -2,10 +2,11 @@ import PrimaryButton from '@/components/Button/PrimaryButton';
 import PrimaryInput from '@/components/Input/PrimaryInput';
 import { ROUTES } from '@/constants/routes';
 import { useNavigate } from 'react-router-dom';
+import GoogleLogo from '@/assets/logos/google.svg?react';
+import AppleLogo from '@/assets/logos/apple.svg?react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { findIdSchema, type FindIdFormData } from '@/schemas/authSchema';
-import GoogleLoginButton from '@/components/Auth/GoogleLoginButton';
 
 const FindIdPage = () => {
   const navigate = useNavigate();
@@ -61,7 +62,7 @@ const FindIdPage = () => {
               </div>
 
               {/* 아이디 찾기 버튼 */}
-              <PrimaryButton text="아이디 찾기" className="w-full bg-blue-600 hover:bg-blue-500" />
+              <PrimaryButton text="아이디 찾기" className="w-full bg-blue-600" />
             </div>
 
             {/* 아이디/비밀번호 찾기 */}
@@ -86,7 +87,14 @@ const FindIdPage = () => {
         </div>
 
         {/* 소셜 로그인 */}
-        <GoogleLoginButton className="w-200 h-46" />
+        <div className="flex items-center gap-40">
+          <button type="button" className="cursor-pointer">
+            <GoogleLogo className="size-50" />
+          </button>
+          <button type="button" className="cursor-pointer">
+            <AppleLogo className="size-50" />
+          </button>
+        </div>
 
         {/* 회원가입 안내 */}
         <div className="flex items-center gap-16 font-body-2-r text-gray-400">
