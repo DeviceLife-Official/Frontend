@@ -90,14 +90,12 @@ const MyPage = () => {
               <p className="font-body-2-sm text-black">라이프스타일</p>
               <div className="flex flex-wrap gap-12 content-start">
                 <RoundedLifestyleTag label="Office" />
-                <RoundedLifestyleTag label="Study" />
-                <RoundedLifestyleTag label="Tour/portability" />
               </div>
             </div>
           </div>
 
           {/* 휴지통 버튼 */}
-          <SecondaryButton text="휴지통" className="mt-76 w-full hover:!bg-blue-50 transition-colors" />
+          {/* <SecondaryButton text="휴지통" className="mt-76 w-full hover:!bg-blue-50 transition-colors" /> */}
         </aside>
 
         {/* 우측 메인 콘텐츠 */}
