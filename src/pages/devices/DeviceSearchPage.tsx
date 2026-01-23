@@ -321,7 +321,10 @@ const DeviceSearchPage = () => {
                 {/* Card */}
                 <div
                   className="bg-white rounded-card px-56 py-40"
-                  style={{ width: 'clamp(903px, calc(903px + (100vw - 1440px) * 0.245833), 1021px)' }}
+                  style={{
+                    width: 'clamp(903px, calc(903px + (100vw - 1440px) * 0.245833), 1021px)',
+                    height: '697px',
+                  }}
                   onClick={(e) => e.stopPropagation()}
                 >
                   {/* Content */}
