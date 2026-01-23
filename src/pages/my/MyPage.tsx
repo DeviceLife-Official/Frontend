@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import GNB from '@/components/Home/GNB';
 import PrimaryButton from '@/components/Button/PrimaryButton';
 import SortDropdown from '@/components/Filter/SortDropdown';
@@ -10,8 +10,31 @@ import SettingMoreIcon from '@/assets/icons/settingmore.svg?react';
 import AlarmIcon from '@/assets/icons/alarm.svg?react';
 import StarIcon from '@/assets/icons/star.svg?react';
 import PlusIcon from '@/assets/icons/plus.svg?react';
+import BackIcon from '@/assets/icons/back.svg?react';
+import CheckboxIcon from '@/assets/icons/checkbox.svg?react';
+import CheckboxOnIcon from '@/assets/icons/checkbox_on.svg?react';
+import TrashIcon from '@/assets/icons/trash.svg?react';
 import Logo from '@/assets/logos/logo.svg?react';
 import { MOCK_COMBINATIONS, MOCK_COMBINATION_DEVICES } from '@/constants/mockData';
+
+// 조합 평가 Mock 데이터
+const MOCK_EVALUATION = {
+  connectivity: {
+    rating: '최상',
+    description: 'Apple 기기 간의 연동성이 완벽합니다. AirDrop, Handoff, Universal Control 등의 기능을 자유롭게 사용할 수 있습니다.',
+    tags: ['AirDrop', 'Handoff', 'Universal Control', 'iCloud 동기화'],
+  },
+  convenience: {
+    rating: '최상',
+    description: '모든 기기가 USB-C 포트를 사용합니다. 하나의 충전기와 케이블로 모든 기기를 충전할 수 있습니다.',
+    tags: ['USB-C', 'N개 기기 해당'],
+  },
+  lifestyle: {
+    rating: '최상',
+    description: '모든 기기가 USB-C 포트를 사용합니다. 하나의 충전기와 케이블로 모든 기기를 충전할 수 있습니다.',
+    tags: ['#Game'],
+  },
+};
 
 const MYPAGE_SORT_OPTIONS = [
   { value: 'latest', label: '최근생성순' },
@@ -23,6 +46,11 @@ const MyPage = () => {
   const [sortOption, setSortOption] = useState('latest');
   const [isAtBottom, setIsAtBottom] = useState(false);
   const [columns, setColumns] = useState<3 | 4>(4);
+  const [openMenuIndex, setOpenMenuIndex] = useState<number | null>(null);
+  const [hoveredMenuItem, setHoveredMenuItem] = useState<string | null>(null);
+  const [detailViewIndex, setDetailViewIndex] = useState<number | null>(null);
+  const [selectedDevices, setSelectedDevices] = useState<number[]>([]);
+  const menuRef = useRef<HTMLDivElement>(null);
 
   // 스크롤 감지 (하단 그라데이션용)
   useEffect(() => {
@@ -47,6 +75,47 @@ const MyPage = () => {
     mediaQuery.addEventListener('change', handleChange);
     return () => mediaQuery.removeEventListener('change', handleChange);
   }, []);
+
+  // 드롭다운 외부 클릭 시 닫기
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setOpenMenuIndex(null);
+        setHoveredMenuItem(null);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  // 자세히보기 클릭 핸들러
+  const handleDetailView = (index: number) => {
+    setDetailViewIndex(index);
+    setOpenMenuIndex(null);
+    setSelectedDevices([]);
+  };
+
+  // 뒤로가기 핸들러
+  const handleBackToNormal = () => {
+    setDetailViewIndex(null);
+    setSelectedDevices([]);
+  };
+
+  // 전체 선택 핸들러
+  const handleSelectAll = (deviceIds: number[]) => {
+    if (selectedDevices.length === deviceIds.length) {
+      setSelectedDevices([]);
+    } else {
+      setSelectedDevices(deviceIds);
+    }
+  };
+
+  // 개별 선택 핸들러
+  const handleSelectDevice = (deviceId: number) => {
+    setSelectedDevices((prev) =>
+      prev.includes(deviceId) ? prev.filter((id) => id !== deviceId) : [...prev, deviceId]
+    );
+  };
 
   return (
     <div className={`min-h-screen bg-white relative ${isAtBottom ? 'bg-effect-fade-bottom' : ''}`}>
@@ -107,13 +176,19 @@ const MyPage = () => {
             paddingRight: 'clamp(80px, calc(80px + (100vw - 1440px) * 0.166667), 160px)',
           }}
         >
-          {/* 헤더: 내 조합 + 새 조합 추가하기 */}
+          {/* 헤더: 내 조합 + 새 조합 추가하기 / 조합 삭제하기 */}
           <div className="flex items-center justify-between h-72">
             <h2 className="font-heading-2 text-black">내 조합</h2>
-            <PrimaryButton
-              text="새 조합 추가하기"
-              className="w-280 bg-blue-600 hover:bg-blue-500"
-            />
+            {detailViewIndex !== null ? (
+              <button className="w-280 h-72 border-2 border-red-500 rounded-button flex items-center justify-center cursor-pointer hover:bg-red-50 transition-colors">
+                <span className="font-body-2-sm text-red-500">조합 삭제하기</span>
+              </button>
+            ) : (
+              <PrimaryButton
+                text="새 조합 추가하기"
+                className="w-280 bg-blue-600 hover:bg-blue-500"
+              />
+            )}
           </div>
 
           {/* 정렬 필터 */}
@@ -127,111 +202,357 @@ const MyPage = () => {
 
           {/* 조합 카드 목록 */}
           <div className="mt-28 flex flex-col gap-68">
-            {MOCK_COMBINATIONS.map((combination) => {
+            {MOCK_COMBINATIONS.map((combination, index) => {
               const devices = MOCK_COMBINATION_DEVICES[combination.id] || [];
               const hasDevices = devices.length > 0;
 
+              const isDetailView = detailViewIndex === index;
+              const deviceIds = devices.map((d) => d.id);
+
+              // 상세보기 모드일 때 선택된 조합만 표시
+              if (detailViewIndex !== null && !isDetailView) {
+                return null;
+              }
+
               return (
                 <div key={combination.id}>
-                  {/* 추천 메시지 */}
-                  <div className="flex items-center gap-16 mb-24">
-                    <AlarmIcon className="w-36 h-36 text-blue-600 flex-shrink-0" />
-                    <p className="font-body-2-r text-blue-600">
-                      {hasDevices
-                        ? '추천하는 조합입니다. 기기 간 호환성이 우수하며 만족도가 높을 것입니다.'
-                        : '-'}
-                    </p>
-                  </div>
+                  {/* 추천 메시지 - 상세보기 모드가 아닐 때만 표시 */}
+                  {!isDetailView && (
+                    <div className="flex items-center gap-16 mb-24">
+                      <AlarmIcon className="w-36 h-36 text-blue-600 flex-shrink-0" />
+                      <p className="font-body-2-r text-blue-600">
+                        {hasDevices
+                          ? '추천하는 조합입니다. 기기 간 호환성이 우수하며 만족도가 높을 것입니다.'
+                          : '-'}
+                      </p>
+                    </div>
+                  )}
 
                   {/* 조합 카드 */}
-                  <div className="bg-white rounded-card shadow-[0_0_10px_rgba(0,0,0,0.1)] relative">
-                    {/* Setting More 버튼 */}
-                    <button className="absolute right-56 top-36 cursor-pointer hover:opacity-80">
-                      <SettingMoreIcon className="w-36 h-36 text-gray-400" />
-                    </button>
+                  <div
+                    className={`rounded-card relative ${
+                      isDetailView ? 'bg-blue-100' : 'bg-white shadow-[0_0_10px_rgba(0,0,0,0.1)]'
+                    }`}
+                  >
+                    {/* 일반 모드: Setting More 버튼 + 드롭다운 */}
+                    {!isDetailView && (
+                      <div
+                        ref={openMenuIndex === index ? menuRef : null}
+                        className="absolute right-56 top-36"
+                      >
+                        <button
+                          onClick={() => setOpenMenuIndex(openMenuIndex === index ? null : index)}
+                          className="cursor-pointer hover:opacity-80"
+                        >
+                          <SettingMoreIcon className="w-36 h-36 text-gray-400" />
+                        </button>
 
-                    {hasDevices ? (
-                      <div className="px-36 pt-24 pb-36">
-                        {/* 조합 정보 (생성일 포함) */}
-                        <div className="flex flex-col gap-24 pl-20 py-24">
-                          {/* 조합 번호 + 생성일 + 조합명 */}
+                        {/* 드롭다운 메뉴 */}
+                        {openMenuIndex === index && (
+                          <div className="absolute right-0 top-full mt-8 bg-white rounded-button shadow-[0_2px_10px_rgba(0,0,0,0.25)] px-8 z-12 flex flex-col">
+                            {/* 삭제하기 */}
+                            <button
+                              onMouseEnter={() => setHoveredMenuItem('delete')}
+                              onMouseLeave={() => setHoveredMenuItem(null)}
+                              className="relative font-body-1-sm text-red-500 text-left py-12 whitespace-nowrap cursor-pointer border-b border-black/50"
+                            >
+                              {hoveredMenuItem === 'delete' && (
+                                <div className="absolute -inset-x-4 inset-y-4 bg-gray-100 rounded-button -z-10" />
+                              )}
+                              삭제하기
+                            </button>
+
+                            {/* 자세히보기 */}
+                            <button
+                              onClick={() => handleDetailView(index)}
+                              onMouseEnter={() => setHoveredMenuItem('detail')}
+                              onMouseLeave={() => setHoveredMenuItem(null)}
+                              className="relative font-body-1-sm text-black text-left py-12 whitespace-nowrap cursor-pointer"
+                            >
+                              {hoveredMenuItem === 'detail' && (
+                                <div className="absolute -inset-x-4 inset-y-4 bg-gray-100 rounded-button -z-10" />
+                              )}
+                              자세히보기
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {/* 상세보기 모드 */}
+                    {isDetailView ? (
+                      <div className="pt-16">
+                        {/* 뒤로가기 버튼 */}
+                        <div className="px-36 pt-20">
+                          <button
+                            onClick={handleBackToNormal}
+                            className="p-10 cursor-pointer hover:opacity-80"
+                          >
+                            <BackIcon className="w-34 h-34 text-gray-400" />
+                          </button>
+                        </div>
+
+                        {/* 조합 정보 */}
+                        <div className="flex flex-col gap-24 pl-56 py-24">
                           <div className="flex flex-col gap-8">
                             <div className="flex items-center gap-16">
-                              <p className="font-body-3-r text-gray-400">{combination.label}</p>
+                              <p className="font-body-2-r text-gray-400">{combination.label}</p>
                               {combination.createdAt && (
-                                <p className="font-body-3-r text-gray-400">
+                                <p className="font-body-2-r text-gray-400">
                                   생성일: {combination.createdAt}
                                 </p>
                               )}
                             </div>
                             <div className="flex items-center gap-8">
-                              <p className="font-body-1-sm text-black">{combination.name}</p>
+                              <p className="font-heading-3 text-black">{combination.name}</p>
                               {combination.isMain && <StarIcon className="w-27 h-27" />}
                             </div>
                           </div>
-                          {/* Tags */}
-                          <div className="flex gap-12">
-                            {combination.tags.map((tag) => (
-                              <CombinationTag key={tag.name} name={tag.name} status={tag.status} />
-                            ))}
+                        </div>
+
+                        {/* 전체 선택 + 휴지통 */}
+                        <div className="px-56">
+                          <div className="flex items-center justify-between pb-16 border-b border-gray-300">
+                            <div className="flex items-center gap-8">
+                              <button
+                                onClick={() => handleSelectAll(deviceIds)}
+                                className="cursor-pointer"
+                              >
+                                {selectedDevices.length === devices.length && devices.length > 0 ? (
+                                  <CheckboxOnIcon className="w-28 h-28" />
+                                ) : (
+                                  <CheckboxIcon className="w-28 h-28" />
+                                )}
+                              </button>
+                              <p className="font-body-2-r text-black">전체 선택하기</p>
+                            </div>
+                            <button className="cursor-pointer hover:opacity-80">
+                              <TrashIcon className="w-28 h-28 text-red-500" />
+                            </button>
                           </div>
                         </div>
 
-                        {/* 기기 그리드 */}
-                        <div className="pl-8 mt-24">
+                        {/* 기기 그리드 (체크박스 포함) */}
+                        <div className="px-56 pt-56 pb-36">
                           <div
                             className={`grid ${columns === 4 ? 'grid-cols-4' : 'grid-cols-3'} gap-x-28 gap-y-12`}
                           >
-                            {devices.slice(0, columns * 2).map((device) => (
+                            {devices.map((device) => (
                               <div
                                 key={device.id}
                                 className="bg-white rounded-card shadow-[0_0_4px_rgba(0,0,0,0.1)] p-12 w-244 flex items-center gap-12"
                               >
                                 <div className="w-64 h-64 bg-gray-200 flex-shrink-0" />
-                                <div className="flex flex-col gap-4">
-                                  <p className="font-body-3-sm text-black">{device.name}</p>
+                                <div className="flex flex-col gap-4 flex-1">
+                                  <div className="flex items-center justify-between">
+                                    <p className="font-body-3-sm text-black truncate w-120">
+                                      {device.name}
+                                    </p>
+                                    {/* 체크박스 - 기기명과 같은 높이 */}
+                                    <button
+                                      onClick={() => handleSelectDevice(device.id)}
+                                      className="cursor-pointer flex-shrink-0"
+                                    >
+                                      {selectedDevices.includes(device.id) ? (
+                                        <CheckboxOnIcon className="w-24 h-24" />
+                                      ) : (
+                                        <CheckboxIcon className="w-24 h-24" />
+                                      )}
+                                    </button>
+                                  </div>
                                   <p className="font-body-4-r text-gray-300">{device.chargingType}</p>
                                   <p className="font-body-3-r text-gray-300">{device.color}</p>
                                 </div>
                               </div>
                             ))}
+                            {/* 기기 추가 버튼 */}
+                            <button className="cursor-pointer hover:opacity-80">
+                              <PlusIcon />
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* 총 가격 */}
+                        <div className="px-56 pb-36">
+                          <div className="flex items-center gap-40 p-20">
+                            <p className="font-body-1-sm text-black">총 가격</p>
+                            <div className="flex items-center gap-8">
+                              <p className="font-body-1-sm text-blue-600">₩</p>
+                              <p className="font-body-1-sm text-blue-600">1,550,000</p>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* 구분선 */}
+                        <div className="mx-44 border-t border-gray-300" />
+
+                        {/* 조합 평가 정보 */}
+                        <div className="px-56 py-56">
+                          <div className="flex items-center justify-end gap-16 mb-32">
+                            <p className="font-body-2-r text-gray-400 underline">조합평가 전문보기</p>
+                          </div>
+
+                          <div className="flex flex-col gap-20">
+                            {/* 연동성 */}
+                            <div className="bg-white rounded-card px-42 py-30 flex flex-col gap-30">
+                              <div className="flex items-center gap-30">
+                                <p className="font-body-1-sm text-black">연동성:</p>
+                                <p className="font-body-1-sm text-blue-600">
+                                  {MOCK_EVALUATION.connectivity.rating}
+                                </p>
+                              </div>
+                              <p className="font-body-3-r text-black">
+                                {MOCK_EVALUATION.connectivity.description}
+                              </p>
+                              <div className="flex gap-16">
+                                {MOCK_EVALUATION.connectivity.tags.map((tag) => (
+                                  <span
+                                    key={tag}
+                                    className="bg-blue-200 text-blue-700 font-body-2-r px-12 py-8 rounded-full"
+                                  >
+                                    {tag}
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
+
+                            {/* 편의성 */}
+                            <div className="bg-white rounded-card px-42 py-30 flex flex-col gap-30">
+                              <div className="flex items-center gap-51">
+                                <p className="font-body-1-sm text-black">편의성:</p>
+                                <p className="font-body-1-sm text-blue-600">
+                                  {MOCK_EVALUATION.convenience.rating}
+                                </p>
+                              </div>
+                              <p className="font-body-3-r text-black">
+                                {MOCK_EVALUATION.convenience.description}
+                              </p>
+                              <div className="flex gap-16">
+                                {MOCK_EVALUATION.convenience.tags.map((tag) => (
+                                  <span
+                                    key={tag}
+                                    className="bg-[#bdf8e1] text-[#00719f] font-body-2-r px-12 py-8 rounded-full"
+                                  >
+                                    {tag}
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
+
+                            {/* 라이프스타일 */}
+                            <div className="bg-white rounded-card px-42 py-30 flex flex-col gap-30">
+                              <div className="flex items-center gap-51">
+                                <p className="font-body-1-sm text-black">라이프스타일:</p>
+                                <p className="font-body-1-sm text-blue-600">
+                                  {MOCK_EVALUATION.lifestyle.rating}
+                                </p>
+                              </div>
+                              <p className="font-body-3-r text-black">
+                                {MOCK_EVALUATION.lifestyle.description}
+                              </p>
+                              <div className="flex gap-16">
+                                {MOCK_EVALUATION.lifestyle.tags.map((tag) => (
+                                  <span
+                                    key={tag}
+                                    className="bg-[#fee8c3] text-[#fb7104] font-body-2-r px-12 py-8 rounded-full"
+                                  >
+                                    {tag}
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
                           </div>
                         </div>
                       </div>
                     ) : (
-                      <div className="px-36 pt-24 pb-36">
-                        {/* 조합 정보 (생성일 포함) */}
-                        <div className="flex flex-col gap-24 pl-20 py-24">
-                          {/* 조합 번호 + 생성일 + 조합명 */}
-                          <div className="flex flex-col gap-8">
-                            <div className="flex items-center gap-16">
-                              <p className="font-body-3-r text-gray-400">{combination.label}</p>
-                              {combination.createdAt && (
-                                <p className="font-body-3-r text-gray-400">
-                                  생성일: {combination.createdAt}
-                                </p>
-                              )}
+                      /* 일반 모드 */
+                      <>
+                        {hasDevices ? (
+                          <div className="px-36 pt-24 pb-36">
+                            {/* 조합 정보 (생성일 포함) */}
+                            <div className="flex flex-col gap-24 pl-20 py-24">
+                              {/* 조합 번호 + 생성일 + 조합명 */}
+                              <div className="flex flex-col gap-8">
+                                <div className="flex items-center gap-16">
+                                  <p className="font-body-3-r text-gray-400">{combination.label}</p>
+                                  {combination.createdAt && (
+                                    <p className="font-body-3-r text-gray-400">
+                                      생성일: {combination.createdAt}
+                                    </p>
+                                  )}
+                                </div>
+                                <div className="flex items-center gap-8">
+                                  <p className="font-body-1-sm text-black">{combination.name}</p>
+                                  {combination.isMain && <StarIcon className="w-27 h-27" />}
+                                </div>
+                              </div>
+                              {/* Tags */}
+                              <div className="flex gap-12">
+                                {combination.tags.map((tag) => (
+                                  <CombinationTag key={tag.name} name={tag.name} status={tag.status} />
+                                ))}
+                              </div>
                             </div>
-                            <div className="flex items-center gap-8">
-                              <p className="font-body-1-sm text-black">{combination.name}</p>
-                              {combination.isMain && <StarIcon className="w-27 h-27" />}
-                            </div>
-                          </div>
-                          {/* Tags */}
-                          <div className="flex gap-12">
-                            {combination.tags.map((tag) => (
-                              <CombinationTag key={tag.name} name={tag.name} status={tag.status} />
-                            ))}
-                          </div>
-                        </div>
 
-                        {/* 빈 조합: 기기 추가 버튼 */}
-                        <div className="pl-8 mt-24">
-                          <button className="cursor-pointer hover:opacity-80">
-                            <PlusIcon />
-                          </button>
-                        </div>
-                      </div>
+                            {/* 기기 그리드 */}
+                            <div className="pl-8 mt-24">
+                              <div
+                                className={`grid ${columns === 4 ? 'grid-cols-4' : 'grid-cols-3'} gap-x-28 gap-y-12`}
+                              >
+                                {devices.slice(0, columns * 2).map((device) => (
+                                  <div
+                                    key={device.id}
+                                    className="bg-white rounded-card shadow-[0_0_4px_rgba(0,0,0,0.1)] p-12 w-244 flex items-center gap-12"
+                                  >
+                                    <div className="w-64 h-64 bg-gray-200 flex-shrink-0" />
+                                    <div className="flex flex-col gap-4">
+                                      <p className="font-body-3-sm text-black">{device.name}</p>
+                                      <p className="font-body-4-r text-gray-300">
+                                        {device.chargingType}
+                                      </p>
+                                      <p className="font-body-3-r text-gray-300">{device.color}</p>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="px-36 pt-24 pb-36">
+                            {/* 조합 정보 (생성일 포함) */}
+                            <div className="flex flex-col gap-24 pl-20 py-24">
+                              {/* 조합 번호 + 생성일 + 조합명 */}
+                              <div className="flex flex-col gap-8">
+                                <div className="flex items-center gap-16">
+                                  <p className="font-body-3-r text-gray-400">{combination.label}</p>
+                                  {combination.createdAt && (
+                                    <p className="font-body-3-r text-gray-400">
+                                      생성일: {combination.createdAt}
+                                    </p>
+                                  )}
+                                </div>
+                                <div className="flex items-center gap-8">
+                                  <p className="font-body-1-sm text-black">{combination.name}</p>
+                                  {combination.isMain && <StarIcon className="w-27 h-27" />}
+                                </div>
+                              </div>
+                              {/* Tags */}
+                              <div className="flex gap-12">
+                                {combination.tags.map((tag) => (
+                                  <CombinationTag key={tag.name} name={tag.name} status={tag.status} />
+                                ))}
+                              </div>
+                            </div>
+
+                            {/* 빈 조합: 기기 추가 버튼 */}
+                            <div className="pl-8 mt-24">
+                              <button className="cursor-pointer hover:opacity-80">
+                                <PlusIcon />
+                              </button>
+                            </div>
+                          </div>
+                        )}
+                      </>
                     )}
                   </div>
                 </div>
