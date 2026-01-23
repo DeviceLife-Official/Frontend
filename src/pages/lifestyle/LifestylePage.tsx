@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { ROTATION_MS } from '@/constants/time';
+import { useCallback, useMemo, useState } from 'react';
+import { ROTATION_MS, TRANSITION_MS } from '@/constants/time';
 import LifestyleTag from '@/components/Lifestyle/LifestyleTag';
 import Office from '@/assets/images/lifestyle/office.jpg';
 import Developer from '@/assets/images/lifestyle/developer.jpg';
@@ -8,6 +8,9 @@ import Study from '@/assets/images/lifestyle/study.jpg';
 import VideoEditing from '@/assets/images/lifestyle/video-editing.jpg';
 import Tour from '@/assets/images/lifestyle/tour.jpg';
 import DeviceSummaryCard from '@/components/Lifestyle/DeviceSummaryCard';
+import { useAutoRotate } from '@/hooks/useAutoRotate';
+import { useCrossfadeImage } from '@/hooks/useCrossFadeImage';
+import { nextInArray } from '@/utils/nextInArray';
 
 const TAGS = [
   'Office/portability',
@@ -34,18 +37,18 @@ const LifestylePage = () => {
   const [isAutoRotate, setIsAutoRotate] = useState(true);
   const [isPaused, setIsPaused] = useState(false);
 
-  useEffect(() => {
-    if (!isAutoRotate || isPaused) return;
+  const targetSrc = useMemo(() => TAG_IMAGE_MAP[selectedLabel], [selectedLabel]);
+  const { currentSrc, nextSrc, isNextVisible } = useCrossfadeImage(targetSrc, {
+    transitionMs: TRANSITION_MS,
+  });
+  const getNextTag = useCallback((prev: Tag) => nextInArray(TAGS, prev), []);
 
-    const id = window.setInterval(() => {
-      setSelectedLabel((prev) => {
-        const idx = TAGS.indexOf(prev);
-        return TAGS[(idx + 1) % TAGS.length];
-      });
-    }, ROTATION_MS);
-
-    return () => window.clearInterval(id);
-  }, [isAutoRotate, isPaused]);
+  useAutoRotate<Tag>({
+    enabled: isAutoRotate && !isPaused,
+    intervalMs: ROTATION_MS,
+    setValue: setSelectedLabel,
+    getNext: getNextTag,
+  });
 
   const handleClickTag = (label: Tag) => {
     setSelectedLabel(label);
@@ -67,7 +70,7 @@ const LifestylePage = () => {
             ))}
           </div>
           <div
-            className="ml-auto w-660 relative h-full"
+            className="ml-auto w-660 relative h-full overflow-hidden"
             onMouseEnter={() => setIsPaused(true)}
             onMouseLeave={() => setIsPaused(false)}
           >
@@ -77,10 +80,23 @@ const LifestylePage = () => {
               <DeviceSummaryCard />
             </div>
             <img
-              src={TAG_IMAGE_MAP[selectedLabel]}
+              src={currentSrc}
               alt={selectedLabel}
               className="absolute inset-0 w-full h-full object-cover"
+              draggable={false}
             />
+            {nextSrc && (
+              <img
+                src={nextSrc}
+                alt={selectedLabel}
+                className="absolute inset-0 w-full h-full object-cover"
+                style={{
+                  opacity: isNextVisible ? 1 : 0,
+                  transition: `opacity ${TRANSITION_MS}ms ease-in-out`,
+                }}
+                draggable={false}
+              />
+            )}
           </div>
         </div>
       </div>
