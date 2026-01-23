@@ -6,7 +6,7 @@ import HomeImage3 from '@/assets/images/home/HomeImage3.svg?react';
 import ConnectivitySection from '@/components/Home/ConnectivitySection';
 import PortabilitySection from '@/components/Home/PortabilitySection';
 import LifestyleSection from '@/components/Home/LifestyleSection';
-import ColormatchingSection from '@/components/Home/ColormatchingSection';
+import LogicEvaluationSection from '@/components/Home/LogicEvaluationSection';
 import Footer from '@/components/Home/Footer';
 
 const IMAGES = [HomeImage1, HomeImage2, HomeImage3];
@@ -48,7 +48,7 @@ const HomePage = () => {
             </div>
             <div className="flex flex-row gap-108">
               <LifestyleSection />
-              <ColormatchingSection />
+              <LogicEvaluationSection />
             </div>
           </div>
         </div>

@@ -50,7 +50,6 @@ export const MOCK_COMBINATIONS: UserCombination[] = [
       { name: '연동성', status: '최적' },
       { name: '편의성', status: '최적' },
       { name: '라이프스타일', status: '최적' },
-      { name: '컬러 매칭', status: '최적' },
     ],
   },
   {
@@ -63,7 +62,6 @@ export const MOCK_COMBINATIONS: UserCombination[] = [
       { name: '연동성', status: '최적' },
       { name: '편의성', status: '최적' },
       { name: '라이프스타일', status: '최적' },
-      { name: '컬러 매칭', status: '최적' },
     ],
   },
   {
@@ -76,7 +74,6 @@ export const MOCK_COMBINATIONS: UserCombination[] = [
       { name: '연동성', status: '최적' },
       { name: '편의성', status: '최적' },
       { name: '라이프스타일', status: '최적' },
-      { name: '컬러 매칭', status: '최적' },
     ],
   },
 ];

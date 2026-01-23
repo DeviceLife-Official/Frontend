@@ -10,7 +10,6 @@ const NAME_STYLE_MAP: Record<CombinationName, string> = {
   연동성: 'bg-blue-200 text-blue-700',
   편의성: 'bg-light-green text-dark-green',
   라이프스타일: 'bg-light-yellow text-dark-yellow',
-  '컬러 매칭': 'bg-light-purple text-dark-purple',
 };
 
 const STATUS_STYLE_MAP: Record<CombinationStatus, string> = {
