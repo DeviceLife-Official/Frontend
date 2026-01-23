@@ -28,7 +28,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
         </p>
 
         {/* Color Chips */}
-        <div className="flex gap-8">
+        {/* <div className="flex gap-8">
           {product.colors.map((color, idx) => (
             <div
               key={idx}
@@ -36,7 +36,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
               style={{ backgroundColor: color }}
             />
           ))}
-        </div>
+        </div> */}
       </div>
     </div>
   );
