@@ -14,6 +14,7 @@ import BackIcon from '@/assets/icons/back.svg?react';
 import CheckboxIcon from '@/assets/icons/checkbox.svg?react';
 import CheckboxOnIcon from '@/assets/icons/checkbox_on.svg?react';
 import TrashIcon from '@/assets/icons/trash.svg?react';
+import RemoveIcon from '@/assets/icons/remove.svg?react';
 import Logo from '@/assets/logos/logo.svg?react';
 import { MOCK_COMBINATIONS, MOCK_COMBINATION_DEVICES } from '@/constants/mockData';
 
@@ -51,6 +52,7 @@ const MyPage = () => {
   const [detailViewIndex, setDetailViewIndex] = useState<number | null>(null);
   const [selectedDevices, setSelectedDevices] = useState<number[]>([]);
   const [savedScrollPosition, setSavedScrollPosition] = useState<number>(0);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
   // 스크롤 감지 (하단 그라데이션용)
@@ -119,6 +121,21 @@ const MyPage = () => {
     setSelectedDevices((prev) =>
       prev.includes(deviceId) ? prev.filter((id) => id !== deviceId) : [...prev, deviceId]
     );
+  };
+
+  // 선택된 기기 삭제 핸들러
+  const handleDeleteDevices = () => {
+    // TODO: API 연동 시 실제 삭제 로직 추가
+    console.log('삭제할 기기 IDs:', selectedDevices);
+    setSelectedDevices([]);
+    setShowDeleteModal(false);
+  };
+
+  // 휴지통 클릭 핸들러
+  const handleTrashClick = () => {
+    if (selectedDevices.length > 0) {
+      setShowDeleteModal(true);
+    }
   };
 
   return (
@@ -330,7 +347,10 @@ const MyPage = () => {
                               </button>
                               <p className="font-body-2-r text-black">전체 선택하기</p>
                             </div>
-                            <button className="cursor-pointer hover:opacity-80">
+                            <button
+                              onClick={handleTrashClick}
+                              className="cursor-pointer hover:opacity-80"
+                            >
                               <TrashIcon className="w-28 h-28 text-red-500" />
                             </button>
                           </div>
@@ -568,6 +588,48 @@ const MyPage = () => {
           <div className="h-268" />
         </main>
       </div>
+
+      {/* 삭제 확인 모달 */}
+      {showDeleteModal && (
+        <>
+          {/* 배경 오버레이 */}
+          <div
+            className="fixed inset-0 bg-black/50 z-60"
+            onClick={() => setShowDeleteModal(false)}
+          />
+          {/* 모달 */}
+          <div className="fixed inset-0 flex items-center justify-center z-70 pointer-events-none">
+            <div
+              className="bg-white rounded-card w-460 px-36 py-44 flex flex-col items-center pointer-events-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* 아이콘 */}
+              <RemoveIcon className="w-58 h-58" />
+
+              {/* 텍스트 */}
+              <p className="font-body-2-r text-black mt-36">
+                선택한 기기들을 삭제하시겠습니까?
+              </p>
+
+              {/* 버튼 그룹 */}
+              <div className="flex gap-20 mt-60">
+                <button
+                  onClick={handleDeleteDevices}
+                  className="w-168 h-52 bg-red-500 hover:bg-red-400 rounded-button flex items-center justify-center cursor-pointer transition-colors"
+                >
+                  <span className="font-body-2-sm text-white">삭제</span>
+                </button>
+                <button
+                  onClick={() => setShowDeleteModal(false)}
+                  className="w-168 h-52 bg-gray-100 hover:bg-gray-200 rounded-button flex items-center justify-center cursor-pointer transition-colors"
+                >
+                  <span className="font-body-2-sm text-black">취소</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 };
