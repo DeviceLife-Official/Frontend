@@ -243,7 +243,7 @@ const DeviceSearchPage = () => {
                 label="브랜드"
                 options={BRAND_OPTIONS}
                 selectedValue={selectedBrand}
-                onSelect={setSelectedBrand}
+                onSelect={(value) => setSelectedBrand(value as string | null)}
               />
             </div>
           </div>
