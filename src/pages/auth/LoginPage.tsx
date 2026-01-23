@@ -6,10 +6,9 @@ import PrimaryInput from '@/components/Input/PrimaryInput';
 import PrimaryButton from '@/components/Button/PrimaryButton';
 import Checkbox from '@/assets/icons/checkbox.svg?react';
 import CheckboxOn from '@/assets/icons/checkbox_on.svg?react';
-import GoogleLogo from '@/assets/logos/google.svg?react';
-import AppleLogo from '@/assets/logos/apple.svg?react';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '@/constants/routes';
+import GoogleLoginButton from '@/components/Auth/GoogleLoginButton';
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -61,9 +60,7 @@ const LoginPage = () => {
                     <p className="font-body-3-r text-warning">{errors.password.message}</p>
                   )}
                 </div>
-              </div>
-
-              {/* 체크박스 */}
+                {/* 체크박스 */}
               <button
                 type="button"
                 onClick={() => setKeepLogin(!keepLogin)}
@@ -72,9 +69,14 @@ const LoginPage = () => {
                 {keepLogin ? <CheckboxOn className="size-26" /> : <Checkbox className="size-26" />}
                 <span className="font-body-2-r text-gray-400">로그인 상태 유지</span>
               </button>
+              </div>
 
               {/* 로그인 버튼 */}
-              <PrimaryButton text="로그인" className="w-full bg-blue-600" disabled={!isValid} />
+              <PrimaryButton
+                text="로그인"
+                className={`w-full bg-blue-600 ${isValid ? 'hover:bg-blue-500' : ''}`}
+                disabled={!isValid}
+              />
             </div>
 
             {/* 아이디/비밀번호 찾기 */}
@@ -99,14 +101,7 @@ const LoginPage = () => {
         </div>
 
         {/* 소셜 로그인 */}
-        <div className="flex items-center gap-40">
-          <button type="button" className="cursor-pointer">
-            <GoogleLogo className="size-50" />
-          </button>
-          <button type="button" className="cursor-pointer">
-            <AppleLogo className="size-50" />
-          </button>
-        </div>
+        <GoogleLoginButton className="w-200 h-46" />
 
         {/* 회원가입 안내 */}
         <div className="flex items-center gap-16 font-body-2-r text-gray-400">

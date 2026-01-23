@@ -116,7 +116,11 @@ const SignupAccountPage = () => {
           </div>
 
           {/* 다음 버튼 */}
-          <PrimaryButton text="다음" className="w-280 bg-blue-500" disabled={!isValid || !isEmailVerified} />
+          <PrimaryButton
+            text="다음"
+            className={`w-280 bg-blue-600 ${isValid && isEmailVerified ? 'hover:bg-blue-500' : ''}`}
+            disabled={!isValid || !isEmailVerified}
+          />
         </form>
       </div>
     </div>
