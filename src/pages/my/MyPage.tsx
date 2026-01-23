@@ -50,6 +50,7 @@ const MyPage = () => {
   const [hoveredMenuItem, setHoveredMenuItem] = useState<string | null>(null);
   const [detailViewIndex, setDetailViewIndex] = useState<number | null>(null);
   const [selectedDevices, setSelectedDevices] = useState<number[]>([]);
+  const [savedScrollPosition, setSavedScrollPosition] = useState<number>(0);
   const menuRef = useRef<HTMLDivElement>(null);
 
   // 스크롤 감지 (하단 그라데이션용)
@@ -90,15 +91,18 @@ const MyPage = () => {
 
   // 자세히보기 클릭 핸들러
   const handleDetailView = (index: number) => {
+    setSavedScrollPosition(window.scrollY);
     setDetailViewIndex(index);
     setOpenMenuIndex(null);
     setSelectedDevices([]);
+    window.scrollTo(0, 0);
   };
 
   // 뒤로가기 핸들러
   const handleBackToNormal = () => {
     setDetailViewIndex(null);
     setSelectedDevices([]);
+    window.scrollTo(0, savedScrollPosition);
   };
 
   // 전체 선택 핸들러
