@@ -13,15 +13,18 @@ import { ROUTES } from '@/constants/routes';
 const SignupAccountPage = () => {
   const navigate = useNavigate();
   const [isEmailVerified, setIsEmailVerified] = useState(false);
+  const [hasSubmitted, setHasSubmitted] = useState(false);
 
   const {
     register,
     handleSubmit,
     watch,
-    formState: { errors, isValid },
+    formState: { errors },
   } = useForm<SignupAccountFormData>({
     resolver: zodResolver(signupAccountSchema),
+    // 최초에는 에러를 숨기고, submit 이후에는 onChange로 실시간 갱신되도록
     mode: 'onChange',
+    reValidateMode: 'onChange',
   });
 
   const watchEmail = watch('email');
@@ -53,9 +56,15 @@ const SignupAccountPage = () => {
     alert('사용 가능한 이메일입니다');
   };
 
-  const onSubmit = (_data: SignupAccountFormData) => {
+  const onSubmitValid = (_data: SignupAccountFormData) => {
+    setHasSubmitted(true);
     // TODO: 데이터 저장 (localStorage or state management)
     navigate(ROUTES.auth.signup.profile);
+  };
+
+  const onSubmitInvalid = () => {
+    // 최초 submit 이후부터 에러를 노출 + 실시간 갱신
+    setHasSubmitted(true);
   };
 
   return (
@@ -66,7 +75,10 @@ const SignupAccountPage = () => {
         <StepIndicator currentStep={1} className="mb-24" />
 
         {/* 폼 컨테이너 */}
-        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-40 items-center w-full">
+        <form
+          onSubmit={handleSubmit(onSubmitValid, onSubmitInvalid)}
+          className="flex flex-col gap-40 items-center w-full"
+        >
           {/* 로고 */}
           <p className="font-service-name text-black">Device Life</p>
           {/* 폼 필드 영역 */}
@@ -87,7 +99,7 @@ const SignupAccountPage = () => {
                   className="w-148 absolute top-1/2 -translate-y-1/2 left-[calc(100%+12px)]"
                 />
               </div>
-              {errors.email && (
+              {hasSubmitted && errors.email && (
                 <p className="font-body-3-r text-warning">{errors.email.message}</p>
               )}
             </div>
@@ -98,7 +110,7 @@ const SignupAccountPage = () => {
                 <InputLabel text="비밀번호" className="absolute right-full mr-96 top-1/2 -translate-y-1/2" />
                 <PrimaryInput {...register('password')} type="password" placeholder="비밀번호" maxLength={20} />
               </div>
-              {errors.password && (
+              {hasSubmitted && errors.password && (
                 <p className="font-body-3-r text-warning">{errors.password.message}</p>
               )}
             </div>
@@ -109,18 +121,14 @@ const SignupAccountPage = () => {
                 <InputLabel text="비밀번호확인" className="absolute right-full mr-95 top-1/2 -translate-y-1/2" />
                 <PrimaryInput {...register('passwordConfirm')} type="password" placeholder="비밀번호확인" maxLength={20} />
               </div>
-              {errors.passwordConfirm && (
+              {hasSubmitted && errors.passwordConfirm && (
                 <p className="font-body-3-r text-warning">{errors.passwordConfirm.message}</p>
               )}
             </div>
           </div>
 
           {/* 다음 버튼 */}
-          <PrimaryButton
-            text="다음"
-            className={`w-280 bg-blue-600 ${isValid && isEmailVerified ? 'hover:bg-blue-500' : ''}`}
-            disabled={!isValid || !isEmailVerified}
-          />
+          <PrimaryButton text="다음" className="w-280 bg-blue-600 hover:bg-blue-500" />
         </form>
       </div>
     </div>
