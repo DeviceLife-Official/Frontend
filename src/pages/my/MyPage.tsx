@@ -169,9 +169,13 @@ const MyPage = () => {
           <div className="flex items-center justify-between h-72">
             <h1 className="font-heading-2 text-black">MY Page</h1>
             <div className="flex items-center gap-8">
-              <button className="w-42 h-42 flex items-center justify-center cursor-pointer hover:opacity-80">
+              <a
+                href="https://lovely-potassium-7f2.notion.site/2f0c82f125c980fa8fa0d2ef430bbe79?pvs=74"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-42 h-42 flex items-center justify-center cursor-pointer hover:opacity-80">
                 <SupportIcon className="w-42 h-42 text-black" />
-              </button>
+              </a>
               <button
                 onClick={() => navigate('/my/settings/profile')}
                 className="w-44 h-44 flex items-center justify-center cursor-pointer hover:opacity-80"
