@@ -223,7 +223,7 @@ const DeviceSearchPage = () => {
           <div className="flex items-center gap-0">
             {/* Filter Icon */}
             <button className="w-48 h-48 flex items-center justify-center">
-              <FilterIcon className="w-48 h-48 text-black" />
+              <FilterIcon className={`w-48 h-48 ${selectedPrice.length > 0 || selectedBrand !== null ? 'text-blue-600' : 'text-black'}`} />
             </button>
 
             {/* Price Filter */}
