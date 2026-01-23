@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { signupProfileSchema, type SignupProfileFormData } from '@/schemas/authSchema';
@@ -7,23 +8,41 @@ import InputLabel from '@/components/Auth/Label/InputLabel';
 import StepIndicator from '@/components/Auth/Indicator/StepIndicator';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '@/constants/routes';
+import { useSignupStore } from '@/stores/signupStore';
 
 const SignupProfilePage = () => {
   const navigate = useNavigate();
+  const [hasSubmitted, setHasSubmitted] = useState(false);
+  const { setProfile } = useSignupStore();
 
   const {
     register,
     handleSubmit,
-    formState: { errors, isValid },
+    formState: { errors },
   } = useForm<SignupProfileFormData>({
     resolver: zodResolver(signupProfileSchema),
+    // 최초에는 에러를 숨기고, submit 이후에는 onChange로 실시간 갱신되도록
     mode: 'onChange',
+    reValidateMode: 'onChange',
   });
 
-  const onSubmit = (_data: SignupProfileFormData) => {
+  const onSubmitValid = (data: SignupProfileFormData) => {
+    setHasSubmitted(true);
+
+    // zustand에 프로필 정보 저장 (API 호출 시 한 번에 사용)
+    setProfile({
+      name: data.name,
+      phone: data.phone,
+    });
+
     // TODO: 회원가입 API 호출
     // TODO: 온보딩으로 이동
     navigate(ROUTES.auth.onboarding.lifestyle, { replace: true });
+  };
+
+  const onSubmitInvalid = () => {
+    // 최초 submit 이후부터 에러를 노출 + 실시간 갱신
+    setHasSubmitted(true);
   };
 
   return (
@@ -35,7 +54,10 @@ const SignupProfilePage = () => {
 
 
         {/* 폼 컨테이너 */}
-        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-40 items-center w-full">
+        <form
+          onSubmit={handleSubmit(onSubmitValid, onSubmitInvalid)}
+          className="flex flex-col gap-40 items-center w-full"
+        >
           {/* 로고 */}
           <p className="font-service-name text-black ">Device Life</p>
           {/* 폼 필드 영역 */}
@@ -46,7 +68,7 @@ const SignupProfilePage = () => {
                 <InputLabel text="이름" className="absolute right-full mr-96 top-1/2 -translate-y-1/2" />
                 <PrimaryInput {...register('name')} type="text" placeholder="이름" />
               </div>
-              {errors.name && (
+              {hasSubmitted && errors.name && (
                 <p className="font-body-3-r text-warning">{errors.name.message}</p>
               )}
             </div>
@@ -57,18 +79,14 @@ const SignupProfilePage = () => {
                 <InputLabel text="휴대폰 번호" className="absolute right-full mr-96 top-1/2 -translate-y-1/2" />
                 <PrimaryInput {...register('phone')} type="tel" placeholder="휴대폰 번호" maxLength={11} />
               </div>
-              {errors.phone && (
+              {hasSubmitted && errors.phone && (
                 <p className="font-body-3-r text-warning">{errors.phone.message}</p>
               )}
             </div>
           </div>
 
           {/* 다음 버튼 */}
-          <PrimaryButton
-            text="가입하기"
-            className={`w-280 bg-blue-600 ${isValid ? 'hover:bg-blue-500' : ''}`}
-            disabled={!isValid}
-          />
+          <PrimaryButton text="가입하기" className="w-280 bg-blue-600 hover:bg-blue-500" />
         </form>
       </div>
     </div>
