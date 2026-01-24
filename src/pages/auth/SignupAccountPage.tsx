@@ -9,53 +9,100 @@ import InputLabel from '@/components/Auth/Label/InputLabel';
 import StepIndicator from '@/components/Auth/Indicator/StepIndicator';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '@/constants/routes';
+import { useSignupStore } from '@/stores/signupStore';
+import { usePostJoinEmail } from '@/apis/auth/postJoinEmail';
 
 const SignupAccountPage = () => {
   const navigate = useNavigate();
-  const [isEmailVerified, setIsEmailVerified] = useState(false);
+  const [hasSubmitted, setHasSubmitted] = useState(false);
+  const [hasEmailSubmitted, setHasEmailSubmitted] = useState(false);
+
+  const { setAccount, isEmailVerified, setIsEmailVerified } = useSignupStore();
+  const { mutateAsync: checkEmailDuplicate, isPending: isCheckingEmail } = usePostJoinEmail();
 
   const {
     register,
     handleSubmit,
+    formState: { errors },
+    setError,
+    clearErrors,
+    trigger,
+    getValues,
     watch,
-    formState: { errors, isValid },
   } = useForm<SignupAccountFormData>({
     resolver: zodResolver(signupAccountSchema),
+    // 최초에는 에러를 숨기고, submit 이후에는 onChange로 실시간 갱신되도록
     mode: 'onChange',
+    reValidateMode: 'onChange',
   });
 
-  const watchEmail = watch('email');
+  const emailValue = watch('email');
 
-  // 이메일이 변경되면 중복확인 초기화
+  // 이메일이 비어있으면 중복확인 상태 초기화
   useEffect(() => {
-    setIsEmailVerified(false);
-  }, [watchEmail]);
+    if (!emailValue && isEmailVerified) {
+      setIsEmailVerified(false);
+    }
+  }, [emailValue, isEmailVerified, setIsEmailVerified]);
 
-  // 중복확인 핸들러
+  // 이메일 중복확인 핸들러
   const handleCheckDuplicate = async () => {
-    // const email = getValues('email');
+    setHasEmailSubmitted(true);
+    // 이메일 유효성 검사
+    const isEmailValid = await trigger('email');
+    if (!isEmailValid) return;
 
-    // TODO: 이메일 중복확인 API 호출
-    // try {
-    //   const { isDuplicate } = await checkEmailDuplicate(email);
-    //   if (isDuplicate) {
-    //     alert('이미 사용 중인 이메일입니다');
-    //     return;
-    //   }
-    //   setIsEmailVerified(true);
-    //   alert('사용 가능한 이메일입니다');
-    // } catch (error) {
-    //   alert('중복확인에 실패했습니다');
-    // }
+    // 이메일 값 가져오기
+    const email = getValues('email');
 
-    // 임시: 중복확인 성공 처리
-    setIsEmailVerified(true);
-    alert('사용 가능한 이메일입니다');
+    // 이메일 중복확인 요청
+    try {
+      const data = await checkEmailDuplicate({ email });
+      if (!data.result?.success) {
+        setError('email', {
+          type: 'manual',
+          message: '이미 사용 중인 이메일입니다.',
+        });
+        return;
+      }
+      setIsEmailVerified(true);
+      clearErrors('email');
+      alert('사용 가능한 이메일입니다');
+    } catch (error) {
+      setError('email', {
+        type: 'manual',
+        message: '이메일 중복확인에 실패했습니다. 잠시 후 다시 시도해주세요.',
+      });
+    }
   };
 
-  const onSubmit = (_data: SignupAccountFormData) => {
-    // TODO: 데이터 저장 (localStorage or state management)
+  // 계정 정보 제출 성공 핸들러
+  const onSubmitValid = (data: SignupAccountFormData) => {
+    setHasSubmitted(true);
+
+    // 아직 중복확인이 완료되지 않은 경우
+    if (!isEmailVerified) {
+      setError('email', {
+        type: 'manual',
+        message: '이메일 중복확인을 확인해주세요.',
+      });
+      return;
+    }
+
+    // zustand에 계정 정보 + 중복확인 여부 저장 (API 호출 시 한 번에 사용)
+    setAccount({
+      email: data.email,
+      password: data.password,
+      isEmailVerified: true,
+    });
+    // 프로필 페이지로 이동
     navigate(ROUTES.auth.signup.profile);
+  };
+
+  // 계정 정보 제출 실패 핸들러
+  const onSubmitInvalid = () => {
+    // 최초 submit 이후부터 에러를 노출 + 실시간 갱신
+    setHasSubmitted(true);
   };
 
   return (
@@ -66,7 +113,10 @@ const SignupAccountPage = () => {
         <StepIndicator currentStep={1} className="mb-24" />
 
         {/* 폼 컨테이너 */}
-        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-40 items-center w-full">
+        <form
+          onSubmit={handleSubmit(onSubmitValid, onSubmitInvalid)}
+          className="flex flex-col gap-40 items-center w-full"
+        >
           {/* 로고 */}
           <p className="font-service-name text-black">Device Life</p>
           {/* 폼 필드 영역 */}
@@ -76,7 +126,11 @@ const SignupAccountPage = () => {
               <div className="relative w-400">
                 <InputLabel text="이메일(ID)" className="absolute right-full mr-95 top-1/2 -translate-y-1/2" />
                 <PrimaryInput
-                  {...register('email')}
+                  {...register('email', {
+                    onChange: () => {
+                      setIsEmailVerified(false);
+                    },
+                  })}
                   type="email"
                   placeholder="이메일"
                   disabled={isEmailVerified}
@@ -84,10 +138,10 @@ const SignupAccountPage = () => {
                 <SecondaryButton
                   text="중복확인"
                   onClick={handleCheckDuplicate}
-                  className="w-148 absolute top-1/2 -translate-y-1/2 left-[calc(100%+12px)]"
+                  className={`w-148 absolute top-1/2 -translate-y-1/2 left-[calc(100%+12px)] ${isCheckingEmail && 'cursor-not-allowed'}`}
                 />
               </div>
-              {errors.email && (
+              {(hasSubmitted || hasEmailSubmitted) && errors.email && (
                 <p className="font-body-3-r text-warning">{errors.email.message}</p>
               )}
             </div>
@@ -98,7 +152,7 @@ const SignupAccountPage = () => {
                 <InputLabel text="비밀번호" className="absolute right-full mr-96 top-1/2 -translate-y-1/2" />
                 <PrimaryInput {...register('password')} type="password" placeholder="비밀번호" maxLength={20} />
               </div>
-              {errors.password && (
+              {hasSubmitted && errors.password && (
                 <p className="font-body-3-r text-warning">{errors.password.message}</p>
               )}
             </div>
@@ -109,18 +163,14 @@ const SignupAccountPage = () => {
                 <InputLabel text="비밀번호확인" className="absolute right-full mr-95 top-1/2 -translate-y-1/2" />
                 <PrimaryInput {...register('passwordConfirm')} type="password" placeholder="비밀번호확인" maxLength={20} />
               </div>
-              {errors.passwordConfirm && (
+              {hasSubmitted && errors.passwordConfirm && (
                 <p className="font-body-3-r text-warning">{errors.passwordConfirm.message}</p>
               )}
             </div>
           </div>
 
           {/* 다음 버튼 */}
-          <PrimaryButton
-            text="다음"
-            className={`w-280 bg-blue-600 ${isValid && isEmailVerified ? 'hover:bg-blue-500' : ''}`}
-            disabled={!isValid || !isEmailVerified}
-          />
+          <PrimaryButton text="다음" className="w-280 bg-blue-600 hover:bg-blue-500" />
         </form>
       </div>
     </div>

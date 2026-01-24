@@ -1,5 +1,5 @@
 export type CommonResponse<T = null> = {
-  isSuccess: boolean;
+  success: boolean;
   code: string;
   message: string;
   result?: T;
