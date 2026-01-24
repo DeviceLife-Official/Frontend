@@ -3,6 +3,7 @@ import { create } from 'zustand';
 type SignupAccountState = {
   email: string;
   password: string;
+  isEmailVerified: boolean;
 };
 
 type SignupProfileState = {
@@ -24,6 +25,7 @@ export const useSignupStore = create<SignupStoreState>((set) => ({
   account: {
     email: '',
     password: '',
+    isEmailVerified: false,
   },
   profile: {
     name: '',
@@ -34,6 +36,7 @@ export const useSignupStore = create<SignupStoreState>((set) => ({
   setAccount: (account) =>
     set(() => ({
       account,
+      isEmailVerified: account.isEmailVerified,
     })),
 
   setProfile: (profile) =>
@@ -48,7 +51,7 @@ export const useSignupStore = create<SignupStoreState>((set) => ({
 
   resetSignup: () =>
     set(() => ({
-      account: { email: '', password: '' },
+      account: { email: '', password: '', isEmailVerified: false },
       profile: { name: '', phone: '' },
       isEmailVerified: false,
     })),

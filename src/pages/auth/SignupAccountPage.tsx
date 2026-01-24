@@ -10,16 +10,16 @@ import StepIndicator from '@/components/Auth/Indicator/StepIndicator';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '@/constants/routes';
 import { useSignupStore } from '@/stores/signupStore';
+import { usePostJoinEmail } from '@/apis/auth/postJoinEmail';
 
 const SignupAccountPage = () => {
   const navigate = useNavigate();
   const [hasSubmitted, setHasSubmitted] = useState(false);
   const [hasEmailSubmitted, setHasEmailSubmitted] = useState(false);
 
-  // zustand에서 가져온 계정 정보 관리 함수
   const { setAccount, isEmailVerified, setIsEmailVerified } = useSignupStore();
+  const { mutateAsync: checkEmailDuplicate } = usePostJoinEmail();
 
-  // 계정 정보 입력 폼 상태 관리
   const {
     register,
     handleSubmit,
@@ -27,6 +27,7 @@ const SignupAccountPage = () => {
     setError,
     clearErrors,
     trigger,
+    getValues,
   } = useForm<SignupAccountFormData>({
     resolver: zodResolver(signupAccountSchema),
     // 최초에는 에러를 숨기고, submit 이후에는 onChange로 실시간 갱신되도록
@@ -34,44 +35,36 @@ const SignupAccountPage = () => {
     reValidateMode: 'onChange',
   });
 
-  // 중복확인 핸들러
+  // 이메일 중복확인 핸들러
   const handleCheckDuplicate = async () => {
-    // 이메일 유효성 먼저 검사
     setHasEmailSubmitted(true);
+    // 이메일 유효성 검사
     const isEmailValid = await trigger('email');
+    if (!isEmailValid) return;
 
-    if (!isEmailValid) {
-      // 이메일 형식/필수 요건이 맞지 않으면 중복확인 진행하지 않음
-      return;
+    // 이메일 값 가져오기
+    const email = getValues('email');
+    // 이메일 중복확인 요청
+    try {
+      const data = await checkEmailDuplicate({ email });
+      console.log('이메일 중복확인 응답:', data);
+      if (!data.result?.success) {
+        setError('email', {
+          type: 'manual',
+          message: '이미 사용 중인 이메일입니다.',
+        });
+        return;
+      }
+      setIsEmailVerified(true);
+      clearErrors('email');
+      alert('사용 가능한 이메일입니다');
+    } catch (error) {
+      console.log('이메일 중복확인 에러:', error);
+      setError('email', {
+        type: 'manual',
+        message: '이메일 중복확인에 실패했습니다. 잠시 후 다시 시도해주세요.',
+      });
     }
-
-    // TODO: 이메일 중복확인 API 호출
-    // try {
-    //   const { isDuplicate } = await checkEmailDuplicate(email);
-    //   if (isDuplicate) {
-    //     setError('email', {
-    //       type: 'manual',
-    //       message: '이미 사용 중인 이메일입니다.',
-    //     });
-    //     return;
-    //   }
-    //   setIsEmailVerified(true);
-    //   clearErrors('email');
-    //   alert('사용 가능한 이메일입니다');
-    // } catch (error) {
-    //   setError('email', {
-    //     type: 'manual',
-    //     message: '이메일 중복확인에 실패했습니다. 잠시 후 다시 시도해주세요.',
-    //   });
-    //   return;
-    // }
-
-    // 임시: 중복확인 성공 처리
-    setIsEmailVerified(true);
-    alert('사용 가능한 이메일입니다');
-
-    // 중복확인 성공 시 이메일 에러 문구 즉시 제거
-    clearErrors('email');
   };
 
   // 계정 정보 제출 성공 핸들러
@@ -87,13 +80,13 @@ const SignupAccountPage = () => {
       return;
     }
 
-    // zustand에 계정 정보 저장 (API 호출 시 한 번에 사용)
+    // zustand에 계정 정보 + 중복확인 여부 저장 (API 호출 시 한 번에 사용)
     setAccount({
       email: data.email,
       password: data.password,
+      isEmailVerified: true,
     });
-
-    // TODO: 회원가입 API에서 계정 정보와 프로필 정보를 함께 전송
+    // 프로필 페이지로 이동
     navigate(ROUTES.auth.signup.profile);
   };
 
