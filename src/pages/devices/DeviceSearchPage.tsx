@@ -48,6 +48,11 @@ const DeviceSearchPage = () => {
 
   const productGridRef = useRef<HTMLDivElement>(null);
 
+  // 페이지 마운트 시 상단으로 스크롤
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   /* 선택된 제품 찾기 */
   const selectedProduct = selectedProductId
     ? MOCK_PRODUCTS.find(p => p.id === Number(selectedProductId))
@@ -321,7 +326,10 @@ const DeviceSearchPage = () => {
                 {/* Card */}
                 <div
                   className="bg-white rounded-card px-56 py-40"
-                  style={{ width: 'clamp(903px, calc(903px + (100vw - 1440px) * 0.245833), 1021px)' }}
+                  style={{
+                    width: 'clamp(903px, calc(903px + (100vw - 1440px) * 0.245833), 1021px)',
+                    height: '697px',
+                  }}
                   onClick={(e) => e.stopPropagation()}
                 >
                   {/* Content */}
