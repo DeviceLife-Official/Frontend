@@ -13,6 +13,7 @@ import GoogleLoginButton from '@/components/Button/GoogleLoginButton';
 const LoginPage = () => {
   const navigate = useNavigate();
   const [keepLogin, setKeepLogin] = useState(false);
+  const [isCapsLockOn, setIsCapsLockOn] = useState(false);
 
   // 로그인 폼 상태 관리
   const {
@@ -23,6 +24,9 @@ const LoginPage = () => {
     resolver: zodResolver(loginSchema), // zod 스키마로 검사해줘!
     mode: 'onChange', // 입력할 때마다 검사
   });
+
+  // 비밀번호 입력 필드 등록
+  const passwordRegister = register('password');
 
   // 로그인 제출 핸들러
   // TODO: 로딩 상태 추가 (중복 클릭 방지)
@@ -51,13 +55,18 @@ const LoginPage = () => {
                 <PrimaryInput {...register('email')} type="email" placeholder="이메일" />
                 <div className="flex flex-col gap-4">
                   <PrimaryInput
-                    {...register('password')}
+                    {...passwordRegister}
                     type="password"
                     placeholder="비밀번호"
                     maxLength={20}
+                    onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
+                      setIsCapsLockOn(e.getModifierState('CapsLock'));
+                    }}
                   />
-                  {errors.password && (
-                    <p className="font-body-3-r text-warning">{errors.password.message}</p>
+                  {(errors.password || isCapsLockOn) && (
+                    <p className="font-body-3-r text-warning">
+                      {errors.password?.message || (isCapsLockOn ? 'Caps Lock이 켜져 있습니다.' : '')}
+                    </p>
                   )}
                 </div>
                 {/* 체크박스 */}
