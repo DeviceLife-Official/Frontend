@@ -58,7 +58,6 @@ const SignupAccountPage = () => {
     // 이메일 중복확인 요청
     try {
       const data = await checkEmailDuplicate({ email });
-      console.log('이메일 중복확인 응답:', data);
       if (!data.result?.success) {
         setError('email', {
           type: 'manual',
@@ -70,7 +69,6 @@ const SignupAccountPage = () => {
       clearErrors('email');
       alert('사용 가능한 이메일입니다');
     } catch (error) {
-      console.log('이메일 중복확인 에러:', error);
       setError('email', {
         type: 'manual',
         message: '이메일 중복확인에 실패했습니다. 잠시 후 다시 시도해주세요.',
