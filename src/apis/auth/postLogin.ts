@@ -1,4 +1,4 @@
-import { axiosInstance } from '@/apis/axios';
+import { axiosInstance } from '@/apis/axios/axios';
 import type { LoginRequest, LoginResponse } from '@/types/auth/login';
 import { useMutation } from '@tanstack/react-query';
 

@@ -1,4 +1,4 @@
-import { axiosInstance } from '@/apis/axios';
+import { axiosInstance } from '@/apis/axios/axios';
 import type { UserProfileResponse } from '@/types/user';
 import { useQuery } from '@tanstack/react-query';
 

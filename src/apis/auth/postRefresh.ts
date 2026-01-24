@@ -1,4 +1,4 @@
-import { refreshAxiosInstance } from '@/apis/refreshAxios';
+import { refreshAxiosInstance } from '@/apis/axios/refreshAxios';
 import type { RefreshTokenResponse } from '@/types/auth/refresh';
 import { useMutation } from '@tanstack/react-query';
 
