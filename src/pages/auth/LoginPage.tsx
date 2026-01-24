@@ -10,7 +10,7 @@ import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '@/constants/routes';
 import GoogleLoginButton from '@/components/Button/GoogleLoginButton';
 import { usePostLogin } from '@/apis/auth/postLogin';
-import { setAuthTokens, setUserId } from '@/utils/authStorage';
+import { setAuthTokens } from '@/utils/authStorage';
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -45,15 +45,14 @@ const LoginPage = () => {
         password: data.password,
       });
 
+      console.log('로그인 응답:', response);
+
       // 2. 토큰 저장
       if (response.result) {
         setAuthTokens({
           accessToken: response.result.accessToken,
           refreshToken: response.result.refreshToken,
         });
-
-        // (선택) 사용자 ID 저장
-        setUserId(response.result.userId);
       }
 
       // 3. 내정보(me) 호출로 로그인 상태 확정
@@ -63,7 +62,8 @@ const LoginPage = () => {
 
       // 4. 라우팅 - 홈(/) 또는 원래 가려던 페이지로 이동
       navigate(ROUTES.home, { replace: true });
-    } catch (error) {
+    } catch (error: any) {
+      console.log('로그인 에러:', error.response?.data || error);
       // 로그인 실패 시 에러 메시지 표시
       setLoginError('아이디 또는 비밀번호를 확인해주세요.');
     }
@@ -87,7 +87,15 @@ const LoginPage = () => {
             <div className="flex flex-col gap-20 w-full">
               {/* 입력창들 */}
               <div className="flex flex-col gap-8">
-                <PrimaryInput {...register('email')} type="email" placeholder="이메일" />
+                <PrimaryInput
+                  {...register('email', {
+                    onChange: () => {
+                      setLoginError('');
+                    },
+                  })}
+                  type="email"
+                  placeholder="이메일"
+                />
                 <div className="flex flex-col gap-4">
                   <PrimaryInput
                     {...passwordRegister}
@@ -96,6 +104,10 @@ const LoginPage = () => {
                     maxLength={20}
                     onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
                       setIsCapsLockOn(e.getModifierState('CapsLock'));
+                    }}
+                    onChange={(e) => {
+                      passwordRegister.onChange(e);
+                      setLoginError('');
                     }}
                   />
                   {(errors.password || isCapsLockOn || loginError) && (
