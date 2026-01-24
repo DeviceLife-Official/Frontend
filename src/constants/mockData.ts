@@ -76,6 +76,18 @@ export const MOCK_COMBINATIONS: UserCombination[] = [
       { name: '라이프스타일', status: '최적' },
     ],
   },
+  {
+    id: 4,
+    label: '조합 4',
+    name: '새로 생성한 조합',
+    isMain: true,
+    createdAt: '2026.01.01',
+    tags: [
+      { name: '연동성', status: '-' },
+      { name: '편의성', status: '-' },
+      { name: '라이프스타일', status: '-' },
+    ],
+  },
 ];
 
 // 조합별 기기 목록 (추후 API 연동)
@@ -114,4 +126,6 @@ export const MOCK_COMBINATION_DEVICES: Record<number, DeviceSummary[]> = {
     { id: 207, name: 'AirPods Pro 2세대', chargingType: 'USB-C', color: '화이트', image: null },
     { id: 208, name: 'AirPods Pro 2세대', chargingType: 'USB-C', color: '화이트', image: null },
   ],
+  // 조합4: 새로 생성한 조합 (기기 없음)
+  4: [],
 };
