@@ -13,6 +13,7 @@ import { usePostLogin } from '@/apis/auth/postLogin';
 import { setAuthTokens } from '@/utils/authStorage';
 import { useQueryClient } from '@tanstack/react-query';
 import { getUserProfile } from '@/apis/mypage/getUserProfile';
+import { queryKeys } from '@/constants/queryKeys';
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -64,7 +65,7 @@ const LoginPage = () => {
       try {
         const userProfileResponse = await getUserProfile();
         // React Query 캐시에 저장
-        queryClient.setQueryData(['userProfile'], userProfileResponse);
+        queryClient.setQueryData(queryKeys.userProfile, userProfileResponse);
         console.log('유저 정보 조회 성공:', userProfileResponse);
 
         // 4. 라우팅 - 홈(/) 또는 원래 가려던 페이지로 이동
