@@ -66,17 +66,18 @@ const LoginPage = () => {
         // React Query 캐시에 저장
         queryClient.setQueryData(['userProfile'], userProfileResponse);
         console.log('유저 정보 조회 성공:', userProfileResponse);
+
+        // 4. 라우팅 - 홈(/) 또는 원래 가려던 페이지로 이동
+        navigate(ROUTES.home, { replace: true });
       } catch (error) {
-        // 유저 정보 조회 실패 시 알림
+        // 유저 정보 조회 실패 시 알림 및 현재 페이지 유지
         alert('유저 정보를 불러오는데 실패했습니다. 잠시 후 다시 시도해주세요.');
         console.log('유저 정보 조회 실패:', error);
-      }
 
-      // 4. 라우팅 - 홈(/) 또는 원래 가려던 페이지로 이동
-      navigate(ROUTES.home, { replace: true });
+      }
     } catch (error: any) {
-      console.log('로그인 에러:', error.response?.data || error);
       // 로그인 실패 시 에러 메시지 표시
+      console.log('로그인 에러:', error.response?.data || error);
       setLoginError('아이디 또는 비밀번호를 확인해주세요.');
     }
   };
