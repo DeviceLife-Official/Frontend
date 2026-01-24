@@ -9,11 +9,14 @@ import CheckboxOn from '@/assets/icons/checkbox_on.svg?react';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '@/constants/routes';
 import GoogleLoginButton from '@/components/Button/GoogleLoginButton';
+import { usePostLogin } from '@/apis/auth/postLogin';
+import { setAuthTokens, setUserId } from '@/utils/authStorage';
 
 const LoginPage = () => {
   const navigate = useNavigate();
   const [keepLogin, setKeepLogin] = useState(false);
   const [isCapsLockOn, setIsCapsLockOn] = useState(false);
+  const [loginError, setLoginError] = useState<string>('');
 
   // 로그인 폼 상태 관리
   const {
@@ -28,10 +31,42 @@ const LoginPage = () => {
   // 비밀번호 입력 필드 등록
   const passwordRegister = register('password');
 
+  // 로그인 API 훅
+  const { mutateAsync: login, isPending } = usePostLogin();
+
   // 로그인 제출 핸들러
-  // TODO: 로딩 상태 추가 (중복 클릭 방지)
-  const onSubmit = (_data: LoginFormData) => {
-    // TODO: 로그인 API 호출
+  const onSubmit = async (data: LoginFormData) => {
+    setLoginError('');
+
+    try {
+      // 1. 로그인 API 호출
+      const response = await login({
+        email: data.email,
+        password: data.password,
+      });
+
+      // 2. 토큰 저장
+      if (response.result) {
+        setAuthTokens({
+          accessToken: response.result.accessToken,
+          refreshToken: response.result.refreshToken,
+        });
+
+        // (선택) 사용자 ID 저장
+        setUserId(response.result.userId);
+      }
+
+      // 3. 내정보(me) 호출로 로그인 상태 확정
+      // TODO: me API 호출 구현
+      // const meResponse = await getMe();
+      // 성공하면 React Query 캐시에 저장되거나 Zustand에 저장
+
+      // 4. 라우팅 - 홈(/) 또는 원래 가려던 페이지로 이동
+      navigate(ROUTES.home, { replace: true });
+    } catch (error) {
+      // 로그인 실패 시 에러 메시지 표시
+      setLoginError('아이디 또는 비밀번호를 확인해주세요.');
+    }
   };
 
   return (
@@ -63,9 +98,11 @@ const LoginPage = () => {
                       setIsCapsLockOn(e.getModifierState('CapsLock'));
                     }}
                   />
-                  {(errors.password || isCapsLockOn) && (
+                  {(errors.password || isCapsLockOn || loginError) && (
                     <p className="font-body-3-r text-warning">
-                      {errors.password?.message || (isCapsLockOn ? 'Caps Lock이 켜져 있습니다.' : '')}
+                      {errors.password?.message ||
+                        (isCapsLockOn ? 'Caps Lock이 켜져 있습니다.' : '') ||
+                        loginError}
                     </p>
                   )}
                 </div>
@@ -83,8 +120,8 @@ const LoginPage = () => {
               {/* 로그인 버튼 */}
               <PrimaryButton
                 text="로그인"
-                className={`w-full bg-blue-600 ${isValid ? 'hover:bg-blue-500' : ''}`}
-                disabled={!isValid}
+                className={`w-full bg-blue-600 ${isValid && !isPending ? 'hover:bg-blue-500' : ''}`}
+                disabled={!isValid || isPending}
               />
             </div>
 
