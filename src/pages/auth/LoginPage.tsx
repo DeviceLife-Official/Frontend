@@ -11,6 +11,8 @@ import { ROUTES } from '@/constants/routes';
 import GoogleLoginButton from '@/components/Button/GoogleLoginButton';
 import { usePostLogin } from '@/apis/auth/postLogin';
 import { setAuthTokens } from '@/utils/authStorage';
+import { useQueryClient } from '@tanstack/react-query';
+import { getUserProfile } from '@/apis/mypage/getUserProfile';
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -34,6 +36,9 @@ const LoginPage = () => {
   // 로그인 API 훅
   const { mutateAsync: login, isPending } = usePostLogin();
 
+  // React Query 클라이언트
+  const queryClient = useQueryClient();
+
   // 로그인 제출 핸들러
   const onSubmit = async (data: LoginFormData) => {
     setLoginError('');
@@ -56,9 +61,16 @@ const LoginPage = () => {
       }
 
       // 3. 내정보(me) 호출로 로그인 상태 확정
-      // TODO: me API 호출 구현
-      // const meResponse = await getMe();
-      // 성공하면 React Query 캐시에 저장되거나 Zustand에 저장
+      try {
+        const userProfileResponse = await getUserProfile();
+        // React Query 캐시에 저장
+        queryClient.setQueryData(['userProfile'], userProfileResponse);
+        console.log('유저 정보 조회 성공:', userProfileResponse);
+      } catch (error) {
+        // 유저 정보 조회 실패 시 알림
+        alert('유저 정보를 불러오는데 실패했습니다. 잠시 후 다시 시도해주세요.');
+        console.log('유저 정보 조회 실패:', error);
+      }
 
       // 4. 라우팅 - 홈(/) 또는 원래 가려던 페이지로 이동
       navigate(ROUTES.home, { replace: true });
