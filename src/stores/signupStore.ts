@@ -7,8 +7,8 @@ type SignupAccountState = {
 };
 
 type SignupProfileState = {
-  name: string;
-  phone: string;
+  username: string;
+  phoneNumber: string;
 };
 
 type SignupStoreState = {
@@ -28,8 +28,8 @@ export const useSignupStore = create<SignupStoreState>((set) => ({
     isEmailVerified: false,
   },
   profile: {
-    name: '',
-    phone: '',
+    username: '',
+    phoneNumber: '',
   },
   isEmailVerified: false,
 
@@ -52,7 +52,7 @@ export const useSignupStore = create<SignupStoreState>((set) => ({
   resetSignup: () =>
     set(() => ({
       account: { email: '', password: '', isEmailVerified: false },
-      profile: { name: '', phone: '' },
+      profile: { username: '', phoneNumber: '' },
       isEmailVerified: false,
     })),
 }));

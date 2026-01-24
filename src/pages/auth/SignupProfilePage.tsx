@@ -9,11 +9,13 @@ import StepIndicator from '@/components/Auth/Indicator/StepIndicator';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '@/constants/routes';
 import { useSignupStore } from '@/stores/signupStore';
+import { usePostJoin } from '@/apis/auth/postJoin';
 
 const SignupProfilePage = () => {
   const navigate = useNavigate();
   const [hasSubmitted, setHasSubmitted] = useState(false);
-  const { setProfile } = useSignupStore();
+  const { account, setProfile } = useSignupStore();
+  const { mutateAsync: signup } = usePostJoin();
 
   // 프로필 정보 입력 폼 상태 관리
   const {
@@ -28,18 +30,35 @@ const SignupProfilePage = () => {
   });
 
   // 프로필 정보 제출 성공 핸들러
-  const onSubmitValid = (data: SignupProfileFormData) => {
+  const onSubmitValid = async (data: SignupProfileFormData) => {
     setHasSubmitted(true);
 
-    // zustand에 프로필 정보 저장 (API 호출 시 한 번에 사용)
+    // 이메일 중복확인 여부 확인
+    if (!account.isEmailVerified) {
+      // 중복확인 안 했으면 계정 페이지로 이동
+      navigate(ROUTES.auth.signup.account, { replace: true });
+      return;
+    }
+
+    // zustand에 프로필 정보 저장
     setProfile({
-      name: data.name,
-      phone: data.phone,
+      username: data.name,
+      phoneNumber: data.phone,
     });
 
-    // TODO: 회원가입 API 호출
-    // TODO: 온보딩으로 이동
-    navigate(ROUTES.auth.onboarding.lifestyle, { replace: true });
+    // 회원가입 API 호출
+    try {
+      await signup({
+        email: account.email,
+        password: account.password,
+        username: data.name,
+        phoneNumber: data.phone,
+      });
+      // 성공 시 온보딩으로 이동
+      navigate(ROUTES.auth.onboarding.lifestyle, { replace: true });
+    } catch (error) {
+      alert('회원가입에 실패했습니다. 잠시 후 다시 시도해주세요.');
+    }
   };
 
   // 프로필 정보 제출 실패 핸들러

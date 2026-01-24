@@ -1,8 +1,8 @@
-import { axiosInstance } from '../axios';
+import { axiosInstance } from '@/apis/axios';
 import type {
   EmailDuplicateRequest,
   EmailDuplicateResponse,
-} from '../../types/auth/signup';
+} from '@/types/auth/signup';
 import { useMutation } from '@tanstack/react-query';
 
 export const postJoinEmail = async (
