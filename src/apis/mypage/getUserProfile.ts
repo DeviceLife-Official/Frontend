@@ -1,6 +1,6 @@
 import { axiosInstance } from '@/apis/axios/axios';
 import type { UserProfileResponse } from '@/types/user';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, type UseQueryOptions } from '@tanstack/react-query';
 import { queryKeys } from '@/constants/queryKeys';
 
 export const getUserProfile = async (): Promise<UserProfileResponse> => {
@@ -8,9 +8,12 @@ export const getUserProfile = async (): Promise<UserProfileResponse> => {
   return data;
 };
 
-export const useGetUserProfile = () => {
-  return useQuery({
+export const useGetUserProfile = (
+  options?: Omit<UseQueryOptions<UserProfileResponse>, 'queryKey' | 'queryFn'>
+) => {
+  return useQuery<UserProfileResponse>({
     queryKey: queryKeys.userProfile,
     queryFn: getUserProfile,
+    ...options,
   });
 };
