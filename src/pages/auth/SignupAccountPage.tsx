@@ -18,7 +18,7 @@ const SignupAccountPage = () => {
   const [hasEmailSubmitted, setHasEmailSubmitted] = useState(false);
 
   const { setAccount, isEmailVerified, setIsEmailVerified } = useSignupStore();
-  const { mutateAsync: checkEmailDuplicate } = usePostJoinEmail();
+  const { mutateAsync: checkEmailDuplicate, isPending: isCheckingEmail } = usePostJoinEmail();
 
   const {
     register,
@@ -140,7 +140,7 @@ const SignupAccountPage = () => {
                 <SecondaryButton
                   text="중복확인"
                   onClick={handleCheckDuplicate}
-                  className="w-148 absolute top-1/2 -translate-y-1/2 left-[calc(100%+12px)]"
+                  className={`w-148 absolute top-1/2 -translate-y-1/2 left-[calc(100%+12px)] ${isCheckingEmail && 'cursor-not-allowed'}`}
                 />
               </div>
               {(hasSubmitted || hasEmailSubmitted) && errors.email && (
