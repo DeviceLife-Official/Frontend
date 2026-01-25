@@ -6,9 +6,7 @@ import { hasAuthTokens } from '@/utils/authStorage';
 
 // 유저 정보 조회 API
 export const getUserProfile = async (): Promise<UserProfileResult> => {
-  console.log('[4-1] 유저 정보 API 요청 전송', { url: '/api/mypage/user-profile' });
   const { data } = await axiosInstance.get<UserProfileResponse>('/api/mypage/user-profile');
-  console.log('[4-2] 유저 정보 API 응답 수신', { data });
   if (!data?.result) {
     throw new Error('유저 정보가 없습니다.');
   }

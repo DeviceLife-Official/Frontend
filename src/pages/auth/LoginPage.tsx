@@ -42,56 +42,37 @@ const LoginPage = () => {
 
   // 로그인 제출 핸들러
   const onSubmit = async (data: LoginFormData) => {
-    console.log('[1단계] 로그인 폼 제출 시작', { email: data.email });
     setLoginError('');
 
     try {
       // 1. 로그인 API 호출
-      console.log('[2단계] 로그인 API 호출 시작');
       const response = await login({
         email: data.email,
         password: data.password,
       });
 
-      console.log('[2단계] ✅ 로그인 API 호출 성공', { response });
-
       // 2. 토큰 저장
-      console.log('[3단계] 토큰 저장 시작');
       if (response.result) {
         setAuthTokens({
           accessToken: response.result.accessToken,
           refreshToken: response.result.refreshToken,
         });
-        console.log('[3단계] ✅ 토큰 저장 완료', {
-          hasAccessToken: !!response.result.accessToken,
-          hasRefreshToken: !!response.result.refreshToken,
-        });
-      } else {
-        console.log('[3단계] ⚠️ 토큰이 응답에 없음');
       }
 
       // 3. 유저 정보 호출로 로그인 상태 확정
-      console.log('[4단계] 유저 정보 조회 시작');
       try {
         const userProfile = await getUserProfile();
         // React Query 캐시에 저장
-        console.log('[4-3] React Query 캐시에 유저 정보 저장 시작');
         queryClient.setQueryData(queryKeys.userProfile, userProfile);
-        console.log('[4-3] ✅ React Query 캐시에 유저 정보 저장 완료');
-        console.log('[4단계] ✅ 유저 정보 조회 성공', { userProfile });
 
         // 4. 라우팅 - 홈(/) 또는 원래 가려던 페이지로 이동
-        console.log('[5단계] 홈으로 이동 시작');
         navigate(ROUTES.home, { replace: true });
-        console.log('[5단계] ✅ 홈으로 이동 완료');
       } catch (error) {
         // 유저 정보 조회 실패 시 알림 및 현재 페이지 유지
-        console.log('[4단계] ❌ 유저 정보 조회 실패', { error });
         alert('유저 정보를 불러오는데 실패했습니다. 잠시 후 다시 시도해주세요.');
       }
     } catch (error: any) {
       // 로그인 실패 시 에러 메시지 표시
-      console.log('[2단계] ❌ 로그인 API 호출 실패', { error: error.response?.data || error });
       setLoginError('아이디 또는 비밀번호를 확인해주세요.');
     }
   };

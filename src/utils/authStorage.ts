@@ -11,13 +11,8 @@ type AuthTokens = {
 
 // 액세스 토큰과 리프레시 토큰을 한번에 저장
 export const setAuthTokens = ({ accessToken, refreshToken }: AuthTokens): void => {
-  console.log('[3-1] localStorage에 토큰 저장 시작');
   localStorage.setItem(ACCESS_TOKEN, accessToken);
   localStorage.setItem(REFRESH_TOKEN, refreshToken);
-  console.log('[3-2] ✅ localStorage에 토큰 저장 완료', {
-    accessTokenLength: accessToken.length,
-    refreshTokenLength: refreshToken.length,
-  });
 };
 
 // 액세스 토큰 가져오기
