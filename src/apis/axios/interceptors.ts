@@ -31,6 +31,12 @@ export const setupResponseInterceptor = (instance: AxiosInstance) => {
 
       // 401 에러이고, 재시도한 요청이 아닌 경우
       if (error.response?.status === 401 && !originalRequest._retry) {
+        // refreshToken이 없으면 (비로그인 상황) 바로 에러 반환
+        const refreshToken = getRefreshToken();
+        if (!refreshToken) {
+          return Promise.reject(error);
+        }
+
         // 이미 refresh 중이면 refreshPromise를 기다림
         if (refreshPromise) {
           try {
@@ -47,11 +53,6 @@ export const setupResponseInterceptor = (instance: AxiosInstance) => {
         // refresh Promise 생성
         refreshPromise = (async () => {
           try {
-            // refreshToken 가져오기
-            const refreshToken = getRefreshToken();
-            if (!refreshToken) {
-              throw new Error('Refresh token이 없습니다.');
-            }
 
             // refreshAxiosInstance로 토큰 재발급 요청
             const { data } = await refreshAxiosInstance.post<RefreshTokenResponse>(
