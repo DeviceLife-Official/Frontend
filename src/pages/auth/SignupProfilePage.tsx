@@ -10,12 +10,14 @@ import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '@/constants/routes';
 import { useSignupStore } from '@/stores/signupStore';
 import { usePostJoin } from '@/apis/auth/postJoin';
+import { useLoginFlow } from '@/hooks/useLoginFlow';
 
 const SignupProfilePage = () => {
   const navigate = useNavigate();
   const [hasSubmitted, setHasSubmitted] = useState(false);
   const { account, setProfile } = useSignupStore();
   const { mutateAsync: signup } = usePostJoin();
+  const { loginAndFinalize } = useLoginFlow();
 
   // 프로필 정보 입력 폼 상태 관리
   const {
@@ -54,8 +56,21 @@ const SignupProfilePage = () => {
         username: data.name,
         phoneNumber: data.phone,
       });
-      // 성공 시 온보딩으로 이동
-      navigate(ROUTES.auth.onboarding.lifestyle, { replace: true });
+
+      // 회원가입 성공 후 자동 로그인
+      try {
+        await loginAndFinalize({
+          email: account.email,
+          password: account.password,
+        });
+
+        // 로그인 성공 시 온보딩으로 이동
+        navigate(ROUTES.auth.onboarding.lifestyle, { replace: true });
+      } catch (loginError) {
+        // 로그인 실패 시 알림
+        alert('회원가입은 완료되었지만 자동 로그인에 실패했습니다. 로그인 페이지에서 다시 시도해주세요.');
+        navigate(ROUTES.auth.login, { replace: true });
+      }
     } catch (error) {
       alert('회원가입에 실패했습니다. 잠시 후 다시 시도해주세요.');
     }
