@@ -10,7 +10,7 @@ import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '@/constants/routes';
 import GoogleLoginButton from '@/components/Button/GoogleLoginButton';
 import { usePostLogin } from '@/apis/auth/postLogin';
-import { setAuthTokens } from '@/utils/authStorage';
+import { setAuthTokens } from '@/utils/auth/authStorage';
 import { useQueryClient } from '@tanstack/react-query';
 import { getUserProfile } from '@/apis/mypage/getUserProfile';
 import { queryKeys } from '@/constants/queryKeys';

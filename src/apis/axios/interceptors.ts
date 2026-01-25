@@ -1,9 +1,9 @@
 // 요청 및 응답 인터셉터
 import type { InternalAxiosRequestConfig, AxiosInstance } from 'axios';
-import { getAccessToken, getRefreshToken, setAuthTokens, clearAuthTokens } from '@/utils/authStorage';
+import { getAccessToken, getRefreshToken, setAuthTokens, clearAuthTokens } from '@/utils/auth/authStorage';
 import { refreshAxiosInstance } from '@/apis/axios/refreshAxios';
 import type { RefreshTokenResponse } from '@/types/auth/refresh';
-import { setAuthorizationHeader } from '@/utils/setAuthorizationHeader';
+import { setAuthorizationHeader } from '@/utils/auth/setAuthorizationHeader';
 
 // 응답 인터셉터에서 사용할 상태
 let refreshPromise: Promise<string> | null = null; // refresh 진행 중인 Promise
