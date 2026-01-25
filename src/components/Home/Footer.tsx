@@ -45,17 +45,15 @@ const Footer = () => {
           </a>
         </div>
         <div className="flex flex-col gap-12 items-start w-fit">
-          <p className="font-body-1-sm text-white">(주) Device Life</p>
+          <p className="font-body-1-sm text-white">Team Device Life</p>
           <p className="font-body-3-r text-white">
-            대표: 김준환 | 사업자등록번호: 105-30-20492 | 통신판매업: 2023-서울마포-2465
+            UMC 9th (University MakesUs Challenge) | 2025.09 ~ 2026.02
           </p>
-          <p className="font-body-3-r text-white">
-            이메일: ssy08042@kau.kr | 주소: 서울특별시 마포구 와우산로 94, 7층
-          </p>
+          <p className="font-body-3-r text-white">Contact: ssy08042@kau.kr</p>
         </div>
 
         <p className="self-stretch font-body-3-r text-white">
-          © Device Life Co, All rights reserved.
+          © 2026 Device Life, All rights reserved.
         </p>
       </div>
     </footer>
