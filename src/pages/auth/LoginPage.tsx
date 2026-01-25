@@ -10,10 +10,8 @@ import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '@/constants/routes';
 import GoogleLoginButton from '@/components/Button/GoogleLoginButton';
 import { usePostLogin } from '@/apis/auth/postLogin';
-import { setAuthTokens } from '@/utils/auth/authStorage';
 import { useQueryClient } from '@tanstack/react-query';
-import { getUserProfile } from '@/apis/mypage/getUserProfile';
-import { queryKeys } from '@/constants/queryKeys';
+import { finalizeLogin } from '@/utils/auth/finalizeLogin';
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -51,25 +49,21 @@ const LoginPage = () => {
         password: data.password,
       });
 
-      // 2. 토큰 저장
+      // 2. 토큰 저장 및 유저 정보 캐시
       if (response.result) {
-        setAuthTokens({
-          accessToken: response.result.accessToken,
-          refreshToken: response.result.refreshToken,
-        });
-      }
+        try {
+          await finalizeLogin(
+            response.result.accessToken,
+            response.result.refreshToken,
+            queryClient
+          );
 
-      // 3. 유저 정보 호출로 로그인 상태 확정
-      try {
-        const userProfile = await getUserProfile();
-        // React Query 캐시에 저장
-        queryClient.setQueryData(queryKeys.userProfile, userProfile);
-
-        // 4. 라우팅 - 홈(/) 또는 원래 가려던 페이지로 이동
-        navigate(ROUTES.home, { replace: true });
-      } catch (error) {
-        // 유저 정보 조회 실패 시 알림 및 현재 페이지 유지
-        alert('유저 정보를 불러오는데 실패했습니다. 잠시 후 다시 시도해주세요.');
+          // 3. 라우팅 - 홈(/) 또는 원래 가려던 페이지로 이동
+          navigate(ROUTES.home, { replace: true });
+        } catch (error) {
+          // 유저 정보 조회 실패 시 알림 및 현재 페이지 유지
+          alert('유저 정보를 불러오는데 실패했습니다. 잠시 후 다시 시도해주세요.');
+        }
       }
     } catch (error: any) {
       // 로그인 실패 시 에러 메시지 표시
