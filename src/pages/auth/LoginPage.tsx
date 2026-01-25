@@ -9,10 +9,17 @@ import CheckboxOn from '@/assets/icons/checkbox_on.svg?react';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '@/constants/routes';
 import GoogleLoginButton from '@/components/Button/GoogleLoginButton';
+import { usePostLogin } from '@/apis/auth/postLogin';
+import { setAuthTokens } from '@/utils/authStorage';
+import { useQueryClient } from '@tanstack/react-query';
+import { getUserProfile } from '@/apis/mypage/getUserProfile';
+import { queryKeys } from '@/constants/queryKeys';
 
 const LoginPage = () => {
   const navigate = useNavigate();
   const [keepLogin, setKeepLogin] = useState(false);
+  const [isCapsLockOn, setIsCapsLockOn] = useState(false);
+  const [loginError, setLoginError] = useState<string>('');
 
   // 로그인 폼 상태 관리
   const {
@@ -24,10 +31,50 @@ const LoginPage = () => {
     mode: 'onChange', // 입력할 때마다 검사
   });
 
+  // 비밀번호 입력 필드 등록
+  const passwordRegister = register('password');
+
+  // 로그인 API 훅
+  const { mutateAsync: login, isPending } = usePostLogin();
+
+  // React Query 클라이언트
+  const queryClient = useQueryClient();
+
   // 로그인 제출 핸들러
-  // TODO: 로딩 상태 추가 (중복 클릭 방지)
-  const onSubmit = (_data: LoginFormData) => {
-    // TODO: 로그인 API 호출
+  const onSubmit = async (data: LoginFormData) => {
+    setLoginError('');
+
+    try {
+      // 1. 로그인 API 호출
+      const response = await login({
+        email: data.email,
+        password: data.password,
+      });
+
+      // 2. 토큰 저장
+      if (response.result) {
+        setAuthTokens({
+          accessToken: response.result.accessToken,
+          refreshToken: response.result.refreshToken,
+        });
+      }
+
+      // 3. 유저 정보 호출로 로그인 상태 확정
+      try {
+        const userProfile = await getUserProfile();
+        // React Query 캐시에 저장
+        queryClient.setQueryData(queryKeys.userProfile, userProfile);
+
+        // 4. 라우팅 - 홈(/) 또는 원래 가려던 페이지로 이동
+        navigate(ROUTES.home, { replace: true });
+      } catch (error) {
+        // 유저 정보 조회 실패 시 알림 및 현재 페이지 유지
+        alert('유저 정보를 불러오는데 실패했습니다. 잠시 후 다시 시도해주세요.');
+      }
+    } catch (error: any) {
+      // 로그인 실패 시 에러 메시지 표시
+      setLoginError('아이디 또는 비밀번호를 확인해주세요.');
+    }
   };
 
   return (
@@ -48,16 +95,35 @@ const LoginPage = () => {
             <div className="flex flex-col gap-20 w-full">
               {/* 입력창들 */}
               <div className="flex flex-col gap-8">
-                <PrimaryInput {...register('email')} type="email" placeholder="이메일" />
+                <PrimaryInput
+                  {...register('email', {
+                    onChange: () => {
+                      setLoginError('');
+                    },
+                  })}
+                  type="email"
+                  placeholder="이메일"
+                />
                 <div className="flex flex-col gap-4">
                   <PrimaryInput
-                    {...register('password')}
+                    {...passwordRegister}
                     type="password"
                     placeholder="비밀번호"
                     maxLength={20}
+                    onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
+                      setIsCapsLockOn(e.getModifierState('CapsLock'));
+                    }}
+                    onChange={(e) => {
+                      passwordRegister.onChange(e);
+                      setLoginError('');
+                    }}
                   />
-                  {errors.password && (
-                    <p className="font-body-3-r text-warning">{errors.password.message}</p>
+                  {(errors.password || isCapsLockOn || loginError) && (
+                    <p className="font-body-3-r text-warning">
+                      {errors.password?.message ||
+                        (isCapsLockOn ? 'Caps Lock이 켜져 있습니다.' : '') ||
+                        loginError}
+                    </p>
                   )}
                 </div>
                 {/* 체크박스 */}
@@ -74,8 +140,8 @@ const LoginPage = () => {
               {/* 로그인 버튼 */}
               <PrimaryButton
                 text="로그인"
-                className={`w-full bg-blue-600 ${isValid ? 'hover:bg-blue-500' : ''}`}
-                disabled={!isValid}
+                className={`w-full bg-blue-600 ${isValid && !isPending ? 'hover:bg-blue-500' : ''}`}
+                disabled={!isValid || isPending}
               />
             </div>
 
