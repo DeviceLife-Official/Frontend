@@ -5,10 +5,12 @@ import OnboardingLifestyleTag from '@/components/Lifestyle/OnboardingLifestyleTa
 import StepIndicator from '@/components/Auth/Indicator/StepIndicator';
 import { ROUTES } from '@/constants/routes';
 import { useGroupedTags } from '@/hooks/useGroupedTags';
+import { usePostUserTags } from '@/apis/tag/postTags';
 
 const OnboardingLifestylePage = () => {
   const navigate = useNavigate();
   const { tags } = useGroupedTags();
+  const { mutateAsync: saveTags, isPending } = usePostUserTags();
   const [selectedInterest, setSelectedInterest] = useState<number[]>([]);
   const [selectedLifestyle, setSelectedLifestyle] = useState<number[]>([]);
   const [selectedBrand, setSelectedBrand] = useState<number[]>([]);
@@ -31,16 +33,15 @@ const OnboardingLifestylePage = () => {
     selectedLifestyle.length > 0 &&
     selectedBrand.length > 0;
 
-  const handleNext = () => {
-    // TODO: 선택한 라이프스타일 저장 (Context/API)
+  const handleNext = async () => {
     const allSelectedTagIds = [...selectedInterest, ...selectedLifestyle, ...selectedBrand];
-    console.log({
-      tagIds: allSelectedTagIds,
-      interest: selectedInterest,
-      lifestyle: selectedLifestyle,
-      brand: selectedBrand,
-    });
-    navigate(ROUTES.auth.onboarding.combination, { replace: true });
+
+    try {
+      await saveTags({ tagIds: allSelectedTagIds });
+      navigate(ROUTES.auth.onboarding.combination, { replace: true });
+    } catch (error) {
+      alert('태그 저장에 실패했습니다. 잠시 후 다시 시도해주세요.');
+    }
   };
 
   return (
@@ -124,8 +125,8 @@ const OnboardingLifestylePage = () => {
           {/* 다음 버튼 */}
           <PrimaryButton
             text="다음"
-            disabled={!isAllSelected}
-            className={`w-280 ${isAllSelected ? 'bg-blue-600 hover:bg-blue-500' : ''}`}
+            disabled={!isAllSelected || isPending}
+            className={`w-280 ${isAllSelected && !isPending ? 'bg-blue-600 hover:bg-blue-500' : ''}`}
             onClick={handleNext}
           />
         </div>
