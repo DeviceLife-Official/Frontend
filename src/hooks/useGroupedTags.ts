@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { useGetTags } from '@/apis/tag/getTags';
-import { splitTagsForOnboarding, type OnboardingTagGroups } from '@/utils/tag/splitTags';
+import { splitTags, type TagGroups } from '@/utils/tag/splitTags';
 
 /**
  * 태그 목록 조회 및 온보딩 그룹별 분류 훅
@@ -11,7 +11,7 @@ import { splitTagsForOnboarding, type OnboardingTagGroups } from '@/utils/tag/sp
 export const useGroupedTags = () => {
   const { data: tags, isLoading, error } = useGetTags();
 
-  const groupedTags: OnboardingTagGroups = useMemo(() => {
+  const groupedTags: TagGroups = useMemo(() => {
     if (!tags || tags.length === 0) {
       return {
         interest: [],
@@ -20,7 +20,7 @@ export const useGroupedTags = () => {
         unknown: [],
       };
     }
-    return splitTagsForOnboarding(tags);
+    return splitTags(tags);
   }, [tags]);
 
   return {
