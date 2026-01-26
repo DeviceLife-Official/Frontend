@@ -1,8 +1,9 @@
 import OnboardingLines from '@/assets/icons/onboarding_lines.svg?react';
+import { useGetUserProfile } from '@/apis/mypage/getUserProfile';
 
 const OnboardingCompletePage = () => {
-  // TODO: 사용자 이름은 전역 상태 또는 API에서 받아오기
-  const userName = '안안안안안안';
+  const { data: userProfile } = useGetUserProfile();
+  const userName = userProfile?.username ?? '';
 
   // 한글과 영문 길이 체크 함수
   const checkNameLength = (name: string) => {
