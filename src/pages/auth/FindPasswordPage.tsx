@@ -6,9 +6,11 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { findPasswordSchema, type FindPasswordFormData } from '@/schemas/authSchema';
 import PrimaryInput from '@/components/Input/PrimaryInput';
 import GoogleLoginButton from '@/components/Button/GoogleLoginButton';
+import { usePostSendMail } from '@/apis/findCredential/postFindPassword';
 
 const FindPasswordPage = () => {
   const navigate = useNavigate();
+  const { mutateAsync: sendMail, isPending } = usePostSendMail();
 
   const {
     register,
@@ -20,9 +22,19 @@ const FindPasswordPage = () => {
   });
 
   // 인증번호 받기 제출 핸들러
-  const onSubmit = (data: FindPasswordFormData) => {
-    // TODO: 인증번호 받기 API 호출
-    console.log(data);
+  const onSubmit = async (data: FindPasswordFormData) => {
+    try {
+      const response = await sendMail({ email: data.email });
+
+      if (response.success) {
+        // 성공 시 step2로 이동 (TODO: step2 구현 후 연결)
+        alert('인증번호가 발송되었습니다. 이메일을 확인해주세요.');
+      } else {
+        alert('인증번호 발송에 실패했습니다. 다시 시도해주세요.');
+      }
+    } catch {
+      alert('오류가 발생했습니다. 다시 시도해주세요.');
+    }
   };
 
   return (
@@ -51,7 +63,11 @@ const FindPasswordPage = () => {
                 )}
               </div>
               {/* 인증번호 받기 버튼 */}
-              <PrimaryButton text="인증번호 받기" className="w-full bg-blue-600" />
+              <PrimaryButton
+                text={isPending ? '발송 중...' : '인증번호 받기'}
+                className="w-full bg-blue-600 hover:bg-blue-500"
+                disabled={isPending}
+              />
             </div>
 
             {/* 아이디/비밀번호 찾기 */}
