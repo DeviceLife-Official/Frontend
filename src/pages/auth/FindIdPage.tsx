@@ -73,7 +73,7 @@ const FindIdPage = () => {
           <div className="flex items-center gap-16 font-body-2-r text-gray-400">
             <button
               type="button"
-              className="cursor-pointer"
+              className="cursor-pointer hover:opacity-80"
               onClick={() => navigate(ROUTES.auth.findId)}
             >
               아이디 찾기
@@ -81,7 +81,7 @@ const FindIdPage = () => {
             <span>|</span>
             <button
               type="button"
-              className="cursor-pointer"
+              className="cursor-pointer hover:opacity-80"
               onClick={() => navigate(ROUTES.auth.findPassword)}
             >
               비밀번호 찾기
@@ -96,7 +96,7 @@ const FindIdPage = () => {
             <span>아직 Device Life 회원이 아니신가요?</span>
             <button
               type="button"
-              className="underline underline-offset-4 cursor-pointer"
+              className="underline underline-offset-4 cursor-pointer hover:opacity-80"
               onClick={() => navigate(ROUTES.auth.signup.base)}
             >
               회원가입 하기
