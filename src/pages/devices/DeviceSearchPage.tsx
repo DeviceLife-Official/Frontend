@@ -487,8 +487,8 @@ const DeviceSearchPage = () => {
             {/* Combination Detail Modal - 기기 리스트 */}
             {modalView === 'combinationDetail' && selectedCombination && (
               <div
-                className="flex flex-col items-start gap-20 pointer-events-auto self-start overflow-y-auto scrollbar-minimal"
-                style={{ maxHeight: '100vh', paddingTop: '50px' }}
+                className="flex flex-col items-start gap-20 pointer-events-auto"
+                style={{ paddingTop: '50px' }}
               >
                 {/* Header: Back + X 버튼 */}
                 <div className="flex items-center justify-between w-full">
@@ -510,9 +510,10 @@ const DeviceSearchPage = () => {
 
                 {/* Card */}
                 <div
-                  className="bg-white rounded-card shadow-[0_0_10px_rgba(0,0,0,0.25)] mb-50"
+                  className="bg-white rounded-card shadow-[0_0_10px_rgba(0,0,0,0.25)] mb-50 overflow-y-auto scrollbar-minimal"
                   style={{
                     width: '907px',
+                    height: '670px',
                   }}
                   onClick={(e) => e.stopPropagation()}
                 >
