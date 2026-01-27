@@ -62,7 +62,7 @@ const OnboardingCombinationPage = () => {
                   {...register('combinationName')}
                   type="text"
                   placeholder="생성하고 싶은 조합명을 입력하세요"
-                  className="w-600 h-72 px-20 py-20 rounded-button bg-blue-100 placeholder-gray-300 font-body-1-r outline-none"
+                  className="w-500 h-52 px-20 py-20 rounded-button bg-blue-100 placeholder-gray-300 font-body-2-r outline-none"
                 />
               </div>
               <PrimaryButton
@@ -83,7 +83,7 @@ const OnboardingCombinationPage = () => {
 
       {/* Step 2: 조합명 확인 */}
       {step === 2 && (
-        <div className="flex flex-col items-center gap-120">
+        <div className="flex flex-col items-center gap-100">
           <div className="flex flex-col items-center gap-44">
             {/* 조합명 표시 박스 (double border) */}
             <div className="relative w-638 h-111">
