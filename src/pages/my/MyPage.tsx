@@ -436,9 +436,9 @@ const MyPage = () => {
 
                         {/* 총 가격 */}
                         <div className="px-56 pb-36">
-                          <div className="flex items-center gap-40 p-20">
+                          <div className="flex items-center gap-24 p-20">
                             <p className="font-body-1-sm text-black">총 가격</p>
-                            <div className="flex items-center gap-8">
+                            <div className="flex items-center gap-4">
                               <p className="font-body-1-sm text-blue-600">₩</p>
                               <p className="font-body-1-sm text-blue-600">1,550,000</p>
                             </div>
