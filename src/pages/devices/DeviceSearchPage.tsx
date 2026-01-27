@@ -339,7 +339,7 @@ const DeviceSearchPage = () => {
                   className="bg-white rounded-card px-56 py-40"
                   style={{
                     width: '907px',
-                    height: '697px',
+                    height: '670px',
                   }}
                   onClick={(e) => e.stopPropagation()}
                 >
