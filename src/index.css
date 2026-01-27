@@ -39,7 +39,7 @@
   --color-poor: #e6284b; /* 미흡 */
 
   /* Radius */
-  --radius-button: 8px;
+  --radius-button: 4px;
   --radius-card: 12px;
   --radius-tag: 999px;
 
@@ -88,6 +88,7 @@
   --font-main: 'WantedSans', system-ui, sans-serif;
 
   --font-size-48: 48px;
+  --font-size-40: 40px;
   --font-size-34: 34px;
   --font-size-32: 32px;
   --font-size-28: 28px;
@@ -99,12 +100,15 @@
 
   --font-weight-bold: 700;
   --font-weight-semibold: 600;
+  --font-weight-medium: 500;
   --font-weight-regular: 400;
 
   --line-height-normal: normal;
+  --line-height-22: 22px;
 
   --letter-spacing: 0em;
   --letter-spacing-1: -0.01em;
+  --letter-spacing-3: -0.03em;
 }
 
 /* Background Effects */
@@ -181,7 +185,7 @@
 /* Heading1 */
 .font-heading-1 {
   font-family: var(--font-main);
-  font-size: var(--font-size-48);
+  font-size: var(--font-size-40);
   font-weight: var(--font-weight-semibold);
   line-height: var(--line-height-normal);
   letter-spacing: var(--letter-spacing-1);
@@ -205,10 +209,20 @@
   letter-spacing: var(--letter-spacing-1);
 }
 
+/* Heading4 */
+.font-heading-4 {
+  font-family: var(--font-main);
+  font-size: var(--font-size-24);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-normal);
+  letter-spacing: var(--letter-spacing-1);
+}
+
+
 /* Body1 (semibold) */
 .font-body-1-sm {
   font-family: var(--font-main);
-  font-size: var(--font-size-24);
+  font-size: var(--font-size-20);
   font-weight: var(--font-weight-semibold);
   line-height: var(--line-height-normal);
   letter-spacing: var(--letter-spacing-1);
@@ -217,7 +231,7 @@
 /* body1 (regular) */
 .font-body-1-r {
   font-family: var(--font-main);
-  font-size: var(--font-size-24);
+  font-size: var(--font-size-20);
   font-weight: var(--font-weight-regular);
   line-height: var(--line-height-normal);
   letter-spacing: var(--letter-spacing-1);
@@ -226,19 +240,19 @@
 /* Body2 (semibold) */
 .font-body-2-sm {
   font-family: var(--font-main);
-  font-size: var(--font-size-20);
+  font-size: var(--font-size-16);
   font-weight: var(--font-weight-semibold);
   line-height: var(--line-height-normal);
-  letter-spacing: var(--letter-spacing-1);
+  letter-spacing: var(--letter-spacing-3);
 }
 
 /* body2 (regular) */
 .font-body-2-r {
   font-family: var(--font-main);
-  font-size: var(--font-size-20);
+  font-size: var(--font-size-16);
   font-weight: var(--font-weight-regular);
-  line-height: var(--line-height-normal);
-  letter-spacing: var(--letter-spacing-1);
+  line-height: var(--line-height-22);
+  letter-spacing: var(--letter-spacing-3);
 }
 
 /* Body3 (semibold) */
