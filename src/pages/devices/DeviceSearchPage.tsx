@@ -376,34 +376,34 @@ const DeviceSearchPage = () => {
                       {/* Product Info Table */}
                       <div className="flex flex-col justify-between h-400 pl-16">
                         <div className="flex items-center gap-24">
-                          <p className="font-body-2-r text-gray-400 whitespace-nowrap">모델명</p>
+                          <p className="font-body-2-r text-gray-400 w-80">모델명</p>
                           <p className="font-body-2-r text-black">{selectedProduct.name}</p>
                         </div>
                         <div className="flex items-center gap-24">
-                          <p className="font-body-2-r text-gray-400 whitespace-nowrap">카테고리</p>
+                          <p className="font-body-2-r text-gray-400 w-80">카테고리</p>
                           <p className="font-body-2-r text-black">{selectedProduct.category}</p>
                         </div>
                         <div className="flex items-center gap-24">
-                          <p className="font-body-2-r text-gray-400 whitespace-nowrap">브랜드</p>
+                          <p className="font-body-2-r text-gray-400 w-80">브랜드</p>
                           <p className="font-body-2-r text-black">Apple</p>
                         </div>
                         <div className="flex items-center gap-24">
-                          <p className="font-body-2-r text-gray-400 whitespace-nowrap">색상</p>
+                          <p className="font-body-2-r text-gray-400 w-80">색상</p>
                           <p className="font-body-2-r text-black">내추럴 티타늄</p>
                         </div>
                         <div className="flex items-center gap-24">
-                          <p className="font-body-2-r text-gray-400 whitespace-nowrap">가격</p>
+                          <p className="font-body-2-r text-gray-400 w-80">가격</p>
                           <div className="flex items-center gap-4 font-body-2-r text-black">
                             <p>{selectedProduct.price.toLocaleString()}</p>
                             <p>원</p>
                           </div>
                         </div>
                         <div className="flex items-center gap-24">
-                          <p className="font-body-2-r text-gray-400 whitespace-nowrap">충전방식</p>
+                          <p className="font-body-2-r text-gray-400 w-80">충전방식</p>
                           <p className="font-body-2-r text-black">USB-C</p>
                         </div>
                         <div className="flex items-center gap-24">
-                          <p className="font-body-2-r text-gray-400 whitespace-nowrap">출시일</p>
+                          <p className="font-body-2-r text-gray-400 w-80">출시일</p>
                           <p className="font-body-2-r text-black">2023년 9월</p>
                         </div>
                       </div>
