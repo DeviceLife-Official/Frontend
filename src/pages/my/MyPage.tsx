@@ -458,8 +458,8 @@ const MyPage = () => {
                             {/* 연동성 */}
                             <div className="bg-white rounded-card px-42 py-30 flex flex-col gap-30">
                               <div className="flex items-center gap-16">
-                                <p className="font-body-1-sm text-black">연동성:</p>
-                                <p className="font-body-1-sm text-blue-600">
+                                <p className="font-heading4 text-black">연동성:</p>
+                                <p className="font-heading4 text-blue-600">
                                   {MOCK_EVALUATION.connectivity.rating}
                                 </p>
                               </div>
@@ -481,8 +481,8 @@ const MyPage = () => {
                             {/* 편의성 */}
                             <div className="bg-white rounded-card px-42 py-30 flex flex-col gap-30">
                               <div className="flex items-center gap-16">
-                                <p className="font-body-1-sm text-black">편의성:</p>
-                                <p className="font-body-1-sm text-blue-600">
+                                <p className="font-font-heading4 text-black">편의성:</p>
+                                <p className="font-font-heading4 text-blue-600">
                                   {MOCK_EVALUATION.convenience.rating}
                                 </p>
                               </div>
@@ -504,8 +504,8 @@ const MyPage = () => {
                             {/* 라이프스타일 */}
                             <div className="bg-white rounded-card px-42 py-30 flex flex-col gap-30">
                               <div className="flex items-center gap-16">
-                                <p className="font-body-1-sm text-black">라이프스타일:</p>
-                                <p className="font-body-1-sm text-blue-600">
+                                <p className="font-font-heading4 text-black">라이프스타일:</p>
+                                <p className="font-font-heading4 text-blue-600">
                                   {MOCK_EVALUATION.lifestyle.rating}
                                 </p>
                               </div>
