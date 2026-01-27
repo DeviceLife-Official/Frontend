@@ -399,7 +399,7 @@ const MyPage = () => {
                             {devices.map((device) => (
                               <div
                                 key={device.id}
-                                className="bg-white rounded-card shadow-[0_0_4px_rgba(0,0,0,0.1)] p-12 w-244 flex items-center gap-12"
+                                className={`bg-white rounded-card shadow-[0_0_4px_rgba(0,0,0,0.1)] p-12 w-244 flex items-center gap-12 border ${selectedDevices.includes(device.id) ? 'border-blue-600' : 'border-transparent'}`}
                               >
                                 <div className="w-64 h-64 bg-gray-200 flex-shrink-0" />
                                 <div className="flex flex-col gap-4 flex-1">
