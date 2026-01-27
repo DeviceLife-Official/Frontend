@@ -138,7 +138,8 @@ const SignupAccountPage = () => {
                 <SecondaryButton
                   text="중복확인"
                   onClick={handleCheckDuplicate}
-                  className={`w-148 absolute top-1/2 -translate-y-1/2 left-[calc(100%+12px)] ${isCheckingEmail && 'cursor-not-allowed'}`}
+                  disabled={isCheckingEmail}
+                  className="w-148 absolute top-1/2 -translate-y-1/2 left-[calc(100%+12px)]"
                 />
               </div>
               {(hasSubmitted || hasEmailSubmitted) && errors.email && (
