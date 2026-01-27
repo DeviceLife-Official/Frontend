@@ -470,7 +470,7 @@ const MyPage = () => {
                                 {MOCK_EVALUATION.connectivity.tags.map((tag) => (
                                   <span
                                     key={tag}
-                                    className="bg-blue-200 text-blue-700 font-body-2-r px-12 py-8 rounded-full"
+                                    className="bg-blue-200 text-blue-700 font-body-2-sm px-12 py-8 rounded-full"
                                   >
                                     {tag}
                                   </span>
@@ -493,7 +493,7 @@ const MyPage = () => {
                                 {MOCK_EVALUATION.convenience.tags.map((tag) => (
                                   <span
                                     key={tag}
-                                    className="bg-[#bdf8e1] text-[#00719f] font-body-2-r px-12 py-8 rounded-full"
+                                    className="bg-[#bdf8e1] text-[#00719f] font-body-2-sm px-12 py-8 rounded-full"
                                   >
                                     {tag}
                                   </span>
@@ -516,7 +516,7 @@ const MyPage = () => {
                                 {MOCK_EVALUATION.lifestyle.tags.map((tag) => (
                                   <span
                                     key={tag}
-                                    className="bg-[#fee8c3] text-[#fb7104] font-body-2-r px-12 py-8 rounded-full"
+                                    className="bg-[#fee8c3] text-[#fb7104] font-body-2-sm px-12 py-8 rounded-full"
                                   >
                                     {tag}
                                   </span>
