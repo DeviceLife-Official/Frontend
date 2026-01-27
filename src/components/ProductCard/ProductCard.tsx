@@ -11,8 +11,8 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
       className="px-40 py-32 cursor-pointer"
       onClick={onClick}
     >
-      {/* Image - 직사각형 */}
-      <div className="w-full h-340 bg-gray-200 mb-24" />
+      {/* Image - 정사각형 */}
+      <div className="w-full aspect-square bg-gray-200 mb-24" />
 
       {/* Content */}
       <div className="flex flex-col gap-24">
