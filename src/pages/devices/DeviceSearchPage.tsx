@@ -338,7 +338,7 @@ const DeviceSearchPage = () => {
                 <div
                   className="bg-white rounded-card px-56 py-40"
                   style={{
-                    width: 'clamp(903px, calc(903px + (100vw - 1440px) * 0.245833), 1021px)',
+                    width: '907px',
                     height: '697px',
                   }}
                   onClick={(e) => e.stopPropagation()}
@@ -351,15 +351,15 @@ const DeviceSearchPage = () => {
                       <div className="flex flex-col gap-20">
                         {/* Name & Price */}
                         <div className="flex flex-col gap-12">
-                          <p className="font-heading-1 text-black">{selectedProduct.name}</p>
-                          <div className="flex items-center gap-8 font-heading-2 text-blue-600">
+                          <p className="font-heading-1 text-blue-600">{selectedProduct.name}</p>
+                          <div className="flex items-center gap-8 font-heading-2 text-gray-500">
                             <p>₩</p>
                             <p>{selectedProduct.price.toLocaleString()}</p>
                           </div>
                         </div>
 
                         {/* Image */}
-                        <div className="w-full h-360 bg-gray-200 relative">
+                        <div className="w-400 h-400 bg-gray-200 relative">
                         </div>
                       </div>
 
@@ -372,39 +372,39 @@ const DeviceSearchPage = () => {
                     </div>
 
                     {/* Right Section */}
-                    <div className="w-302 flex flex-col gap-56 pt-126">
+                    <div className="w-302 flex flex-col gap-40 pt-126">
                       {/* Product Info Table */}
-                      <div className="flex flex-col justify-between h-360 pl-16">
-                        <div className="flex items-center gap-80">
-                          <p className="font-body-1-r text-gray-400">모델명</p>
-                          <p className="font-body-1-r text-black">{selectedProduct.name}</p>
+                      <div className="flex flex-col justify-between h-400 pl-16">
+                        <div className="flex items-center gap-24">
+                          <p className="font-body-2-r text-gray-400 whitespace-nowrap">모델명</p>
+                          <p className="font-body-2-r text-black">{selectedProduct.name}</p>
                         </div>
-                        <div className="flex items-center gap-58">
-                          <p className="font-body-1-r text-gray-400">카테고리</p>
-                          <p className="font-body-1-r text-black">{selectedProduct.category}</p>
+                        <div className="flex items-center gap-24">
+                          <p className="font-body-2-r text-gray-400 whitespace-nowrap">카테고리</p>
+                          <p className="font-body-2-r text-black">{selectedProduct.category}</p>
                         </div>
-                        <div className="flex items-center gap-78">
-                          <p className="font-body-1-r text-gray-400">브랜드</p>
-                          <p className="font-body-1-r text-black">Apple</p>
+                        <div className="flex items-center gap-24">
+                          <p className="font-body-2-r text-gray-400 whitespace-nowrap">브랜드</p>
+                          <p className="font-body-2-r text-black">Apple</p>
                         </div>
-                        <div className="flex items-center gap-100">
-                          <p className="font-body-1-r text-gray-400">색상</p>
-                          <p className="font-body-1-r text-black">내추럴 티타늄</p>
+                        <div className="flex items-center gap-24">
+                          <p className="font-body-2-r text-gray-400 whitespace-nowrap">색상</p>
+                          <p className="font-body-2-r text-black">내추럴 티타늄</p>
                         </div>
-                        <div className="flex items-center gap-100">
-                          <p className="font-body-1-r text-gray-400">가격</p>
-                          <div className="flex items-center gap-4 font-body-1-r text-black">
+                        <div className="flex items-center gap-24">
+                          <p className="font-body-2-r text-gray-400 whitespace-nowrap">가격</p>
+                          <div className="flex items-center gap-4 font-body-2-r text-black">
                             <p>{selectedProduct.price.toLocaleString()}</p>
                             <p>원</p>
                           </div>
                         </div>
-                        <div className="flex items-center gap-56">
-                          <p className="font-body-1-r text-gray-400">충전방식</p>
-                          <p className="font-body-1-r text-black">USB-C</p>
+                        <div className="flex items-center gap-24">
+                          <p className="font-body-2-r text-gray-400 whitespace-nowrap">충전방식</p>
+                          <p className="font-body-2-r text-black">USB-C</p>
                         </div>
-                        <div className="flex items-center gap-80">
-                          <p className="font-body-1-r text-gray-400">출시일</p>
-                          <p className="font-body-1-r text-black">2023년 9월</p>
+                        <div className="flex items-center gap-24">
+                          <p className="font-body-2-r text-gray-400 whitespace-nowrap">출시일</p>
+                          <p className="font-body-2-r text-black">2023년 9월</p>
                         </div>
                       </div>
 
