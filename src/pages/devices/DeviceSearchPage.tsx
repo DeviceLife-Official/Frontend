@@ -346,7 +346,7 @@ const DeviceSearchPage = () => {
                   {/* Content */}
                   <div className="flex items-start justify-between gap-56">
                     {/* Left Section */}
-                    <div className="w-400 flex flex-col gap-32">
+                    <div className="w-400 flex flex-col gap-20">
                       {/* Name & Price + Image */}
                       <div className="flex flex-col gap-20">
                         {/* Name & Price */}
