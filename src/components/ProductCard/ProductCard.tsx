@@ -8,7 +8,7 @@ interface ProductCardProps {
 const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
   return (
     <div
-      className="px-40 py-32 cursor-pointer"
+      className="px-40 py-32 cursor-pointer group"
       onClick={onClick}
     >
       {/* Image - 정사각형 */}
@@ -18,7 +18,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
       <div className="flex flex-col gap-16">
         {/* Name & Category */}
         <div className="flex flex-col gap-4">
-          <p className="font-heading-3 text-black">{product.name}</p>
+          <p className="font-heading-3 text-black group-hover:text-blue-600 transition-colors">{product.name}</p>
           <p className="font-body-2-sm text-gray-300">{product.category}</p>
         </div>
 
