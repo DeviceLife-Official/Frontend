@@ -278,7 +278,7 @@ const MyPage = () => {
 
                   {/* 조합 카드 */}
                   <div
-                    onClick={(e) => {
+                    onClick={() => {
                       // 상세보기가 아닐 때, 카드를 클릭하면 상세보기로 진입
                       if (!isDetailView) {
                         handleDetailView(index);
