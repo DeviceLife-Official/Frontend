@@ -95,9 +95,9 @@ export const MOCK_COMBINATIONS: UserCombination[] = [
     isMain: false,
     createdAt: '2026.01.10',
     tags: [
-      { name: '연동성', status: '양호' },
+      { name: '연동성', status: '보통' },
       { name: '편의성', status: '최적' },
-      { name: '라이프스타일', status: '양호' },
+      { name: '라이프스타일', status: '보통' },
     ],
   },
   {
@@ -108,7 +108,7 @@ export const MOCK_COMBINATIONS: UserCombination[] = [
     createdAt: '2026.01.15',
     tags: [
       { name: '연동성', status: '최적' },
-      { name: '편의성', status: '양호' },
+      { name: '편의성', status: '보통' },
       { name: '라이프스타일', status: '최적' },
     ],
   },
