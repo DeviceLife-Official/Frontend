@@ -11,7 +11,7 @@ const SecondaryButton = ({ text, onClick, className = '' }: SecondaryButtonProps
       onClick={onClick}
       className={`
         flex items-center justify-center
-        h-72
+        h-52
         bg-blue-100 border border-blue-600
         rounded-button
         font-body-2-sm text-blue-600

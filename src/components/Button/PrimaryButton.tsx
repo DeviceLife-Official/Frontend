@@ -12,7 +12,7 @@ const PrimaryButton = ({ text, onClick, disabled = false, className = '' }: Prim
       disabled={disabled}
       className={`
         flex items-center justify-center
-        h-72
+        h-52
         rounded-button
         font-body-2-sm
         text-white

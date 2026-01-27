@@ -21,7 +21,7 @@ const EmailSection = ({ value }: EmailSectionProps) => {
           className="
             relative
             flex items-center
-            w-500 h-64
+            w-500 h-52
             px-16
             rounded-button
             bg-gray-100
