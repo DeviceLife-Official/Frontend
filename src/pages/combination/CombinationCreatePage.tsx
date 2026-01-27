@@ -103,7 +103,7 @@ const CombinationCreatePage = () => {
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' && isValid) handleCreate();
                   }}
-                  className="w-600 h-72 px-20 py-20 rounded-button bg-blue-100 placeholder-gray-300 font-body-1-r outline-none"
+                  className="w-500 h-52 px-20 py-20 rounded-button bg-blue-100 placeholder-gray-300 font-body-2-r outline-none"
                 />
                 <p className="pl-20 mt-16 font-body-4-r text-warning">{helperText}</p>
               </div>
