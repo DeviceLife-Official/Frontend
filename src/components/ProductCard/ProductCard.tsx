@@ -12,10 +12,10 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
       onClick={onClick}
     >
       {/* Image - 정사각형 */}
-      <div className="w-full aspect-square bg-gray-200 mb-24" />
+      <div className="w-full aspect-square bg-gray-200 mb-20" />
 
       {/* Content */}
-      <div className="flex flex-col gap-24">
+      <div className="flex flex-col gap-16">
         {/* Name & Category */}
         <div className="flex flex-col gap-4">
           <p className="font-heading-3 text-black">{product.name}</p>
