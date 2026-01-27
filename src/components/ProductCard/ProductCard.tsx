@@ -19,11 +19,11 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
         {/* Name & Category */}
         <div className="flex flex-col gap-4">
           <p className="font-heading-3 text-black">{product.name}</p>
-          <p className="font-body-1-sm text-gray-300">{product.category}</p>
+          <p className="font-body-2-sm text-gray-300">{product.category}</p>
         </div>
 
         {/* Price */}
-        <p className="font-heading-3 text-blue-600">
+        <p className="font-body-1-sm text-gray-500">
           {product.price.toLocaleString()}
         </p>
 

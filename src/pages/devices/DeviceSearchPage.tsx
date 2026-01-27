@@ -232,7 +232,7 @@ const DeviceSearchPage = () => {
             </button>
 
             {/* Price Filter */}
-            <div className="ml-72">
+            <div className="ml-40">
               <FilterDropdown
                 label="가격대"
                 options={PRICE_OPTIONS}
@@ -243,7 +243,7 @@ const DeviceSearchPage = () => {
             </div>
 
             {/* Brand Filter */}
-            <div className="ml-32">
+            <div className="ml-20">
               <FilterDropdown
                 label="브랜드"
                 options={BRAND_OPTIONS}
