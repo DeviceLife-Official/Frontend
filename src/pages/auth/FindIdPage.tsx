@@ -6,9 +6,11 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { findIdSchema, type FindIdFormData } from '@/schemas/authSchema';
 import GoogleLoginButton from '@/components/Button/GoogleLoginButton';
+import { usePostFindId } from '@/apis/findCredential/postFindId';
 
 const FindIdPage = () => {
   const navigate = useNavigate();
+  const { mutateAsync: findId, isPending } = usePostFindId();
 
   const {
     register,
@@ -20,12 +22,35 @@ const FindIdPage = () => {
   });
 
   // 아이디 찾기 제출 핸들러
-  const onSubmit = (data: FindIdFormData) => {
-    // TODO: 아이디 찾기 API 호출
-    console.log(data);
+  const onSubmit = async (data: FindIdFormData) => {
+    try {
+      const response = await findId({
+        username: data.name,
+        phoneNumber: data.phone,
+      });
 
-    // TODO: API 응답으로 실제 결과 페이지에 필요한 데이터 전달
-    navigate(ROUTES.auth.findIdResult);
+      // 응답의 success 필드로 실제 성공/실패 판단
+      if (response.success && response.result?.emailInfo) {
+        // 아이디 찾기 성공
+        navigate(ROUTES.auth.findIdResult, {
+          state: {
+            success: true,
+            email: response.result.emailInfo,
+          },
+        });
+      } else {
+        // API 응답은 왔지만 아이디 찾기 실패
+        navigate(ROUTES.auth.findIdResult, {
+          state: {
+            success: false,
+            email: null,
+          },
+        });
+      }
+    } catch {
+      // HTTP 에러 발생 시
+      alert('오류가 발생했습니다. 다시 시도해 주세요.');
+    }
   };
 
   return (
@@ -64,7 +89,11 @@ const FindIdPage = () => {
               </div>
 
               {/* 아이디 찾기 버튼 */}
-              <PrimaryButton text="아이디 찾기" className="w-full bg-blue-600 hover:bg-blue-500" />
+              <PrimaryButton
+                text={isPending ? '조회 중...' : '아이디 찾기'}
+                className="w-full bg-blue-600 hover:bg-blue-500"
+                disabled={isPending}
+              />
             </div>
 
             {/* 아이디/비밀번호 찾기 */}

@@ -1,15 +1,22 @@
 import PrimaryButton from "@/components/Button/PrimaryButton";
 import OnboardingLifestyleTag from "@/components/Lifestyle/OnboardingLifestyleTag";
 import { ROUTES } from "@/constants/routes";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import WarningIcon from "@/assets/icons/warning.svg?react";
+
+// 라우터 state 타입
+type FindIdResultState = {
+  success?: boolean;
+  email?: string | null;
+};
 
 const FindIdResultPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
 
-  // TODO: 추후 API/라우터 연동 시 실제 값으로 교체
-  const isSuccess = true; // true: 성공 화면, false: 실패 화면
-  const email = "Ehfl04@gmail.com";
+  // 라우터 state에서 결과 정보 가져오기
+  const { success, email } = (location.state || {}) as FindIdResultState;
+  const isSuccess = success && email;
 
   return (
     <div className="relative flex items-center justify-center h-[calc(100vh-80px)] bg-white overflow-hidden">
@@ -24,7 +31,7 @@ const FindIdResultPage = () => {
 
             {/* 아이디 표시 영역 - 성공 */}
             <OnboardingLifestyleTag
-              label={email}
+              label={email!}
               selected={true}
               className="w-300 h-150 !px-0 !py-24 !border-shadow-blue-welcome !font-body-1-r !text-black"
             />
