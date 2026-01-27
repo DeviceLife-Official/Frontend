@@ -100,7 +100,7 @@ const CombinationResultOverlay = ({
           <p className="w-600 text-center font-body-2-sm text-blue-600">
             이제 기기검색 창에서 원하는 기기들을 골라 내가 만든 조합에 담아보세요!
           </p>
-          <div className="mt-120">
+          <div className="mt-100">
             <PrimaryButton
               text="완료"
               className="w-280 bg-blue-600 hover:bg-blue-500"
