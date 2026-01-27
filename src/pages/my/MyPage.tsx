@@ -536,9 +536,9 @@ const MyPage = () => {
                               {/* 조합 번호 + 생성일 + 조합명 */}
                               <div className="flex flex-col gap-8">
                                 <div className="flex items-center gap-16">
-                                  <p className="font-body-3-r text-gray-400">{combination.label}</p>
+                                  <p className="font-body-4-r text-gray-400">{combination.label}</p>
                                   {combination.createdAt && (
-                                    <p className="font-body-3-r text-gray-400">
+                                    <p className="font-body-4-r text-gray-400">
                                       생성일: {combination.createdAt}
                                     </p>
                                   )}
@@ -586,9 +586,9 @@ const MyPage = () => {
                               {/* 조합 번호 + 생성일 + 조합명 */}
                               <div className="flex flex-col gap-8">
                                 <div className="flex items-center gap-16">
-                                  <p className="font-body-3-r text-gray-400">{combination.label}</p>
+                                  <p className="font-body-4-r text-gray-400">{combination.label}</p>
                                   {combination.createdAt && (
-                                    <p className="font-body-3-r text-gray-400">
+                                    <p className="font-body-4-r text-gray-400">
                                       생성일: {combination.createdAt}
                                     </p>
                                   )}
