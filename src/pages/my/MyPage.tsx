@@ -201,8 +201,8 @@ const MyPage = () => {
               <p className="font-body-2-sm text-black whitespace-nowrap">이메일</p>
               <p className="font-body-2-r text-black truncate">example@devicelife.com</p>
             </div>
-            <div className="flex flex-col gap-30">
-              <p className="font-body-2-sm text-black">라이프스타일</p>
+            <div className="flex items-center gap-36">
+              <p className="font-body-2-sm text-black whitespace-nowrap">라이프스타일</p>
               <div className="flex flex-wrap gap-12 content-start">
                 <RoundedLifestyleTag label="Office" />
               </div>
