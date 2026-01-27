@@ -192,16 +192,16 @@ const MyPage = () => {
           </div>
 
           {/* 사용자 정보 */}
-          <div className="mt-59 flex flex-col gap-36">
-            <div className="flex items-center gap-36">
+          <div className="mt-59 flex flex-col gap-16">
+            <div className="flex items-center gap-24">
               <p className="font-body-2-sm text-black whitespace-nowrap">가입일</p>
               <p className="font-body-2-r text-black">2023.12.22</p>
             </div>
-            <div className="flex items-center gap-36">
+            <div className="flex items-center gap-24">
               <p className="font-body-2-sm text-black whitespace-nowrap">이메일</p>
               <p className="font-body-2-r text-black truncate">example@devicelife.com</p>
             </div>
-            <div className="flex items-center gap-36">
+            <div className="flex items-center gap-24">
               <p className="font-body-2-sm text-black whitespace-nowrap">라이프스타일</p>
               <div className="flex flex-wrap gap-12 content-start">
                 <RoundedLifestyleTag label="Office" />
