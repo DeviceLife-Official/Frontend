@@ -23,6 +23,9 @@ const FindIdPage = () => {
   const onSubmit = (data: FindIdFormData) => {
     // TODO: 아이디 찾기 API 호출
     console.log(data);
+
+    // TODO: API 응답으로 실제 결과 페이지에 필요한 데이터 전달
+    navigate(ROUTES.auth.findIdResult);
   };
 
   return (
