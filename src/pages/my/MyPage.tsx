@@ -208,9 +208,6 @@ const MyPage = () => {
               </div>
             </div>
           </div>
-
-          {/* 휴지통 버튼 */}
-          {/* <SecondaryButton text="휴지통" className="mt-76 w-full hover:!bg-blue-50 transition-colors" /> */}
         </aside>
 
         {/* 우측 메인 콘텐츠 */}
@@ -281,8 +278,16 @@ const MyPage = () => {
 
                   {/* 조합 카드 */}
                   <div
+                    onClick={(e) => {
+                      // 상세보기가 아닐 때, 카드를 클릭하면 상세보기로 진입
+                      if (!isDetailView) {
+                        handleDetailView(index);
+                      }
+                    }}
                     className={`rounded-card relative ${
-                      isDetailView ? 'bg-blue-100' : 'bg-white shadow-[0_0_10px_rgba(0,0,0,0.1)]'
+                      isDetailView
+                        ? 'bg-blue-100'
+                        : 'bg-white shadow-[0_0_10px_rgba(0,0,0,0.1)] cursor-pointer hover:bg-gray-50 transition-colors'
                     }`}
                   >
                     {/* 일반 모드: Setting More 버튼 + 드롭다운 */}
@@ -292,7 +297,10 @@ const MyPage = () => {
                         className="absolute right-56 top-36"
                       >
                         <button
-                          onClick={() => setOpenMenuIndex(openMenuIndex === index ? null : index)}
+                          onClick={(e) => {
+                            e.stopPropagation(); // 카드 클릭 이벤트 전파 방지
+                            setOpenMenuIndex(openMenuIndex === index ? null : index);
+                          }}
                           className="cursor-pointer hover:opacity-80"
                         >
                           <SettingMoreIcon className="w-36 h-36 text-gray-400" />
@@ -303,7 +311,8 @@ const MyPage = () => {
                           <div className="absolute right-0 top-full mt-8 bg-white rounded-button shadow-[0_2px_10px_rgba(0,0,0,0.25)] px-8 z-12 flex flex-col">
                             {/* 삭제하기 */}
                             <button
-                              onClick={() => {
+                              onClick={(e) => {
+                                e.stopPropagation();
                                 setDeleteTargetIndex(index);
                                 setShowCombinationDeleteModal(true);
                                 setOpenMenuIndex(null);
@@ -320,7 +329,10 @@ const MyPage = () => {
 
                             {/* 자세히보기 */}
                             <button
-                              onClick={() => handleDetailView(index)}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleDetailView(index);
+                              }}
                               onMouseEnter={() => setHoveredMenuItem('detail')}
                               onMouseLeave={() => setHoveredMenuItem(null)}
                               className="relative font-body-1-sm text-black text-left py-12 whitespace-nowrap cursor-pointer"
@@ -337,7 +349,7 @@ const MyPage = () => {
 
                     {/* 상세보기 모드 */}
                     {isDetailView ? (
-                      <div className="pt-16">
+                      <div className="pt-16 cursor-auto" onClick={(e) => e.stopPropagation()}>
                         {/* 뒤로가기 버튼 */}
                         <div className="px-36 pt-20">
                           <button
@@ -609,7 +621,10 @@ const MyPage = () => {
                             {/* 빈 조합: 기기 추가 버튼 */}
                             <div className="pl-8 mt-24">
                               <button
-                                onClick={() => navigate('/devices')}
+                                onClick={(e) => {
+                                  e.stopPropagation(); // 카드 클릭 전파 방지 (상세보기 진입 막기)
+                                  navigate('/devices');
+                                }}
                                 className="cursor-pointer hover:opacity-80"
                               >
                                 <PlusIcon />
