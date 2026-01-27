@@ -242,17 +242,8 @@ const MyPage = () => {
             )}
           </div>
 
-          {/* 정렬 필터 */}
-          <div className="flex justify-end mt-76">
-            <SortDropdown
-              options={MYPAGE_SORT_OPTIONS}
-              selectedValue={sortOption}
-              onSelect={setSortOption}
-            />
-          </div>
-
           {/* 조합 카드 목록 */}
-          <div className="mt-28 flex flex-col gap-68">
+          <div className="mt-76 flex flex-col gap-68">
             {MOCK_COMBINATIONS.map((combination, index) => {
               const devices = MOCK_COMBINATION_DEVICES[combination.id] || [];
               const hasDevices = devices.length > 0;
@@ -267,15 +258,24 @@ const MyPage = () => {
 
               return (
                 <div key={combination.id}>
-                  {/* 추천 메시지 - 상세보기 모드가 아닐 때만 표시 */}
+                  {/* 추천 메시지 + 정렬 필터 - 상세보기 모드가 아닐 때만 표시 */}
                   {!isDetailView && (
-                    <div className="flex items-center gap-16 mb-24">
-                      <AlarmIcon className="w-36 h-36 text-blue-600 flex-shrink-0" />
-                      <p className="font-body-2-r text-blue-600">
-                        {hasDevices
-                          ? '추천하는 조합입니다. 기기 간 호환성이 우수하며 만족도가 높을 것입니다.'
-                          : '-'}
-                      </p>
+                    <div className="flex items-center justify-between mb-24">
+                      <div className="flex items-center gap-16">
+                        <AlarmIcon className="w-36 h-36 text-blue-600 flex-shrink-0" />
+                        <p className="font-body-2-r text-blue-600">
+                          {hasDevices
+                            ? '추천하는 조합입니다. 기기 간 호환성이 우수하며 만족도가 높을 것입니다.'
+                            : '-'}
+                        </p>
+                      </div>
+                      {index === 0 && (
+                        <SortDropdown
+                          options={MYPAGE_SORT_OPTIONS}
+                          selectedValue={sortOption}
+                          onSelect={setSortOption}
+                        />
+                      )}
                     </div>
                   )}
 
