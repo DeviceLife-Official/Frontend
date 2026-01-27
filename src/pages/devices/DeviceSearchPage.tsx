@@ -210,7 +210,7 @@ const DeviceSearchPage = () => {
                     <div className="w-50 h-50 2xl:w-60 2xl:h-60 flex items-center justify-center">
                       <Icon className="w-50 h-50 2xl:w-60 2xl:h-60" />
                     </div>
-                    <p className="font-body-3-sm 2xl:font-body-2-sm whitespace-nowrap">{category.name}</p>
+                    <p className="font-body-1-sm whitespace-nowrap">{category.name}</p>
                   </button>
                 );
               })}
@@ -232,7 +232,7 @@ const DeviceSearchPage = () => {
             </button>
 
             {/* Price Filter */}
-            <div className="ml-72">
+            <div className="ml-40">
               <FilterDropdown
                 label="가격대"
                 options={PRICE_OPTIONS}
@@ -243,7 +243,7 @@ const DeviceSearchPage = () => {
             </div>
 
             {/* Brand Filter */}
-            <div className="ml-32">
+            <div className="ml-20">
               <FilterDropdown
                 label="브랜드"
                 options={BRAND_OPTIONS}

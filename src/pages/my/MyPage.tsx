@@ -186,23 +186,23 @@ const MyPage = () => {
           </div>
 
           {/* 프로필 카드 */}
-          <div className="mt-76 h-100 rounded-card shadow-[0_0_4px_rgba(0,0,0,0.25)] flex items-center justify-center gap-30">
+          <div className="mt-60 h-100 rounded-card border border-blue-300 flex items-center justify-center gap-30">
             <Logo className="w-48 h-48 flex-shrink-0" />
             <p className="font-heading-2 text-black">000 님</p>
           </div>
 
           {/* 사용자 정보 */}
-          <div className="mt-59 flex flex-col gap-36">
-            <div className="flex items-center gap-36">
+          <div className="mt-44 flex flex-col gap-16">
+            <div className="flex items-center gap-24">
               <p className="font-body-2-sm text-black whitespace-nowrap">가입일</p>
               <p className="font-body-2-r text-black">2023.12.22</p>
             </div>
-            <div className="flex items-center gap-36">
+            <div className="flex items-center gap-24">
               <p className="font-body-2-sm text-black whitespace-nowrap">이메일</p>
               <p className="font-body-2-r text-black truncate">example@devicelife.com</p>
             </div>
-            <div className="flex flex-col gap-30">
-              <p className="font-body-2-sm text-black">라이프스타일</p>
+            <div className="flex items-center gap-24">
+              <p className="font-body-2-sm text-black whitespace-nowrap">라이프스타일</p>
               <div className="flex flex-wrap gap-12 content-start">
                 <RoundedLifestyleTag label="Office" />
               </div>
@@ -242,17 +242,8 @@ const MyPage = () => {
             )}
           </div>
 
-          {/* 정렬 필터 */}
-          <div className="flex justify-end mt-76">
-            <SortDropdown
-              options={MYPAGE_SORT_OPTIONS}
-              selectedValue={sortOption}
-              onSelect={setSortOption}
-            />
-          </div>
-
           {/* 조합 카드 목록 */}
-          <div className="mt-28 flex flex-col gap-68">
+          <div className="mt-76 flex flex-col gap-40">
             {MOCK_COMBINATIONS.map((combination, index) => {
               const devices = MOCK_COMBINATION_DEVICES[combination.id] || [];
               const hasDevices = devices.length > 0;
@@ -267,15 +258,24 @@ const MyPage = () => {
 
               return (
                 <div key={combination.id}>
-                  {/* 추천 메시지 - 상세보기 모드가 아닐 때만 표시 */}
+                  {/* 추천 메시지 + 정렬 필터 - 상세보기 모드가 아닐 때만 표시 */}
                   {!isDetailView && (
-                    <div className="flex items-center gap-16 mb-24">
-                      <AlarmIcon className="w-36 h-36 text-blue-600 flex-shrink-0" />
-                      <p className="font-body-2-r text-blue-600">
-                        {hasDevices
-                          ? '추천하는 조합입니다. 기기 간 호환성이 우수하며 만족도가 높을 것입니다.'
-                          : '-'}
-                      </p>
+                    <div className="flex items-center justify-between mb-24">
+                      <div className="flex items-center gap-16">
+                        <AlarmIcon className="w-36 h-36 text-blue-600 flex-shrink-0" />
+                        <p className="font-body-2-r text-blue-600">
+                          {hasDevices
+                            ? '추천하는 조합입니다. 기기 간 호환성이 우수하며 만족도가 높을 것입니다.'
+                            : '-'}
+                        </p>
+                      </div>
+                      {index === 0 && (
+                        <SortDropdown
+                          options={MYPAGE_SORT_OPTIONS}
+                          selectedValue={sortOption}
+                          onSelect={setSortOption}
+                        />
+                      )}
                     </div>
                   )}
 
@@ -380,7 +380,7 @@ const MyPage = () => {
                                   <CheckboxIcon className="w-28 h-28" />
                                 )}
                               </button>
-                              <p className="font-body-2-r text-black">전체 선택하기</p>
+                              <p className="font-body-1-r text-black">전체 선택하기</p>
                             </div>
                             <button
                               onClick={handleTrashClick}
@@ -399,7 +399,7 @@ const MyPage = () => {
                             {devices.map((device) => (
                               <div
                                 key={device.id}
-                                className="bg-white rounded-card shadow-[0_0_4px_rgba(0,0,0,0.1)] p-12 w-244 flex items-center gap-12"
+                                className={`bg-white rounded-card shadow-[0_0_4px_rgba(0,0,0,0.1)] p-12 w-244 flex items-center gap-12 border ${selectedDevices.includes(device.id) ? 'border-blue-600' : 'border-transparent'}`}
                               >
                                 <div className="w-64 h-64 bg-gray-200 flex-shrink-0" />
                                 <div className="flex flex-col gap-4 flex-1">
@@ -436,9 +436,9 @@ const MyPage = () => {
 
                         {/* 총 가격 */}
                         <div className="px-56 pb-36">
-                          <div className="flex items-center gap-40 p-20">
+                          <div className="flex items-center gap-24 p-20">
                             <p className="font-body-1-sm text-black">총 가격</p>
-                            <div className="flex items-center gap-8">
+                            <div className="flex items-center gap-4">
                               <p className="font-body-1-sm text-blue-600">₩</p>
                               <p className="font-body-1-sm text-blue-600">1,550,000</p>
                             </div>
@@ -457,7 +457,7 @@ const MyPage = () => {
                           <div className="flex flex-col gap-20">
                             {/* 연동성 */}
                             <div className="bg-white rounded-card px-42 py-30 flex flex-col gap-30">
-                              <div className="flex items-center gap-30">
+                              <div className="flex items-center gap-16">
                                 <p className="font-body-1-sm text-black">연동성:</p>
                                 <p className="font-body-1-sm text-blue-600">
                                   {MOCK_EVALUATION.connectivity.rating}
@@ -466,11 +466,11 @@ const MyPage = () => {
                               <p className="font-body-3-r text-black leading-28">
                                 {MOCK_EVALUATION.connectivity.description}
                               </p>
-                              <div className="flex gap-16">
+                              <div className="flex gap-8">
                                 {MOCK_EVALUATION.connectivity.tags.map((tag) => (
                                   <span
                                     key={tag}
-                                    className="bg-blue-200 text-blue-700 font-body-2-r px-12 py-8 rounded-full"
+                                    className="bg-blue-200 text-blue-700 font-body-2-sm px-12 py-8 rounded-full"
                                   >
                                     {tag}
                                   </span>
@@ -480,7 +480,7 @@ const MyPage = () => {
 
                             {/* 편의성 */}
                             <div className="bg-white rounded-card px-42 py-30 flex flex-col gap-30">
-                              <div className="flex items-center gap-51">
+                              <div className="flex items-center gap-16">
                                 <p className="font-body-1-sm text-black">편의성:</p>
                                 <p className="font-body-1-sm text-blue-600">
                                   {MOCK_EVALUATION.convenience.rating}
@@ -489,11 +489,11 @@ const MyPage = () => {
                               <p className="font-body-3-r text-black leading-28">
                                 {MOCK_EVALUATION.convenience.description}
                               </p>
-                              <div className="flex gap-16">
+                              <div className="flex gap-8">
                                 {MOCK_EVALUATION.convenience.tags.map((tag) => (
                                   <span
                                     key={tag}
-                                    className="bg-[#bdf8e1] text-[#00719f] font-body-2-r px-12 py-8 rounded-full"
+                                    className="bg-[#bdf8e1] text-[#00719f] font-body-2-sm px-12 py-8 rounded-full"
                                   >
                                     {tag}
                                   </span>
@@ -503,7 +503,7 @@ const MyPage = () => {
 
                             {/* 라이프스타일 */}
                             <div className="bg-white rounded-card px-42 py-30 flex flex-col gap-30">
-                              <div className="flex items-center gap-51">
+                              <div className="flex items-center gap-16">
                                 <p className="font-body-1-sm text-black">라이프스타일:</p>
                                 <p className="font-body-1-sm text-blue-600">
                                   {MOCK_EVALUATION.lifestyle.rating}
@@ -512,11 +512,11 @@ const MyPage = () => {
                               <p className="font-body-3-r text-black leading-28">
                                 {MOCK_EVALUATION.lifestyle.description}
                               </p>
-                              <div className="flex gap-16">
+                              <div className="flex gap-8">
                                 {MOCK_EVALUATION.lifestyle.tags.map((tag) => (
                                   <span
                                     key={tag}
-                                    className="bg-[#fee8c3] text-[#fb7104] font-body-2-r px-12 py-8 rounded-full"
+                                    className="bg-[#fee8c3] text-[#fb7104] font-body-2-sm px-12 py-8 rounded-full"
                                   >
                                     {tag}
                                   </span>
