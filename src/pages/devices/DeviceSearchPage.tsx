@@ -443,13 +443,13 @@ const DeviceSearchPage = () => {
                 <div
                   className="bg-white rounded-card shadow-[0_0_10px_rgba(0,0,0,0.25)]"
                   style={{
-                    width: 'clamp(903px, calc(903px + (100vw - 1440px) * 0.245833), 1021px)',
-                    height: '697px',
+                    width: '907px',
+                    height: '670px',
                   }}
                   onClick={(e) => e.stopPropagation()}
                 >
                   {/* Combination List */}
-                  <div className="flex flex-col mx-20 overflow-y-auto max-h-[657px] scrollbar-minimal">
+                  <div className="flex flex-col mx-20 overflow-y-auto max-h-[630px] scrollbar-minimal">
                     {MOCK_COMBINATIONS.map((combo) => (
                       <button
                         key={combo.id}
@@ -488,7 +488,7 @@ const DeviceSearchPage = () => {
             {modalView === 'combinationDetail' && selectedCombination && (
               <div
                 className="flex flex-col items-start gap-20 pointer-events-auto self-start"
-                style={{ marginTop: 'calc((100vh - 765px) / 2)' }}
+                style={{ marginTop: 'calc((100vh - 738px) / 2)' }}
               >
                 {/* Header: Back + X 버튼 */}
                 <div className="flex items-center justify-between w-full">
@@ -512,10 +512,8 @@ const DeviceSearchPage = () => {
                 <div
                   className="bg-white rounded-card shadow-[0_0_10px_rgba(0,0,0,0.25)] relative"
                   style={{
-                    width: 'clamp(903px, calc(903px + (100vw - 1440px) * 0.245833), 1021px)',
-                    height: showAllDevices
-                      ? 'clamp(700px, calc(700px + (100vw - 1440px) * 0.0625), 730px)'
-                      : '697px',
+                    width: '907px',
+                    height: showAllDevices ? '700px' : '670px',
                     transition: 'height 0.3s ease',
                   }}
                   onClick={(e) => e.stopPropagation()}
