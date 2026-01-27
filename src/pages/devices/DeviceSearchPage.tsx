@@ -534,7 +534,7 @@ const DeviceSearchPage = () => {
                   />
 
                   {/* 담기 버튼 - 하단 고정 */}
-                  <div className="absolute bottom-56 right-56">
+                  <div className="absolute bottom-40 right-40">
                     <PrimaryButton
                       text={isAlreadyInSelectedCombination ? '이미 담은 상품입니다.' : `${selectedCombination.label} 에 담기`}
                       onClick={handleAddDeviceToCombination}
