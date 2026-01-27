@@ -38,7 +38,11 @@ const FindIdResultPage = () => {
 
             {/* 하단 버튼 영역 - 성공 (로그인 / 비밀번호 찾기) */}
             <div className="flex flex-col items-center w-full gap-20">
-              <PrimaryButton text="로그인" className="w-400 bg-blue-600 hover:bg-blue-500" onClick={() => navigate(ROUTES.auth.login)} />
+              <PrimaryButton
+                text="로그인"
+                className="w-400 bg-blue-600 hover:bg-blue-500"
+                onClick={() => navigate(ROUTES.auth.login, { state: { prefillEmail: email } })}
+              />
               <div className="flex items-center gap-16 font-body-2-r text-gray-400">
                 <span>비밀번호가 생각나지 않으신가요?</span>
                 <button
