@@ -525,7 +525,7 @@ const DeviceSearchPage = () => {
                     columns={3}
                     defaultRows={3}
                     expanded={showAllDevices}
-                    onExpand={() => setShowAllDevices(true)}
+                    onExpand={(value) => setShowAllDevices(value)}
                     showExpandButton={true}
                     showGradient={true}
                     className="px-56 pt-40 pb-158"

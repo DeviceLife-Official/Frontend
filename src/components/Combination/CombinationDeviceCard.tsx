@@ -43,6 +43,13 @@ const CombinationDeviceCard = ({
     onExpand?.(true);
   };
 
+  const handleCollapse = () => {
+    if (!isControlled) {
+      setInternalExpanded(false);
+    }
+    onExpand?.(false);
+  };
+
   const gridColsClass = columns === 4 ? 'grid-cols-4' : 'grid-cols-3';
   const deviceCardWidth = columns === 4 ? 'w-244' : 'w-244';
   const deviceImageSize = columns === 4 ? 'w-64 h-64' : 'w-64 h-64';
@@ -96,13 +103,21 @@ const CombinationDeviceCard = ({
         )}
       </div>
 
-      {/* 기기 전체보기 버튼 */}
+      {/* 기기 전체보기 / 간략히 보기 버튼 */}
       {showExpandButton && hasMoreDevices && !showAllDevices && (
         <button
           onClick={handleExpand}
           className="mt-16 pl-12 font-body-2-r text-gray-500 underline cursor-pointer hover:opacity-80"
         >
           기기 전체보기
+        </button>
+      )}
+      {showExpandButton && hasMoreDevices && showAllDevices && (
+        <button
+          onClick={handleCollapse}
+          className="mt-16 pl-12 font-body-2-r text-gray-500 underline cursor-pointer hover:opacity-80"
+        >
+          간략히 보기
         </button>
       )}
     </div>
