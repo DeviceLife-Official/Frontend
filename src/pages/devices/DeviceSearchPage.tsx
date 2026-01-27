@@ -210,7 +210,7 @@ const DeviceSearchPage = () => {
                     <div className="w-50 h-50 2xl:w-60 2xl:h-60 flex items-center justify-center">
                       <Icon className="w-50 h-50 2xl:w-60 2xl:h-60" />
                     </div>
-                    <p className="font-body-3-sm 2xl:font-body-2-sm whitespace-nowrap">{category.name}</p>
+                    <p className="font-body-1-sm whitespace-nowrap">{category.name}</p>
                   </button>
                 );
               })}
