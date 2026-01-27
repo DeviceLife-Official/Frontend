@@ -466,7 +466,7 @@ const MyPage = () => {
                               <p className="font-body-3-r text-black leading-28">
                                 {MOCK_EVALUATION.connectivity.description}
                               </p>
-                              <div className="flex gap-16">
+                              <div className="flex gap-8">
                                 {MOCK_EVALUATION.connectivity.tags.map((tag) => (
                                   <span
                                     key={tag}
@@ -489,7 +489,7 @@ const MyPage = () => {
                               <p className="font-body-3-r text-black leading-28">
                                 {MOCK_EVALUATION.convenience.description}
                               </p>
-                              <div className="flex gap-16">
+                              <div className="flex gap-8">
                                 {MOCK_EVALUATION.convenience.tags.map((tag) => (
                                   <span
                                     key={tag}
@@ -512,7 +512,7 @@ const MyPage = () => {
                               <p className="font-body-3-r text-black leading-28">
                                 {MOCK_EVALUATION.lifestyle.description}
                               </p>
-                              <div className="flex gap-16">
+                              <div className="flex gap-8">
                                 {MOCK_EVALUATION.lifestyle.tags.map((tag) => (
                                   <span
                                     key={tag}
