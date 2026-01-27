@@ -380,7 +380,7 @@ const MyPage = () => {
                                   <CheckboxIcon className="w-28 h-28" />
                                 )}
                               </button>
-                              <p className="font-body--r text-black">전체 선택하기</p>
+                              <p className="font-body-1-r text-black">전체 선택하기</p>
                             </div>
                             <button
                               onClick={handleTrashClick}
