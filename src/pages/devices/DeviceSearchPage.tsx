@@ -449,12 +449,12 @@ const DeviceSearchPage = () => {
                   onClick={(e) => e.stopPropagation()}
                 >
                   {/* Combination List */}
-                  <div className="flex flex-col mx-20 overflow-y-auto max-h-[630px] scrollbar-minimal">
+                  <div className="flex flex-col ml-20 overflow-y-auto h-full scrollbar-minimal">
                     {MOCK_COMBINATIONS.map((combo) => (
                       <button
                         key={combo.id}
                         onClick={() => handleSelectCombination(combo.id)}
-                        className="flex items-center justify-between pl-20 pr-36 py-24 hover:bg-gray-50 transition-colors border-b border-gray-200 cursor-pointer"
+                        className="flex items-center justify-between pl-20 pr-36 py-24 hover:bg-gray-50 transition-colors border-b border-gray-200 cursor-pointer last:border-none"
                       >
                         {/* 좌측: 조합 정보 */}
                         <div className="flex flex-col gap-24 items-start">
@@ -487,8 +487,8 @@ const DeviceSearchPage = () => {
             {/* Combination Detail Modal - 기기 리스트 */}
             {modalView === 'combinationDetail' && selectedCombination && (
               <div
-                className="flex flex-col items-start gap-20 pointer-events-auto self-start"
-                style={{ marginTop: 'calc((100vh - 738px) / 2)' }}
+                className="flex flex-col items-start gap-20 pointer-events-auto self-start overflow-y-auto scrollbar-minimal"
+                style={{ maxHeight: '100vh', paddingTop: '50px' }}
               >
                 {/* Header: Back + X 버튼 */}
                 <div className="flex items-center justify-between w-full">
@@ -510,11 +510,9 @@ const DeviceSearchPage = () => {
 
                 {/* Card */}
                 <div
-                  className="bg-white rounded-card shadow-[0_0_10px_rgba(0,0,0,0.25)] relative"
+                  className="bg-white rounded-card shadow-[0_0_10px_rgba(0,0,0,0.25)] mb-50"
                   style={{
                     width: '907px',
-                    height: showAllDevices ? '700px' : '670px',
-                    transition: 'height 0.3s ease',
                   }}
                   onClick={(e) => e.stopPropagation()}
                 >
@@ -526,19 +524,39 @@ const DeviceSearchPage = () => {
                     defaultRows={3}
                     expanded={showAllDevices}
                     onExpand={(value) => setShowAllDevices(value)}
-                    showExpandButton={true}
+                    showExpandButton={false}
                     showGradient={true}
-                    className="px-56 pt-40 pb-158"
+                    className="px-56 pt-40 pb-0"
                   />
 
-                  {/* 담기 버튼 - 하단 고정 */}
-                  <div className="absolute bottom-40 right-40">
-                    <PrimaryButton
-                      text={isAlreadyInSelectedCombination ? '이미 담은 상품입니다.' : `${selectedCombination.label} 에 담기`}
-                      onClick={handleAddDeviceToCombination}
-                      disabled={isAlreadyInSelectedCombination}
-                      className={`w-280 ${isAlreadyInSelectedCombination ? '' : 'bg-blue-600 hover:bg-blue-500'}`}
-                    />
+                  {/* 토글 버튼 - CombinationDeviceCard 외부에 배치 */}
+                  {combinationDevices.length > 9 && !showAllDevices && (
+                    <button
+                      onClick={() => setShowAllDevices(true)}
+                      className="mt-16 px-56 pl-68 font-body-2-r text-gray-500 underline cursor-pointer hover:opacity-80"
+                    >
+                      기기 전체보기
+                    </button>
+                  )}
+                  {combinationDevices.length > 9 && showAllDevices && (
+                    <button
+                      onClick={() => setShowAllDevices(false)}
+                      className="mt-16 px-56 pl-68 font-body-2-r text-gray-500 underline cursor-pointer hover:opacity-80"
+                    >
+                      간략히 보기
+                    </button>
+                  )}
+
+                  {/* 버튼 컨테이너 - 토글 버튼으로부터 72px 간격 유지 */}
+                  <div className="px-40 pb-40 pt-72">
+                    <div className="flex justify-end">
+                      <PrimaryButton
+                        text={isAlreadyInSelectedCombination ? '이미 담은 상품입니다.' : `${selectedCombination.label} 에 담기`}
+                        onClick={handleAddDeviceToCombination}
+                        disabled={isAlreadyInSelectedCombination}
+                        className={`w-280 ${isAlreadyInSelectedCombination ? '' : 'bg-blue-600 hover:bg-blue-500'}`}
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
