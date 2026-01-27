@@ -43,6 +43,13 @@ const CombinationDeviceCard = ({
     onExpand?.(true);
   };
 
+  const handleCollapse = () => {
+    if (!isControlled) {
+      setInternalExpanded(false);
+    }
+    onExpand?.(false);
+  };
+
   const gridColsClass = columns === 4 ? 'grid-cols-4' : 'grid-cols-3';
   const deviceCardWidth = columns === 4 ? 'w-244' : 'w-244';
   const deviceImageSize = columns === 4 ? 'w-64 h-64' : 'w-64 h-64';
@@ -56,7 +63,7 @@ const CombinationDeviceCard = ({
           <p className="font-body-3-r text-gray-400">{combination.label}</p>
           <div className="flex items-center gap-8">
             <p className="font-body-1-sm text-black">{combination.name}</p>
-            {combination.isMain && <StarIcon className="w-27 h-27" />}
+            {combination.isMain && <StarIcon className="w-22 h-22" />}
           </div>
         </div>
         {/* Tags */}
@@ -96,13 +103,21 @@ const CombinationDeviceCard = ({
         )}
       </div>
 
-      {/* 기기 전체보기 버튼 */}
+      {/* 기기 전체보기 / 간략히 보기 버튼 */}
       {showExpandButton && hasMoreDevices && !showAllDevices && (
         <button
           onClick={handleExpand}
           className="mt-16 pl-12 font-body-2-r text-gray-500 underline cursor-pointer hover:opacity-80"
         >
           기기 전체보기
+        </button>
+      )}
+      {showExpandButton && hasMoreDevices && showAllDevices && (
+        <button
+          onClick={handleCollapse}
+          className="mt-16 pl-12 font-body-2-r text-gray-500 underline cursor-pointer hover:opacity-80"
+        >
+          간략히 보기
         </button>
       )}
     </div>

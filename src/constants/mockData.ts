@@ -88,6 +88,30 @@ export const MOCK_COMBINATIONS: UserCombination[] = [
       { name: '라이프스타일', status: '-' },
     ],
   },
+  {
+    id: 5,
+    label: '조합 5',
+    name: '게이밍 셋업',
+    isMain: false,
+    createdAt: '2026.01.10',
+    tags: [
+      { name: '연동성', status: '보통' },
+      { name: '편의성', status: '최적' },
+      { name: '라이프스타일', status: '보통' },
+    ],
+  },
+  {
+    id: 6,
+    label: '조합 6',
+    name: '출퇴근용 조합',
+    isMain: false,
+    createdAt: '2026.01.15',
+    tags: [
+      { name: '연동성', status: '최적' },
+      { name: '편의성', status: '보통' },
+      { name: '라이프스타일', status: '최적' },
+    ],
+  },
 ];
 
 // 조합별 기기 목록 (추후 API 연동)
@@ -128,4 +152,15 @@ export const MOCK_COMBINATION_DEVICES: Record<number, DeviceSummary[]> = {
   ],
   // 조합4: 새로 생성한 조합 (기기 없음)
   4: [],
+  // 조합5: 게이밍 셋업
+  5: [
+    { id: 301, name: 'ROG Ally', chargingType: 'USB-C', color: '화이트', image: null },
+    { id: 302, name: 'ROG 게이밍 모니터', chargingType: 'USB-C', color: '블랙', image: null },
+    { id: 303, name: '로지텍 G Pro 마우스', chargingType: 'USB-C', color: '블랙', image: null },
+  ],
+  // 조합6: 출퇴근용 조합
+  6: [
+    { id: 401, name: 'AirPods Pro 2세대', chargingType: 'USB-C', color: '화이트', image: null },
+    { id: 402, name: 'Apple Watch Series 9', chargingType: 'MagSafe', color: '미드나이트', image: null },
+  ],
 };

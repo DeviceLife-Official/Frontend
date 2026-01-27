@@ -45,6 +45,7 @@ const DeviceSearchPage = () => {
   const [selectedCombinationId, setSelectedCombinationId] = useState<number | null>(null);
   const [showAllDevices, setShowAllDevices] = useState(false);
   const [showSaveCompleteModal, setShowSaveCompleteModal] = useState(false);
+  const [isFadingOut, setIsFadingOut] = useState(false);
 
   const productGridRef = useRef<HTMLDivElement>(null);
 
@@ -106,11 +107,21 @@ const DeviceSearchPage = () => {
   /* 저장 완료 모달 자동 닫기 */
   useEffect(() => {
     if (showSaveCompleteModal) {
-      const timer = setTimeout(() => {
-        setShowSaveCompleteModal(false);
-        handleCloseModal();
+      // 1. 0.8초 유지
+      const holdTimer = setTimeout(() => {
+        setIsFadingOut(true);
+
+        // 2. 0.2초 동안 dissolve (fade-out) 후 종료
+        const closeTimer = setTimeout(() => {
+          setShowSaveCompleteModal(false);
+          setIsFadingOut(false);
+          handleCloseModal();
+        }, 200); // 0.2초
+
+        return () => clearTimeout(closeTimer);
       }, 800); // 0.8초
-      return () => clearTimeout(timer);
+
+      return () => clearTimeout(holdTimer);
     }
   }, [showSaveCompleteModal]);
 
@@ -327,28 +338,28 @@ const DeviceSearchPage = () => {
                 <div
                   className="bg-white rounded-card px-56 py-40"
                   style={{
-                    width: 'clamp(903px, calc(903px + (100vw - 1440px) * 0.245833), 1021px)',
-                    height: '697px',
+                    width: '907px',
+                    height: '670px',
                   }}
                   onClick={(e) => e.stopPropagation()}
                 >
                   {/* Content */}
                   <div className="flex items-start justify-between gap-56">
                     {/* Left Section */}
-                    <div className="w-400 flex flex-col gap-32">
+                    <div className="w-400 flex flex-col gap-20">
                       {/* Name & Price + Image */}
                       <div className="flex flex-col gap-20">
                         {/* Name & Price */}
                         <div className="flex flex-col gap-12">
-                          <p className="font-heading-1 text-black">{selectedProduct.name}</p>
-                          <div className="flex items-center gap-8 font-heading-2 text-blue-600">
+                          <p className="font-heading-1 text-blue-600">{selectedProduct.name}</p>
+                          <div className="flex items-center gap-8 font-heading-2 text-gray-500">
                             <p>₩</p>
                             <p>{selectedProduct.price.toLocaleString()}</p>
                           </div>
                         </div>
 
                         {/* Image */}
-                        <div className="w-full h-360 bg-gray-200 relative">
+                        <div className="w-400 h-400 bg-gray-200 relative">
                         </div>
                       </div>
 
@@ -361,39 +372,39 @@ const DeviceSearchPage = () => {
                     </div>
 
                     {/* Right Section */}
-                    <div className="w-302 flex flex-col gap-56 pt-126">
+                    <div className="w-302 flex flex-col gap-40 pt-126">
                       {/* Product Info Table */}
-                      <div className="flex flex-col justify-between h-360 pl-16">
-                        <div className="flex items-center gap-80">
-                          <p className="font-body-1-r text-gray-400">모델명</p>
-                          <p className="font-body-1-r text-black">{selectedProduct.name}</p>
+                      <div className="flex flex-col justify-between h-400 pl-16">
+                        <div className="flex items-center gap-24">
+                          <p className="font-body-2-r text-gray-400 w-80">모델명</p>
+                          <p className="font-body-2-r text-black">{selectedProduct.name}</p>
                         </div>
-                        <div className="flex items-center gap-58">
-                          <p className="font-body-1-r text-gray-400">카테고리</p>
-                          <p className="font-body-1-r text-black">{selectedProduct.category}</p>
+                        <div className="flex items-center gap-24">
+                          <p className="font-body-2-r text-gray-400 w-80">카테고리</p>
+                          <p className="font-body-2-r text-black">{selectedProduct.category}</p>
                         </div>
-                        <div className="flex items-center gap-78">
-                          <p className="font-body-1-r text-gray-400">브랜드</p>
-                          <p className="font-body-1-r text-black">Apple</p>
+                        <div className="flex items-center gap-24">
+                          <p className="font-body-2-r text-gray-400 w-80">브랜드</p>
+                          <p className="font-body-2-r text-black">Apple</p>
                         </div>
-                        <div className="flex items-center gap-100">
-                          <p className="font-body-1-r text-gray-400">색상</p>
-                          <p className="font-body-1-r text-black">내추럴 티타늄</p>
+                        <div className="flex items-center gap-24">
+                          <p className="font-body-2-r text-gray-400 w-80">색상</p>
+                          <p className="font-body-2-r text-black">내추럴 티타늄</p>
                         </div>
-                        <div className="flex items-center gap-100">
-                          <p className="font-body-1-r text-gray-400">가격</p>
-                          <div className="flex items-center gap-4 font-body-1-r text-black">
+                        <div className="flex items-center gap-24">
+                          <p className="font-body-2-r text-gray-400 w-80">가격</p>
+                          <div className="flex items-center gap-4 font-body-2-r text-black">
                             <p>{selectedProduct.price.toLocaleString()}</p>
                             <p>원</p>
                           </div>
                         </div>
-                        <div className="flex items-center gap-56">
-                          <p className="font-body-1-r text-gray-400">충전방식</p>
-                          <p className="font-body-1-r text-black">USB-C</p>
+                        <div className="flex items-center gap-24">
+                          <p className="font-body-2-r text-gray-400 w-80">충전방식</p>
+                          <p className="font-body-2-r text-black">USB-C</p>
                         </div>
-                        <div className="flex items-center gap-80">
-                          <p className="font-body-1-r text-gray-400">출시일</p>
-                          <p className="font-body-1-r text-black">2023년 9월</p>
+                        <div className="flex items-center gap-24">
+                          <p className="font-body-2-r text-gray-400 w-80">출시일</p>
+                          <p className="font-body-2-r text-black">2023년 9월</p>
                         </div>
                       </div>
 
@@ -432,13 +443,13 @@ const DeviceSearchPage = () => {
                 <div
                   className="bg-white rounded-card shadow-[0_0_10px_rgba(0,0,0,0.25)]"
                   style={{
-                    width: 'clamp(903px, calc(903px + (100vw - 1440px) * 0.245833), 1021px)',
-                    height: '697px',
+                    width: '907px',
+                    height: '670px',
                   }}
                   onClick={(e) => e.stopPropagation()}
                 >
                   {/* Combination List */}
-                  <div className="flex flex-col mx-20">
+                  <div className="flex flex-col mx-20 overflow-y-auto max-h-[630px] scrollbar-minimal">
                     {MOCK_COMBINATIONS.map((combo) => (
                       <button
                         key={combo.id}
@@ -453,7 +464,7 @@ const DeviceSearchPage = () => {
                             {/* 조합명 + 대표조합 star */}
                             <div className="flex items-center gap-8">
                               <p className="font-body-1-sm text-black">{combo.name}</p>
-                              {combo.isMain && <StarIcon className="w-27 h-27" />}
+                              {combo.isMain && <StarIcon className="w-22 h-22" />}
                             </div>
                           </div>
                           {/* Tags */}
@@ -477,7 +488,7 @@ const DeviceSearchPage = () => {
             {modalView === 'combinationDetail' && selectedCombination && (
               <div
                 className="flex flex-col items-start gap-20 pointer-events-auto self-start"
-                style={{ marginTop: 'calc((100vh - 765px) / 2)' }}
+                style={{ marginTop: 'calc((100vh - 738px) / 2)' }}
               >
                 {/* Header: Back + X 버튼 */}
                 <div className="flex items-center justify-between w-full">
@@ -501,10 +512,8 @@ const DeviceSearchPage = () => {
                 <div
                   className="bg-white rounded-card shadow-[0_0_10px_rgba(0,0,0,0.25)] relative"
                   style={{
-                    width: 'clamp(903px, calc(903px + (100vw - 1440px) * 0.245833), 1021px)',
-                    height: showAllDevices
-                      ? 'clamp(700px, calc(700px + (100vw - 1440px) * 0.0625), 730px)'
-                      : '697px',
+                    width: '907px',
+                    height: showAllDevices ? '700px' : '670px',
                     transition: 'height 0.3s ease',
                   }}
                   onClick={(e) => e.stopPropagation()}
@@ -516,14 +525,14 @@ const DeviceSearchPage = () => {
                     columns={3}
                     defaultRows={3}
                     expanded={showAllDevices}
-                    onExpand={() => setShowAllDevices(true)}
+                    onExpand={(value) => setShowAllDevices(value)}
                     showExpandButton={true}
                     showGradient={true}
                     className="px-56 pt-40 pb-158"
                   />
 
                   {/* 담기 버튼 - 하단 고정 */}
-                  <div className="absolute bottom-56 right-56">
+                  <div className="absolute bottom-40 right-40">
                     <PrimaryButton
                       text={isAlreadyInSelectedCombination ? '이미 담은 상품입니다.' : `${selectedCombination.label} 에 담기`}
                       onClick={handleAddDeviceToCombination}
@@ -542,8 +551,8 @@ const DeviceSearchPage = () => {
       {/* 저장 완료 모달 - 독립적으로 표시 */}
       {showSaveCompleteModal && (
         <>
-          <div className="fixed inset-0 bg-black/50 z-60" />
-          <div className="fixed inset-0 flex items-center justify-center z-80">
+          <div className={`fixed inset-0 bg-black/50 z-60 transition-opacity duration-200 ${isFadingOut ? 'opacity-0' : 'opacity-100'}`} />
+          <div className={`fixed inset-0 flex items-center justify-center z-80 transition-opacity duration-200 ${isFadingOut ? 'opacity-0' : 'opacity-100'}`}>
             <div className="w-300 h-300 bg-white rounded-card shadow-[0_0_10px_rgba(0,0,0,0.25)] relative animate-fade-in">
               <SaveIcon className="w-100 h-100 text-blue-600 absolute left-1/2 -translate-x-1/2 top-64" />
               <p className="font-heading-3 text-blue-600 absolute left-1/2 -translate-x-1/2 top-206">저장 완료!</p>
