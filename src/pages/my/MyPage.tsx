@@ -186,7 +186,7 @@ const MyPage = () => {
           </div>
 
           {/* 프로필 카드 */}
-          <div className="mt-60 h-100 rounded-card shadow-[0_0_4px_rgba(0,0,0,0.25)] flex items-center justify-center gap-30">
+          <div className="mt-60 h-100 rounded-card border border-blue-300 flex items-center justify-center gap-30">
             <Logo className="w-48 h-48 flex-shrink-0" />
             <p className="font-heading-2 text-black">000 님</p>
           </div>
