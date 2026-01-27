@@ -3,13 +3,15 @@ type PrimaryButtonProps = {
   onClick?: () => void;
   disabled?: boolean;
   className?: string;
+  form?: string;
 };
 
-const PrimaryButton = ({ text, onClick, disabled = false, className = '' }: PrimaryButtonProps) => {
+const PrimaryButton = ({ text, onClick, disabled = false, className = '', form }: PrimaryButtonProps) => {
   return (
     <button
       onClick={onClick}
       disabled={disabled}
+      form={form}
       className={`
         flex items-center justify-center
         h-52

@@ -88,10 +88,11 @@ const LoginPage = () => {
 
           {/* 폼 컨테이너 */}
           <form
+            id="login-form"
             onSubmit={handleSubmit(onSubmit)}
             className="flex flex-col items-center gap-24 w-400"
           >
-            {/* 입력 + 버튼 영역 */}
+            {/* 입력 영역 */}
             <div className="flex flex-col gap-20 w-full">
               {/* 입력창들 */}
               <div className="flex flex-col gap-8">
@@ -137,13 +138,22 @@ const LoginPage = () => {
               </button>
               </div>
 
-              {/* 로그인 버튼 */}
-              <PrimaryButton
-                text="로그인"
-                className={`w-full bg-blue-600 ${isValid && !isPending ? 'hover:bg-blue-500' : ''}`}
-                disabled={!isValid || isPending}
-              />
             </div>
+
+          </form>
+        </div>
+
+        {/* 로그인 버튼 + 아이디/비밀번호 찾기 + 소셜 로그인 + 회원가입 안내 */}
+        <div className="flex flex-col items-center gap-32">
+          {/* 로그인 버튼 + 아이디/비밀번호 찾기 */}
+          <div className="flex flex-col items-center gap-12 w-400">
+            {/* 로그인 버튼 */}
+            <PrimaryButton
+              text="로그인"
+              className={`w-full bg-blue-600 ${isValid && !isPending ? 'hover:bg-blue-500' : ''}`}
+              disabled={!isValid || isPending}
+              form="login-form"
+            />
 
             {/* 아이디/비밀번호 찾기 */}
             <div className="flex items-center gap-16 font-body-2-r text-gray-400">
@@ -163,22 +173,22 @@ const LoginPage = () => {
                 비밀번호 찾기
               </button>
             </div>
-          </form>
-        </div>
+          </div>
 
-        {/* 소셜 로그인 */}
-        <GoogleLoginButton className="w-200 h-46" />
+          {/* 소셜 로그인 */}
+          <GoogleLoginButton className="w-200 h-46" />
 
-        {/* 회원가입 안내 */}
-        <div className="flex items-center gap-16 font-body-2-r text-gray-400">
-          <span>아직 Device Life 회원이 아니신가요?</span>
-          <button
-            type="button"
-            className="underline underline-offset-4 cursor-pointer"
-            onClick={() => navigate(ROUTES.auth.signup.base)}
-          >
-            회원가입 하기
-          </button>
+          {/* 회원가입 안내 */}
+          <div className="flex items-center gap-16 font-body-2-r text-gray-400">
+            <span>아직 Device Life 회원이 아니신가요?</span>
+            <button
+              type="button"
+              className="underline underline-offset-4 cursor-pointer"
+              onClick={() => navigate(ROUTES.auth.signup.base)}
+            >
+              회원가입 하기
+            </button>
+          </div>
         </div>
       </div>
     </div>
