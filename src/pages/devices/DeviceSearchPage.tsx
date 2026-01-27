@@ -449,7 +449,7 @@ const DeviceSearchPage = () => {
                   onClick={(e) => e.stopPropagation()}
                 >
                   {/* Combination List */}
-                  <div className="flex flex-col mx-20">
+                  <div className="flex flex-col mx-20 overflow-y-auto max-h-[657px] scrollbar-minimal">
                     {MOCK_COMBINATIONS.map((combo) => (
                       <button
                         key={combo.id}

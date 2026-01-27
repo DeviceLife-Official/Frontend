@@ -366,3 +366,36 @@ body {
 .animate-lines-appear {
   animation: linesAppear 2s ease-out forwards;
 }
+
+/* 미니멀 스크롤바 */
+.scrollbar-minimal {
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+}
+
+.scrollbar-minimal:hover {
+  scrollbar-color: var(--color-gray-200) transparent;
+}
+
+/* Webkit (Chrome, Safari, Edge) */
+.scrollbar-minimal::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scrollbar-minimal::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-minimal::-webkit-scrollbar-thumb {
+  background-color: transparent;
+  border-radius: 1000px;
+  transition: background-color 0.2s ease;
+}
+
+.scrollbar-minimal:hover::-webkit-scrollbar-thumb {
+  background-color: var(--color-gray-200);
+}
+
+.scrollbar-minimal::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-gray-300);
+}
