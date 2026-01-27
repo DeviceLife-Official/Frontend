@@ -243,7 +243,7 @@ const MyPage = () => {
           </div>
 
           {/* 조합 카드 목록 */}
-          <div className="mt-76 flex flex-col gap-68">
+          <div className="mt-76 flex flex-col gap-40">
             {MOCK_COMBINATIONS.map((combination, index) => {
               const devices = MOCK_COMBINATION_DEVICES[combination.id] || [];
               const hasDevices = devices.length > 0;
