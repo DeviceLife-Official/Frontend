@@ -9,13 +9,13 @@ import {
   type OnboardingCombinationFormData,
 } from '@/schemas/authSchema';
 import { ROUTES } from '@/constants/routes';
-import { usePostCombo } from '@/apis/combo/postCombo';
+import { usePostCreateCombination } from '@/apis/combo/postCreateCombination';
 
 const OnboardingCombinationPage = () => {
   const [step, setStep] = useState(1);
   const [combinationName, setCombinationName] = useState('');
   const navigate = useNavigate();
-  const { mutateAsync: createCombo, isPending } = usePostCombo();
+  const { mutateAsync: createCombo, isPending } = usePostCreateCombination();
 
   const {
     register,
