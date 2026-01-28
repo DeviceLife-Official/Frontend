@@ -1,5 +1,5 @@
 import { axiosInstance } from '@/apis/axios/axios';
-import type { PostCreateCombinationRequest, PostCreateCombinationResponse } from '@/types/combo/combo';
+import type { PostCreateCombinationRequest, PostCreateCombinationResponse } from '@/types/combo/createCombo'
 import { useMutation } from '@tanstack/react-query';
 
 // 조합 생성 API
