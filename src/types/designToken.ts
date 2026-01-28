@@ -45,6 +45,7 @@ export type TypographyToken =
   | 'font-heading-1'
   | 'font-heading-2'
   | 'font-heading-3'
+  | 'font-heading-4'
 
   /* Body (semibold) */
   | 'font-body-1-sm'

@@ -1,8 +1,22 @@
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import OnboardingLines from '@/assets/icons/onboarding_lines.svg?react';
+import { useGetUserProfile } from '@/apis/mypage/getUserProfile';
+import { ROUTES } from '@/constants/routes';
 
 const OnboardingCompletePage = () => {
-  // TODO: 사용자 이름은 전역 상태 또는 API에서 받아오기
-  const userName = '안안안안안안';
+  const navigate = useNavigate();
+  const { data: userProfile } = useGetUserProfile();
+  const userName = userProfile?.username ?? '';
+
+  // 애니메이션(2초) 종료 후 3초 뒤 홈으로 이동
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      navigate(ROUTES.home, { replace: true });
+    }, 5000); // 2초(애니메이션) + 3초(대기)
+
+    return () => clearTimeout(timer);
+  }, [navigate]);
 
   // 한글과 영문 길이 체크 함수
   const checkNameLength = (name: string) => {

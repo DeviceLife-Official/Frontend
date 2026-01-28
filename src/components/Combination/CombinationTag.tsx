@@ -18,7 +18,7 @@ const CombinationTag = ({ name, status, className = '' }: CombinationTagProps) =
         inline-flex items-center gap-8
         px-12 py-8 h-30
         rounded-tag
-        font-caption-r
+        font-caption-sm
         ${COMBINATION_NAME_STYLE_MAP[name]}
         ${className}
       `}
