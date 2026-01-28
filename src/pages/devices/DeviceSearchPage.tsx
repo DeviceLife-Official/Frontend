@@ -468,7 +468,7 @@ const DeviceSearchPage = () => {
                             </div>
                           </div>
                           {/* Tags */}
-                          <div className="flex gap-12">
+                          <div className="flex gap-12 -ml-4">
                             {combo.tags.map((tag) => (
                               <CombinationTag key={tag.name} name={tag.name} status={tag.status} />
                             ))}

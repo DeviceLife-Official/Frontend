@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import GNB from '@/components/Home/GNB';
 import PrimaryButton from '@/components/Button/PrimaryButton';
+import SecondaryButton from '@/components/Button/SecondaryButton';
 import SortDropdown from '@/components/Filter/SortDropdown';
 import CombinationTag from '@/components/Combination/CombinationTag';
 import RoundedLifestyleTag from '@/components/Lifestyle/RoundedLifestyleTag';
@@ -16,6 +17,7 @@ import CheckboxIcon from '@/assets/icons/checkbox.svg?react';
 import CheckboxOnIcon from '@/assets/icons/checkbox_on.svg?react';
 import TrashIcon from '@/assets/icons/trash.svg?react';
 import RemoveIcon from '@/assets/icons/remove.svg?react';
+import SaveIcon from '@/assets/icons/save.svg?react';
 import Logo from '@/assets/logos/logo.svg?react';
 import { MOCK_COMBINATIONS, MOCK_COMBINATION_DEVICES } from '@/constants/mockData';
 
@@ -57,6 +59,9 @@ const MyPage = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showCombinationDeleteModal, setShowCombinationDeleteModal] = useState(false);
   const [deleteTargetIndex, setDeleteTargetIndex] = useState<number | null>(null);
+  const [editingCombinationIndex, setEditingCombinationIndex] = useState<number | null>(null);
+  const [editingCombinationName, setEditingCombinationName] = useState('');
+  const [showSaveModal, setShowSaveModal] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
   // 스크롤 감지 (하단 그라데이션용)
@@ -153,6 +158,14 @@ const MyPage = () => {
       setDetailViewIndex(null);
       setSelectedDevices([]);
     }
+  };
+
+  // 조합명 저장 핸들러
+  const handleSaveCombinationName = () => {
+    // API 연동 시 실제 저장 로직 추가
+    console.log('저장된 조합명:', editingCombinationName);
+    setShowSaveModal(false);
+    setEditingCombinationIndex(null);
   };
 
   return (
@@ -290,7 +303,7 @@ const MyPage = () => {
                         : 'bg-white shadow-[0_0_10px_rgba(0,0,0,0.1)] cursor-pointer hover:bg-gray-50 transition-colors'
                     }`}
                   >
-                    {/* 일반 모드: Setting More 버튼 + 드롭다운 */}
+                    {/* 일반 모드: Setting More 버튼 + 드롭다운 또는 저장하기 버튼 */}
                     {!isDetailView && (
                       <div
                         ref={openMenuIndex === index ? menuRef : null}
@@ -298,7 +311,7 @@ const MyPage = () => {
                       >
                         <button
                           onClick={(e) => {
-                            e.stopPropagation(); // 카드 클릭 이벤트 전파 방지
+                            e.stopPropagation();
                             setOpenMenuIndex(openMenuIndex === index ? null : index);
                           }}
                           className="cursor-pointer hover:opacity-80"
@@ -325,6 +338,24 @@ const MyPage = () => {
                                 <div className="absolute -inset-x-4 inset-y-4 bg-gray-100 rounded-button -z-10" />
                               )}
                               삭제하기
+                            </button>
+
+                            {/* 조합명 수정하기 */}
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setEditingCombinationIndex(index);
+                                setEditingCombinationName(combination.name);
+                                setOpenMenuIndex(null);
+                              }}
+                              onMouseEnter={() => setHoveredMenuItem('rename')}
+                              onMouseLeave={() => setHoveredMenuItem(null)}
+                              className="relative font-body-1-sm text-black text-left py-12 whitespace-nowrap cursor-pointer border-b border-black/50"
+                            >
+                              {hoveredMenuItem === 'rename' && (
+                                <div className="absolute -inset-x-4 inset-y-4 bg-gray-100 rounded-button -z-10" />
+                              )}
+                              조합명 수정하기
                             </button>
 
                             {/* 자세히보기 */}
@@ -411,7 +442,8 @@ const MyPage = () => {
                             {devices.map((device) => (
                               <div
                                 key={device.id}
-                                className={`bg-white rounded-card shadow-[0_0_4px_rgba(0,0,0,0.1)] p-12 w-244 flex items-center gap-12 border ${selectedDevices.includes(device.id) ? 'border-blue-600' : 'border-transparent'}`}
+                                onClick={() => window.open(`/devices?productId=${device.id}`, '_blank')}
+                                className={`bg-white rounded-card shadow-[0_0_4px_rgba(0,0,0,0.1)] p-12 w-244 flex items-center gap-12 border cursor-pointer hover:shadow-[0_0_8px_rgba(0,0,0,0.15)] transition-shadow ${selectedDevices.includes(device.id) ? 'border-blue-600' : 'border-transparent'}`}
                               >
                                 <div className="w-64 h-64 bg-gray-200 flex-shrink-0" />
                                 <div className="flex flex-col gap-4 flex-1">
@@ -421,7 +453,10 @@ const MyPage = () => {
                                     </p>
                                     {/* 체크박스 - 기기명과 같은 높이 */}
                                     <button
-                                      onClick={() => handleSelectDevice(device.id)}
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleSelectDevice(device.id);
+                                      }}
                                       className="cursor-pointer flex-shrink-0"
                                     >
                                       {selectedDevices.includes(device.id) ? (
@@ -438,7 +473,10 @@ const MyPage = () => {
                             ))}
                             {/* 기기 추가 버튼 */}
                             <button
-                              onClick={() => navigate('/devices')}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                navigate('/devices');
+                              }}
                               className="cursor-pointer hover:opacity-80"
                             >
                               <PlusIcon />
@@ -478,7 +516,7 @@ const MyPage = () => {
                               <p className="font-body-3-r text-black leading-28">
                                 {MOCK_EVALUATION.connectivity.description}
                               </p>
-                              <div className="flex gap-8">
+                              <div className="flex gap-8 -ml-4">
                                 {MOCK_EVALUATION.connectivity.tags.map((tag) => (
                                   <span
                                     key={tag}
@@ -501,7 +539,7 @@ const MyPage = () => {
                               <p className="font-body-3-r text-black leading-28">
                                 {MOCK_EVALUATION.convenience.description}
                               </p>
-                              <div className="flex gap-8">
+                              <div className="flex gap-8 -ml-4">
                                 {MOCK_EVALUATION.convenience.tags.map((tag) => (
                                   <span
                                     key={tag}
@@ -524,7 +562,7 @@ const MyPage = () => {
                               <p className="font-body-3-r text-black leading-28">
                                 {MOCK_EVALUATION.lifestyle.description}
                               </p>
-                              <div className="flex gap-8">
+                              <div className="flex gap-8 -ml-4">
                                 {MOCK_EVALUATION.lifestyle.tags.map((tag) => (
                                   <span
                                     key={tag}
@@ -548,9 +586,9 @@ const MyPage = () => {
                               {/* 조합 번호 + 생성일 + 조합명 */}
                               <div className="flex flex-col gap-8">
                                 <div className="flex items-center gap-16">
-                                  <p className="font-body-4-r text-gray-400">{combination.label}</p>
+                                  <p className="font-body-3-r text-gray-400">{combination.label}</p>
                                   {combination.createdAt && (
-                                    <p className="font-body-4-r text-gray-400">
+                                    <p className="font-body-3-r text-gray-400">
                                       생성일: {combination.createdAt}
                                     </p>
                                   )}
@@ -561,7 +599,7 @@ const MyPage = () => {
                                 </div>
                               </div>
                               {/* Tags */}
-                              <div className="flex gap-12">
+                              <div className="flex gap-12 -ml-4">
                                 {combination.tags.map((tag) => (
                                   <CombinationTag key={tag.name} name={tag.name} status={tag.status} />
                                 ))}
@@ -569,7 +607,7 @@ const MyPage = () => {
                             </div>
 
                             {/* 기기 그리드 */}
-                            <div className="pl-8 mt-24">
+                            <div className="pl-8 mt-24 relative">
                               <div
                                 className={`grid ${columns === 4 ? 'grid-cols-4' : 'grid-cols-3'} gap-x-28 gap-y-12`}
                               >
@@ -589,6 +627,17 @@ const MyPage = () => {
                                   </div>
                                 ))}
                               </div>
+
+                              {/* 그라데이션 - 4열: 9개 이상, 3열: 7개 이상 */}
+                              {devices.length >= (columns === 4 ? 9 : 7) && (
+                                <div
+                                  className="absolute right-0 bottom-0 w-244 h-80 rounded-card pointer-events-none"
+                                  style={{
+                                    background:
+                                      'linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 70%)',
+                                  }}
+                                />
+                              )}
                             </div>
                           </div>
                         ) : (
@@ -611,7 +660,7 @@ const MyPage = () => {
                                 </div>
                               </div>
                               {/* Tags */}
-                              <div className="flex gap-12">
+                              <div className="flex gap-12 -ml-4">
                                 {combination.tags.map((tag) => (
                                   <CombinationTag key={tag.name} name={tag.name} status={tag.status} />
                                 ))}
@@ -725,6 +774,48 @@ const MyPage = () => {
                     setShowCombinationDeleteModal(false);
                     setDeleteTargetIndex(null);
                   }}
+                  className="w-168 h-52 bg-gray-100 hover:bg-gray-200 rounded-button flex items-center justify-center cursor-pointer transition-colors"
+                >
+                  <span className="font-body-2-sm text-black">취소</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* 조합명 저장 확인 모달 */}
+      {showSaveModal && (
+        <>
+          {/* 배경 오버레이 */}
+          <div
+            className="fixed inset-0 bg-black/50 z-60"
+            onClick={() => setShowSaveModal(false)}
+          />
+          {/* 모달 */}
+          <div className="fixed inset-0 flex items-center justify-center z-70 pointer-events-none">
+            <div
+              className="bg-white rounded-card w-460 px-36 py-44 flex flex-col items-center pointer-events-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* 아이콘 */}
+              <SaveIcon className="w-58 h-58 text-blue-600" />
+
+              {/* 텍스트 */}
+              <p className="font-body-2-r text-black mt-36">
+                조합명을 저장하시겠습니까?
+              </p>
+
+              {/* 버튼 그룹 */}
+              <div className="flex gap-20 mt-60">
+                <button
+                  onClick={handleSaveCombinationName}
+                  className="w-168 h-52 bg-blue-600 hover:bg-blue-500 rounded-button flex items-center justify-center cursor-pointer transition-colors"
+                >
+                  <span className="font-body-2-sm text-white">확인</span>
+                </button>
+                <button
+                  onClick={() => setShowSaveModal(false)}
                   className="w-168 h-52 bg-gray-100 hover:bg-gray-200 rounded-button flex items-center justify-center cursor-pointer transition-colors"
                 >
                   <span className="font-body-2-sm text-black">취소</span>
