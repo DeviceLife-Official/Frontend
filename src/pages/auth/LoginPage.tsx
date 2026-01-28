@@ -9,11 +9,7 @@ import CheckboxOn from '@/assets/icons/checkbox_on.svg?react';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '@/constants/routes';
 import GoogleLoginButton from '@/components/Button/GoogleLoginButton';
-import { usePostLogin } from '@/apis/auth/postLogin';
-import { setAuthTokens } from '@/utils/authStorage';
-import { useQueryClient } from '@tanstack/react-query';
-import { getUserProfile } from '@/apis/mypage/getUserProfile';
-import { queryKeys } from '@/constants/queryKeys';
+import { useLoginFlow } from '@/hooks/useLoginFlow';
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -34,44 +30,22 @@ const LoginPage = () => {
   // 비밀번호 입력 필드 등록
   const passwordRegister = register('password');
 
-  // 로그인 API 훅
-  const { mutateAsync: login, isPending } = usePostLogin();
-
-  // React Query 클라이언트
-  const queryClient = useQueryClient();
+  // 로그인 플로우 훅
+  const { loginAndFinalize, isPending } = useLoginFlow();
 
   // 로그인 제출 핸들러
   const onSubmit = async (data: LoginFormData) => {
     setLoginError('');
 
     try {
-      // 1. 로그인 API 호출
-      const response = await login({
+      await loginAndFinalize({
         email: data.email,
         password: data.password,
       });
 
-      // 2. 토큰 저장
-      if (response.result) {
-        setAuthTokens({
-          accessToken: response.result.accessToken,
-          refreshToken: response.result.refreshToken,
-        });
-      }
-
-      // 3. 유저 정보 호출로 로그인 상태 확정
-      try {
-        const userProfile = await getUserProfile();
-        // React Query 캐시에 저장
-        queryClient.setQueryData(queryKeys.userProfile, userProfile);
-
-        // 4. 라우팅 - 홈(/) 또는 원래 가려던 페이지로 이동
-        navigate(ROUTES.home, { replace: true });
-      } catch (error) {
-        // 유저 정보 조회 실패 시 알림 및 현재 페이지 유지
-        alert('유저 정보를 불러오는데 실패했습니다. 잠시 후 다시 시도해주세요.');
-      }
-    } catch (error: any) {
+      // 로그인 성공 시 라우팅
+      navigate(ROUTES.home, { replace: true });
+    } catch (error) {
       // 로그인 실패 시 에러 메시지 표시
       setLoginError('아이디 또는 비밀번호를 확인해주세요.');
     }
