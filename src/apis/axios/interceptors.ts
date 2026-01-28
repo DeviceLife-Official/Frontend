@@ -4,6 +4,7 @@ import { getAccessToken, getRefreshToken, setAuthTokens, clearAuthTokens } from 
 import { refreshAxiosInstance } from '@/apis/axios/refreshAxios';
 import type { RefreshTokenResponse } from '@/types/auth/refresh';
 import { setAuthorizationHeader } from '@/utils/auth/setAuthorizationHeader';
+import { ROUTES } from '@/constants/routes';
 
 // 응답 인터셉터에서 사용할 상태
 let refreshPromise: Promise<string> | null = null; // refresh 진행 중인 Promise
@@ -90,8 +91,9 @@ export const setupResponseInterceptor = (instance: AxiosInstance) => {
             // 6. 새 accessToken 반환
             return data.result.accessToken;
           } catch (refreshError) {
-            // 7. refresh 실패 시 토큰 정리
+            // 7. refresh 실패 시 토큰 정리 후 로그인 페이지로 이동
             clearAuthTokens();
+            window.location.href = ROUTES.auth.login;
             throw refreshError;
           } finally {
             // 8. refresh 완료 후 Promise 초기화
