@@ -17,7 +17,6 @@ export const ROUTES = {
     },
     onboarding: {
       lifestyle: '/auth/onboarding/lifestyle',
-      recommendation: '/auth/onboarding/recommendation',
       combination: '/auth/onboarding/combination',
       complete: '/auth/onboarding/complete',
     },

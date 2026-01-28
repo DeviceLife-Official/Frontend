@@ -5,7 +5,6 @@ import LoginPage from '@/pages/auth/LoginPage';
 import OnboardingCombinationPage from '@/pages/auth/OnboardingCombinationPage';
 import OnboardingCompletePage from '@/pages/auth/OnboardingCompletePage';
 import OnboardingLifestylePage from '@/pages/auth/OnboardingLifestylePage';
-import OnboardingRecommendationPage from '@/pages/auth/OnboardingRecommendationPage';
 import SignupAccountPage from '@/pages/auth/SignupAccountPage';
 import SignupProfilePage from '@/pages/auth/SignupProfilePage';
 import SignupPage from '@/pages/auth/SignupPage';
@@ -35,7 +34,6 @@ export const AuthFlowRoutes = [
         path: 'onboarding',
         children: [
           { path: 'lifestyle', element: <OnboardingLifestylePage /> },
-          { path: 'recommendation', element: <OnboardingRecommendationPage /> },
           { path: 'combination', element: <OnboardingCombinationPage /> },
           { path: 'complete', element: <OnboardingCompletePage /> },
         ],
