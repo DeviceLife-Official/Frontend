@@ -5,7 +5,7 @@ export type CombinationName = (typeof COMBINATION_NAMES)[number];
 export type CombinationStatus = (typeof COMBINATION_STATUSES)[number];
 
 export const COMBINATION_NAME_STYLE_MAP: Record<CombinationName, string> = {
-  연동성: 'bg-blue-200 text-blue-700',
+  연동성: 'bg-blue-200 text-blue-800',
   편의성: 'bg-light-green text-dark-green',
   라이프스타일: 'bg-light-yellow text-dark-yellow',
 };
