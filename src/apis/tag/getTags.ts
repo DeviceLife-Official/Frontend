@@ -1,7 +1,7 @@
 import { axiosInstance } from '@/apis/axios/axios';
 import type { GetTagsResponse, GetTagsResult } from '@/types/tag/tag';
 import { useQuery } from '@tanstack/react-query';
-import { queryKey } from '@/constants/queryKeys';
+import { queryKey } from '@/constants/queryKey';
 
 // 태그 목록 조회 API
 // 전체 태그를 가져오려면 항상 type: 'LIFESTYLE'을 보내야 함

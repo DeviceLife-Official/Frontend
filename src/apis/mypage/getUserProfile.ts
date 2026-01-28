@@ -1,7 +1,7 @@
 import { axiosInstance } from '@/apis/axios/axios';
 import type { UserProfileResponse, UserProfileResult } from '@/types/mypage/user';
 import { useQuery } from '@tanstack/react-query';
-import { queryKey } from '@/constants/queryKeys';
+import { queryKey } from '@/constants/queryKey';
 import { hasAuthTokens } from '@/utils/auth/authStorage';
 
 // 유저 정보 조회 API

@@ -1,6 +1,6 @@
 import { setAuthTokens } from '@/utils/auth/authStorage';
 import { getUserProfile } from '@/apis/mypage/getUserProfile';
-import { queryKey } from '@/constants/queryKeys';
+import { queryKey } from '@/constants/queryKey';
 import type { QueryClient } from '@tanstack/react-query';
 
 /**
