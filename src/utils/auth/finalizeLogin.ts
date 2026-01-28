@@ -1,6 +1,6 @@
 import { setAuthTokens } from '@/utils/auth/authStorage';
 import { getUserProfile } from '@/apis/mypage/getUserProfile';
-import { queryKeys } from '@/constants/queryKeys';
+import { queryKey } from '@/constants/queryKeys';
 import type { QueryClient } from '@tanstack/react-query';
 
 /**
@@ -23,5 +23,5 @@ export const finalizeLogin = async (
 
   // 2. 유저 정보 조회 및 캐시 저장
   const userProfile = await getUserProfile();
-  queryClient.setQueryData(queryKeys.userProfile, userProfile);
+  queryClient.setQueryData([queryKey.USER_PROFILE], userProfile);
 };
