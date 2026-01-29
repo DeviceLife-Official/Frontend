@@ -12,7 +12,7 @@ const PrimaryInput = forwardRef<HTMLInputElement, PrimaryInputProps>(
         type={type}
         disabled={disabled}
         className={`
-          w-full h-72 px-16 bg-white border border-black rounded-button
+          w-400 h-52 px-16 bg-white border border-black rounded-button
           font-body-2-r text-gray-500 placeholder:text-gray-300
           outline-none focus:border-blue-500
           ${disabled ? 'bg-gray-100 cursor-not-allowed' : ''}
