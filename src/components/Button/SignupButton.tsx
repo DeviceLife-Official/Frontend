@@ -25,7 +25,7 @@ const SignupButton = ({
       onClick={onClick}
       disabled={disabled}
       className={`
-        relative w-400 h-72
+        relative w-400 h-52
         bg-white border border-black rounded-button
         outline-none transition-all duration-200
         ${disabled ? 'bg-gray-100 cursor-not-allowed' : 'cursor-pointer hover:bg-gray-100 hover:border-gray-700'}
