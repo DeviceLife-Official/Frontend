@@ -91,7 +91,6 @@ const CombinationCreatePage = () => {
     <div className="min-h-[calc(100vh-80px)] flex items-center justify-center">
       <div className="flex flex-col gap-144">
         <CombinationStyleProbe ref={styleProbeRef} />
-
         <div
           className={`
             fixed left-0 right-0 bottom-0 top-80 z-800 bg-white pointer-events-none
@@ -99,7 +98,6 @@ const CombinationCreatePage = () => {
             ${bgOn ? 'opacity-100' : 'opacity-0'}
           `}
         />
-
         <CombinationResultOverlay
           centerText={centerText}
           resultOn={resultOn && mode === 'result'}
@@ -108,7 +106,6 @@ const CombinationCreatePage = () => {
           showExtras={showExtras}
           targetRef={targetRef}
         />
-
         {mode === 'form' && (
           <>
             <div className="flex flex-row gap-20 justify-center">
