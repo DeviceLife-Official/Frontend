@@ -182,9 +182,9 @@ const FindPasswordPage = () => {
               이메일로 발송된 인증번호 6자리를 입력해 주세요
             </p>
             {/* 남은 시간 */}
-            <div className="flex items-center gap-8 font-body-2-r">
+            <div className="flex items-center gap-12 font-body-1-sm">
               <span className="text-black">남은 시간</span>
-              <span className="font-body-2-sm text-warning">{formatTime(timeLeft)}</span>
+              <span className="text-warning">{formatTime(timeLeft)}</span>
             </div>
           </div>
 
