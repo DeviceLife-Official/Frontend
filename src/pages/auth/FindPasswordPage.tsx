@@ -14,10 +14,12 @@ const TIMER_SECONDS = 180; // 3분
 
 const FindPasswordPage = () => {
   const navigate = useNavigate();
-  const [step, setStep] = useState<1 | 2>(2);
+  const [step, setStep] = useState<1 | 2 | 3>(3);
   const [verificationCode, setVerificationCode] = useState('');
   const [timeLeft, setTimeLeft] = useState(TIMER_SECONDS);
   const [isTimerRunning, setIsTimerRunning] = useState(false);
+  const [newPassword, setNewPassword] = useState('');
+  const [newPasswordConfirm, setNewPasswordConfirm] = useState('');
 
   const { mutateAsync: sendMail, isPending } = usePostSendMail();
 
@@ -212,6 +214,56 @@ const FindPasswordPage = () => {
               onClick={handleVerify}
               disabled={verificationCode.length !== 6 || timeLeft <= 0}
               className={`w-400 ${verificationCode.length === 6 && timeLeft > 0
+                  ? 'bg-blue-600 hover:bg-blue-500'
+                  : ''
+                }`}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Step 3: 새 비밀번호 설정 */}
+      {step === 3 && (
+        <div className="flex flex-col items-center gap-56">
+          {/* 타이틀 */}
+          <p className="font-body-1-sm text-blue-600 text-center">
+            새로운 비밀번호를 설정해 주세요
+          </p>
+
+          {/* 입력 필드 + 버튼 영역 */}
+          <div className="flex flex-col gap-40 w-400">
+            {/* 입력 필드들 */}
+            <div className="flex flex-col gap-20">
+              {/* 새 비밀번호 */}
+              <div className="flex flex-col gap-10">
+                <p className="font-body-3-sm text-black">새 비밀번호</p>
+                <PrimaryInput
+                  type="password"
+                  placeholder="영문+숫자 조합 *~20자"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  maxLength={20}
+                />
+              </div>
+
+              {/* 새 비밀번호 확인 */}
+              <div className="flex flex-col gap-10">
+                <p className="font-body-3-sm text-black">새 비밀번호 확인</p>
+                <PrimaryInput
+                  type="password"
+                  placeholder="비밀번호를 한 번 더 입력해 주세요"
+                  value={newPasswordConfirm}
+                  onChange={(e) => setNewPasswordConfirm(e.target.value)}
+                  maxLength={20}
+                />
+              </div>
+            </div>
+
+            {/* 비밀번호 변경하기 버튼 */}
+            <PrimaryButton
+              text="비밀번호 변경하기"
+              disabled={!newPassword || !newPasswordConfirm || newPassword !== newPasswordConfirm}
+              className={`w-full ${newPassword && newPasswordConfirm && newPassword === newPasswordConfirm
                   ? 'bg-blue-600 hover:bg-blue-500'
                   : ''
                 }`}
