@@ -14,7 +14,7 @@ const TIMER_SECONDS = 180; // 3분
 
 const FindPasswordPage = () => {
   const navigate = useNavigate();
-  const [step, setStep] = useState<1 | 2>(1);
+  const [step, setStep] = useState<1 | 2>(2);
   const [verificationCode, setVerificationCode] = useState('');
   const [timeLeft, setTimeLeft] = useState(TIMER_SECONDS);
   const [isTimerRunning, setIsTimerRunning] = useState(false);
@@ -189,21 +189,20 @@ const FindPasswordPage = () => {
           </div>
 
           {/* 입력 + 버튼 영역 */}
-          <div className="flex flex-col items-center gap-20 w-560">
+          <div className="flex flex-col items-center gap-20">
             {/* 인증번호 입력 + 재전송 버튼 */}
-            <div className="flex gap-12 w-full">
+            <div className="relative w-400">
               <PrimaryInput
                 type="text"
                 placeholder="인증번호 입력"
                 value={verificationCode}
                 onChange={(e) => setVerificationCode(e.target.value)}
                 maxLength={6}
-                className="w-400"
               />
               <SecondaryButton
                 text="인증번호 재전송"
                 onClick={handleResend}
-                className="w-148"
+                className="w-148 absolute top-1/2 -translate-y-1/2 left-[calc(100%+12px)]"
               />
             </div>
 
@@ -212,9 +211,9 @@ const FindPasswordPage = () => {
               text="확인"
               onClick={handleVerify}
               disabled={verificationCode.length !== 6 || timeLeft <= 0}
-              className={`w-full ${verificationCode.length === 6 && timeLeft > 0
-                ? 'bg-blue-600 hover:bg-blue-500'
-                : ''
+              className={`w-400 ${verificationCode.length === 6 && timeLeft > 0
+                  ? 'bg-blue-600 hover:bg-blue-500'
+                  : ''
                 }`}
             />
           </div>
