@@ -8,7 +8,10 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { findPasswordSchema, type FindPasswordFormData } from '@/schemas/authSchema';
 import PrimaryInput from '@/components/Input/PrimaryInput';
 import GoogleLoginButton from '@/components/Button/GoogleLoginButton';
-import { usePostSendMail } from '@/apis/findCredential/postFindPassword';
+import {
+  usePostSendMail,
+  usePostVerifyCode,
+} from '@/apis/findCredential/postFindPassword';
 
 const TIMER_SECONDS = 180; // 3분
 
@@ -23,6 +26,7 @@ const FindPasswordPage = () => {
   const [newPasswordConfirm, setNewPasswordConfirm] = useState('');
 
   const { mutateAsync: sendMail, isPending } = usePostSendMail();
+  const { mutateAsync: verifyCode, isPending: isVerifyPending } = usePostVerifyCode();
 
   const {
     register,
@@ -95,28 +99,36 @@ const FindPasswordPage = () => {
     setHasSubmitted(true);
   };
 
-  // Step2: 인증번호 재전송 핸들러
+  // Step2: 인증번호 재전송 (step1 이메일 사용)
   const handleResend = async () => {
     try {
       const email = getValues('email');
-      const response = await sendMail({ email });
-
-      if (response.success) {
-        startTimer();
-        setVerificationCode('');
-        alert('인증번호가 재전송되었습니다.');
+      await sendMail({ email });
+      startTimer();
+      setVerificationCode('');
+    } catch (error: unknown) {
+      const axiosError = error as { response?: unknown };
+      if (axiosError.response) {
+        alert('인증번호 재전송에 실패했습니다. 다시 시도해 주세요.');
       } else {
-        alert('인증번호 재전송에 실패했습니다. 다시 시도해주세요.');
+        alert('오류가 발생했습니다. 다시 시도해 주세요.');
       }
-    } catch {
-      alert('오류가 발생했습니다. 다시 시도해주세요.');
     }
   };
 
-  // Step2: 인증번호 확인 핸들러
-  const handleVerify = () => {
-    // TODO: 인증번호 확인 API 호출
-    console.log('인증번호 확인:', verificationCode);
+  // Step2: 인증번호 확인 API 연동
+  const handleVerify = async () => {
+    try {
+      await verifyCode({ code: verificationCode });
+      // TODO: 성공 시 step3 이동 등
+    } catch (error: unknown) {
+      const axiosError = error as { response?: unknown };
+      if (axiosError.response) {
+        // TODO: 에러 메시지 표시
+      } else {
+        alert('오류가 발생했습니다. 다시 시도해 주세요.');
+      }
+    }
   };
 
   return (
@@ -227,10 +239,14 @@ const FindPasswordPage = () => {
 
             {/* 확인 버튼 */}
             <PrimaryButton
-              text="확인"
+              text={isVerifyPending ? '확인 중...' : '확인'}
               onClick={handleVerify}
-              disabled={verificationCode.length !== 6 || timeLeft <= 0}
-              className={`w-400 ${verificationCode.length === 6 && timeLeft > 0
+              disabled={
+                verificationCode.length !== 6 ||
+                timeLeft <= 0 ||
+                isVerifyPending
+              }
+              className={`w-400 ${verificationCode.length === 6 && timeLeft > 0 && !isVerifyPending
                   ? 'bg-blue-600 hover:bg-blue-500'
                   : ''
                 }`}
