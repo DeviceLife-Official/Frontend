@@ -241,15 +241,12 @@ const MyPage = () => {
               </div>
             </div>
           </div>
-<<<<<<< HEAD
-=======
 
           {/* 최근에 본 기기 플로팅 섹션 */}
           <RecentlyViewedFloating
             userName="000"
             sidebarContentRef={sidebarContentRef}
           />
->>>>>>> b3657c6 (feat: 마이페이지 좌측 플로팅 구현)
         </aside>
 
         {/* 우측 메인 콘텐츠 */}
@@ -320,16 +317,7 @@ const MyPage = () => {
 
                   {/* 조합 카드 */}
                   <div
-<<<<<<< HEAD
-                    onClick={() => {
-                      // 상세보기가 아닐 때, 카드를 클릭하면 상세보기로 진입
-                      if (!isDetailView) {
-                        handleDetailView(index);
-                      }
-                    }}
-=======
                     onClick={() => !isDetailView && editingCombinationIndex !== index && handleDetailView(index)}
->>>>>>> a8799cc (feat: 조합명 수정하기 구현, 저장팝업 구현)
                     className={`rounded-card relative ${
                       isDetailView
                         ? 'bg-blue-100'
