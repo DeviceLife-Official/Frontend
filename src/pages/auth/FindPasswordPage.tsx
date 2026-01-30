@@ -24,6 +24,8 @@ const FindPasswordPage = () => {
   const [isTimerRunning, setIsTimerRunning] = useState(false);
   const [newPassword, setNewPassword] = useState('');
   const [newPasswordConfirm, setNewPasswordConfirm] = useState('');
+  const [verifyToken, setVerifyToken] = useState<string>('');
+  const [verifyError, setVerifyError] = useState<string>('');
 
   const { mutateAsync: sendMail, isPending } = usePostSendMail();
   const { mutateAsync: verifyCode, isPending: isVerifyPending } = usePostVerifyCode();
@@ -56,7 +58,13 @@ const FindPasswordPage = () => {
   // 타이머 useEffect
   useEffect(() => {
     if (!isTimerRunning || timeLeft <= 0) {
-      if (timeLeft <= 0) setIsTimerRunning(false);
+      if (timeLeft <= 0) {
+        setIsTimerRunning(false);
+        // 시간 만료 시 에러 메시지 표시
+        if (step === 2) {
+          setVerifyError('인증 시간이 만료되었어요. 인증번호를 다시 받아주세요.');
+        }
+      }
       return;
     }
 
@@ -65,7 +73,7 @@ const FindPasswordPage = () => {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [isTimerRunning, timeLeft]);
+  }, [isTimerRunning, timeLeft, step]);
 
   // Step1: 인증번호 받기 제출 핸들러 (유효할 때만 호출)
   const onSubmitValid = async (data: FindPasswordFormData) => {
@@ -101,10 +109,11 @@ const FindPasswordPage = () => {
 
   // Step2: 인증번호 재전송 (step1 이메일 사용)
   const handleResend = async () => {
+    setVerifyError(''); // 에러 초기화
     try {
       const email = getValues('email');
       await sendMail({ email });
-      startTimer();
+      startTimer(); // 타이머 3분으로 리셋
       setVerificationCode('');
     } catch (error: unknown) {
       const axiosError = error as { response?: unknown };
@@ -118,16 +127,29 @@ const FindPasswordPage = () => {
 
   // Step2: 인증번호 확인 API 연동
   const handleVerify = async () => {
+    setVerifyError(''); // 에러 초기화
+
     try {
-      await verifyCode({ code: verificationCode });
-      // TODO: 성공 시 step3 이동 등
-    } catch (error: unknown) {
-      const axiosError = error as { response?: unknown };
-      if (axiosError.response) {
-        // TODO: 에러 메시지 표시
-      } else {
-        alert('오류가 발생했습니다. 다시 시도해 주세요.');
+      const response = await verifyCode({ code: verificationCode });
+
+      // 성공 시 verifyToken 저장하고 step3로 이동
+      if (response.result?.verifyToken) {
+        setVerifyToken(response.result.verifyToken);
+        setStep(3);
       }
+    } catch (error: unknown) {
+      const axiosError = error as {
+        response?: { data?: { message?: string } };
+      };
+
+      // API 응답이 있는 경우 → 응답의 message를 에러 문구로 표시
+      if (axiosError.response?.data?.message) {
+        setVerifyError(axiosError.response.data.message);
+        return;
+      }
+
+      // 네트워크 오류 등 응답 자체가 없는 경우 → alert
+      alert('오류가 발생했습니다. 다시 시도해 주세요.');
     }
   };
 
@@ -222,19 +244,27 @@ const FindPasswordPage = () => {
           {/* 입력 + 버튼 영역 */}
           <div className="flex flex-col items-center gap-20">
             {/* 인증번호 입력 + 재전송 버튼 */}
-            <div className="relative w-400">
-              <PrimaryInput
-                type="text"
-                placeholder="인증번호 입력"
-                value={verificationCode}
-                onChange={(e) => setVerificationCode(e.target.value)}
-                maxLength={6}
-              />
-              <SecondaryButton
-                text="인증번호 재전송"
-                onClick={handleResend}
-                className="w-148 absolute top-1/2 -translate-y-1/2 left-[calc(100%+12px)]"
-              />
+            <div className="flex flex-col gap-8 w-400">
+              <div className="relative">
+                <PrimaryInput
+                  type="text"
+                  placeholder="인증번호 입력"
+                  value={verificationCode}
+                  onChange={(e) => {
+                    setVerificationCode(e.target.value);
+                    setVerifyError(''); // 입력 시 에러 초기화
+                  }}
+                  maxLength={6}
+                />
+                <SecondaryButton
+                  text="인증번호 재전송"
+                  onClick={handleResend}
+                  className="w-148 absolute top-1/2 -translate-y-1/2 left-[calc(100%+12px)]"
+                />
+              </div>
+              {verifyError && (
+                <p className="font-body-3-r text-warning">{verifyError}</p>
+              )}
             </div>
 
             {/* 확인 버튼 */}
