@@ -51,6 +51,19 @@ export const findPasswordSchema = z.object({
 
 export type FindPasswordFormData = z.infer<typeof findPasswordSchema>;
 
+// 비밀번호 재설정 스키마
+export const resetPasswordSchema = z
+  .object({
+    newPassword: passwordSchema,
+    newPasswordConfirm: z.string().min(1, '비밀번호 확인을 입력하세요'),
+  })
+  .refine((data) => data.newPassword === data.newPasswordConfirm, {
+    message: '비밀번호가 일치하지 않습니다',
+    path: ['newPasswordConfirm'], // 에러를 newPasswordConfirm 필드에만 표시
+  });
+
+export type ResetPasswordFormData = z.infer<typeof resetPasswordSchema>;
+
 // 회원가입 - 계정 정보 스키마
 export const signupAccountSchema = z
   .object({

@@ -5,12 +5,18 @@ import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '@/constants/routes';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { findPasswordSchema, type FindPasswordFormData } from '@/schemas/authSchema';
+import {
+  findPasswordSchema,
+  type FindPasswordFormData,
+  resetPasswordSchema,
+  type ResetPasswordFormData,
+} from '@/schemas/authSchema';
 import PrimaryInput from '@/components/Input/PrimaryInput';
 import GoogleLoginButton from '@/components/Button/GoogleLoginButton';
 import {
   usePostSendMail,
   usePostVerifyCode,
+  usePostResetPassword,
 } from '@/apis/findCredential/postFindPassword';
 
 const TIMER_SECONDS = 180; // 3분
@@ -19,16 +25,17 @@ const FindPasswordPage = () => {
   const navigate = useNavigate();
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [hasSubmitted, setHasSubmitted] = useState(false);
+  const [hasResetSubmitted, setHasResetSubmitted] = useState(false);
   const [verificationCode, setVerificationCode] = useState('');
   const [timeLeft, setTimeLeft] = useState(TIMER_SECONDS);
   const [isTimerRunning, setIsTimerRunning] = useState(false);
-  const [newPassword, setNewPassword] = useState('');
-  const [newPasswordConfirm, setNewPasswordConfirm] = useState('');
   const [verifyToken, setVerifyToken] = useState<string>('');
   const [verifyError, setVerifyError] = useState<string>('');
+  const [resetError, setResetError] = useState<string>('');
 
   const { mutateAsync: sendMail, isPending } = usePostSendMail();
   const { mutateAsync: verifyCode, isPending: isVerifyPending } = usePostVerifyCode();
+  const { mutateAsync: resetPassword, isPending: isResetPending } = usePostResetPassword();
 
   const {
     register,
@@ -40,6 +47,18 @@ const FindPasswordPage = () => {
     resolver: zodResolver(findPasswordSchema),
     mode: 'onSubmit',
     reValidateMode: 'onChange', // 한 번 제출 후에는 입력 시마다 재검사
+  });
+
+  // Step3: 비밀번호 재설정 폼
+  const {
+    register: registerReset,
+    handleSubmit: handleResetSubmit,
+    formState: { errors: resetErrors },
+    setError: setResetFormError,
+  } = useForm<ResetPasswordFormData>({
+    resolver: zodResolver(resetPasswordSchema),
+    mode: 'onChange',
+    reValidateMode: 'onChange',
   });
 
   // 타이머 포맷팅 (mm:ss)
@@ -151,6 +170,39 @@ const FindPasswordPage = () => {
       // 네트워크 오류 등 응답 자체가 없는 경우 → alert
       alert('오류가 발생했습니다. 다시 시도해 주세요.');
     }
+  };
+
+  // Step3: 비밀번호 변경 API 연동 (유효할 때만 호출)
+  const onResetPasswordValid = async (data: ResetPasswordFormData) => {
+    setResetError(''); // API 에러 초기화
+
+    try {
+      await resetPassword({
+        verifiedToken: verifyToken,
+        newPassword: data.newPassword,
+      });
+
+      // 성공 시 로그인 화면으로 이동
+      navigate(ROUTES.auth.login);
+    } catch (error: unknown) {
+      const axiosError = error as {
+        response?: { data?: { message?: string } };
+      };
+
+      // API 응답이 있는 경우 → 응답의 message를 에러 문구로 표시
+      if (axiosError.response?.data?.message) {
+        setResetError(axiosError.response.data.message);
+        return;
+      }
+
+      // 네트워크 오류 등 응답 자체가 없는 경우 → alert
+      alert('오류가 발생했습니다. 다시 시도해 주세요.');
+    }
+  };
+
+  // Step3: 유효성 검사 실패 시 한 번이라도 제출했음을 표시 → 이후 실시간 검사
+  const onResetPasswordInvalid = () => {
+    setHasResetSubmitted(true);
   };
 
   return (
@@ -294,44 +346,59 @@ const FindPasswordPage = () => {
           </p>
 
           {/* 입력 필드 + 버튼 영역 */}
-          <div className="flex flex-col gap-40 w-400">
+          <form
+            onSubmit={handleResetSubmit(onResetPasswordValid, onResetPasswordInvalid)}
+            className="flex flex-col gap-40 w-400"
+          >
             {/* 입력 필드들 */}
             <div className="flex flex-col gap-20">
               {/* 새 비밀번호 */}
               <div className="flex flex-col gap-10">
                 <p className="font-body-3-sm text-black">새 비밀번호</p>
                 <PrimaryInput
+                  {...registerReset('newPassword')}
                   type="password"
                   placeholder="영문+숫자 조합 *~20자"
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
                   maxLength={20}
                 />
+                {hasResetSubmitted && resetErrors.newPassword && (
+                  <p className="font-body-3-r text-warning">
+                    {resetErrors.newPassword.message}
+                  </p>
+                )}
               </div>
 
               {/* 새 비밀번호 확인 */}
               <div className="flex flex-col gap-10">
                 <p className="font-body-3-sm text-black">새 비밀번호 확인</p>
                 <PrimaryInput
+                  {...registerReset('newPasswordConfirm')}
                   type="password"
                   placeholder="비밀번호를 한 번 더 입력해 주세요"
-                  value={newPasswordConfirm}
-                  onChange={(e) => setNewPasswordConfirm(e.target.value)}
                   maxLength={20}
                 />
+                {hasResetSubmitted && resetErrors.newPasswordConfirm && (
+                  <p className="font-body-3-r text-warning">
+                    {resetErrors.newPasswordConfirm.message}
+                  </p>
+                )}
               </div>
             </div>
 
             {/* 비밀번호 변경하기 버튼 */}
-            <PrimaryButton
-              text="비밀번호 변경하기"
-              disabled={!newPassword || !newPasswordConfirm || newPassword !== newPasswordConfirm}
-              className={`w-full ${newPassword && newPasswordConfirm && newPassword === newPasswordConfirm
-                  ? 'bg-blue-600 hover:bg-blue-500'
-                  : ''
+            <div className="flex flex-col gap-8 w-full">
+              <PrimaryButton
+                text={isResetPending ? '변경 중...' : '비밀번호 변경하기'}
+                disabled={isResetPending}
+                className={`w-full ${
+                  !isResetPending ? 'bg-blue-600 hover:bg-blue-500' : ''
                 }`}
-            />
-          </div>
+              />
+              {resetError && (
+                <p className="font-body-3-r text-warning">{resetError}</p>
+              )}
+            </div>
+          </form>
         </div>
       )}
     </div>
