@@ -36,6 +36,9 @@ const CombinationDeviceCard = ({
   const hasMoreDevices = devices.length > defaultDeviceCount;
   const displayedDevices = showAllDevices ? devices : devices.slice(0, defaultDeviceCount);
 
+  const gradientThreshold = columns === 4 ? 9 : 7;
+  const shouldShowGradient = devices.length >= gradientThreshold;
+
   const handleExpand = () => {
     if (!isControlled) {
       setInternalExpanded(true);
@@ -67,7 +70,7 @@ const CombinationDeviceCard = ({
           </div>
         </div>
         {/* Tags */}
-        <div className="flex gap-12">
+        <div className="flex gap-12 -ml-4">
           {combination.tags.map((tag) => (
             <CombinationTag key={tag.name} name={tag.name} status={tag.status} />
           ))}
@@ -93,7 +96,7 @@ const CombinationDeviceCard = ({
         </div>
 
         {/* 그라데이션 */}
-        {showGradient && hasMoreDevices && !showAllDevices && (
+        {showGradient && shouldShowGradient && !showAllDevices && (
           <div
             className={`absolute right-0 bottom-0 ${deviceCardWidth} h-80 rounded-card pointer-events-none`}
             style={{

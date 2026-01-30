@@ -1,5 +1,5 @@
 import { useMemo, useRef, useState } from 'react';
-
+import { useNavigate } from 'react-router-dom';
 import PrimaryButton from '@/components/Button/PrimaryButton';
 import Stage1Section from '@/components/Combination/Stage1Section';
 import Stage2Section from '@/components/Combination/Stage2Section';
@@ -8,13 +8,12 @@ import CombinationResultOverlay from '@/components/Combination/CombinationResult
 import CombinationStyleProbe from '@/components/Combination/CombinationStyleProbe';
 import { useCombinationMotion } from '@/hooks/useCombinationMotion';
 import { useCombinationNameInput } from '@/hooks/useCombinationNameInput';
+import { usePostCreateCombination } from '@/apis/combo/postCreateCombination';
 
 type ResultPhase = 'idle' | 'shrink' | 'stack' | 'done';
 
-// TODO: 나중에 API/상태에서 가져오기 (내가 만든 조합명 리스트)
-const EXISTING_COMBO_NAMES = ['사무실 세팅'];
-
 const CombinationCreatePage = () => {
+  const navigate = useNavigate();
   const [centerText, setCenterText] = useState<string>('');
   const [mode, setMode] = useState<'form' | 'result'>('form');
   const [bgOn, setBgOn] = useState(false);
@@ -22,7 +21,7 @@ const CombinationCreatePage = () => {
   const [phase, setPhase] = useState<ResultPhase>('idle');
   const [showDouble, setShowDouble] = useState(false);
   const [showExtras, setShowExtras] = useState(false);
-
+  const [serverErrorMessage, setServerErrorMessage] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const styleProbeRef = useRef<HTMLDivElement | null>(null);
   const targetRef = useRef<HTMLDivElement | null>(null);
@@ -37,7 +36,6 @@ const CombinationCreatePage = () => {
     validate,
   } = useCombinationNameInput({
     inputRef,
-    existingNames: EXISTING_COMBO_NAMES,
     maxLen: 20,
   });
 
@@ -53,14 +51,34 @@ const CombinationCreatePage = () => {
     setShowExtras,
   });
 
-  const handleCreate = () => {
+  const { mutateAsync } = usePostCreateCombination();
+
+  const handleCreate = async () => {
     if (!isValid) return;
     if (validate(name) !== null) return;
-    setBgOn(true);
-    start(name.trim());
+    try {
+      setServerErrorMessage(null);
+      const res = await mutateAsync({ comboName: name });
+      if (res.success && res.result) {
+        setBgOn(true);
+        start(res.result.comboName);
+      }
+    } catch (err: any) {
+      const code = err?.response?.data?.code;
+      if (code === 'AUTH_401') {
+        navigate('/auth/login');
+        return;
+      }
+      if (code === 'COMBO_4005') {
+        setServerErrorMessage('이미 동일한 이름의 조합이 존재합니다.');
+        return;
+      }
+      setServerErrorMessage('조합 생성 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+    }
   };
 
   const helperText =
+    serverErrorMessage ??
     errorMessage ??
     '회원의 경우 로그인 한 뒤 조합을 생성해야 마이페이지>내 조합 목록에 저장됩니다.';
 
@@ -97,7 +115,10 @@ const CombinationCreatePage = () => {
                   type="text"
                   placeholder="생성하고 싶은 조합명을 입력하세요"
                   value={name}
-                  onChange={onNameChange}
+                  onChange={(e) => {
+                    setServerErrorMessage(null);
+                    onNameChange(e);
+                  }}
                   onCompositionStart={onCompositionStart}
                   onCompositionEnd={onCompositionEnd}
                   onKeyDown={(e) => {
