@@ -449,7 +449,11 @@ const DeviceSearchPage = () => {
                   onClick={(e) => e.stopPropagation()}
                 >
                   {/* Combination List */}
+<<<<<<< HEAD
                   <div className="flex flex-col ml-20 overflow-y-auto h-full scrollbar-minimal">
+=======
+                  <div className="flex flex-col mx-20 overflow-y-auto max-h-630 scrollbar-minimal">
+>>>>>>> 17715f7 (feat: 플로팅메뉴 mock)
                     {MOCK_COMBINATIONS.map((combo) => (
                       <button
                         key={combo.id}
