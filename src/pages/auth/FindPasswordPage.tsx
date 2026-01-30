@@ -24,9 +24,8 @@ const TIMER_SECONDS = 180; // 3분
 
 const FindPasswordPage = () => {
   const navigate = useNavigate();
-  const [step, setStep] = useState<1 | 2 | 3>(3);
+  const [step, setStep] = useState<1 | 2 | 3>(1);
   const [hasSubmitted, setHasSubmitted] = useState(false);
-  const [hasResetSubmitted, setHasResetSubmitted] = useState(false);
   const [verificationCode, setVerificationCode] = useState('');
   const [timeLeft, setTimeLeft] = useState(TIMER_SECONDS);
   const [isTimerRunning, setIsTimerRunning] = useState(false);
@@ -56,8 +55,7 @@ const FindPasswordPage = () => {
   const {
     register: registerReset,
     handleSubmit: handleResetSubmit,
-    formState: { errors: resetErrors },
-    setError: setResetFormError,
+    formState: { errors: resetErrors, isValid: isResetValid },
   } = useForm<ResetPasswordFormData>({
     resolver: zodResolver(resetPasswordSchema),
     mode: 'onChange',
@@ -203,9 +201,9 @@ const FindPasswordPage = () => {
     }
   };
 
-  // Step3: 유효성 검사 실패 시 한 번이라도 제출했음을 표시 → 이후 실시간 검사
+  // Step3: 유효성 검사 실패 시 (실시간 검사이므로 별도 처리 불필요)
   const onResetPasswordInvalid = () => {
-    setHasResetSubmitted(true);
+    // 실시간 검사로 에러가 이미 표시되므로 별도 처리 불필요
   };
 
   return (
@@ -379,7 +377,7 @@ const FindPasswordPage = () => {
                     />
                   )}
                 </div>
-                {hasResetSubmitted && resetErrors.newPassword && (
+                {resetErrors.newPassword && (
                   <p className="font-body-3-r text-warning">
                     {resetErrors.newPassword.message}
                   </p>
@@ -397,7 +395,7 @@ const FindPasswordPage = () => {
                   placeholder="비밀번호를 한 번 더 입력해 주세요"
                   maxLength={20}
                 />
-                {hasResetSubmitted && resetErrors.newPasswordConfirm && (
+                {resetErrors.newPasswordConfirm && (
                   <p className="font-body-3-r text-warning">
                     {resetErrors.newPasswordConfirm.message}
                   </p>
@@ -412,9 +410,11 @@ const FindPasswordPage = () => {
             <div className="flex flex-col gap-8 w-full">
               <PrimaryButton
                 text={isResetPending ? '변경 중...' : '비밀번호 변경하기'}
-                disabled={isResetPending}
+                disabled={!isResetValid || isResetPending}
                 className={`w-full ${
-                  !isResetPending ? 'bg-blue-600 hover:bg-blue-500' : ''
+                  isResetValid && !isResetPending
+                    ? 'bg-blue-600 hover:bg-blue-500'
+                    : ''
                 }`}
               />
             </div>
