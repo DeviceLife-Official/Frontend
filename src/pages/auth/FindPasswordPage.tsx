@@ -105,14 +105,16 @@ const FindPasswordPage = () => {
       startTimer();
     } catch (error: unknown) {
       // axios 에러 타입: response가 있으면 API 응답은 왔지만 실패 (4xx, 5xx)
-      const axiosError = error as { response?: unknown };
+      const axiosError = error as {
+        response?: { data?: { message?: string } };
+      };
 
-      // API 응답이 있는 경우 → 에러 메시지 표시
+      // API 응답이 있는 경우 → 응답의 message를 에러 문구로 표시
       if (axiosError.response) {
         setHasSubmitted(true);
         setError('email', {
           type: 'manual',
-          message: '입력하신 정보와 일치하는 계정을 찾을 수 없습니다.',
+          message: axiosError.response.data?.message
         });
         return;
       }
