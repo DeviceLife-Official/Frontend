@@ -13,6 +13,7 @@ import {
 } from '@/schemas/authSchema';
 import PrimaryInput from '@/components/Input/PrimaryInput';
 import GoogleLoginButton from '@/components/Button/GoogleLoginButton';
+import InputEyeIcon from '@/assets/icons/input_eye.svg?react';
 import {
   usePostSendMail,
   usePostVerifyCode,
@@ -23,7 +24,7 @@ const TIMER_SECONDS = 180; // 3분
 
 const FindPasswordPage = () => {
   const navigate = useNavigate();
-  const [step, setStep] = useState<1 | 2 | 3>(1);
+  const [step, setStep] = useState<1 | 2 | 3>(3);
   const [hasSubmitted, setHasSubmitted] = useState(false);
   const [hasResetSubmitted, setHasResetSubmitted] = useState(false);
   const [verificationCode, setVerificationCode] = useState('');
@@ -32,6 +33,7 @@ const FindPasswordPage = () => {
   const [verifyToken, setVerifyToken] = useState<string>('');
   const [verifyError, setVerifyError] = useState<string>('');
   const [resetError, setResetError] = useState<string>('');
+  const [isNewPasswordFocused, setIsNewPasswordFocused] = useState(false);
 
   const { mutateAsync: sendMail, isPending } = usePostSendMail();
   const { mutateAsync: verifyCode, isPending: isVerifyPending } = usePostVerifyCode();
@@ -355,12 +357,24 @@ const FindPasswordPage = () => {
               {/* 새 비밀번호 */}
               <div className="flex flex-col gap-10">
                 <p className="font-body-3-sm text-black">새 비밀번호</p>
-                <PrimaryInput
-                  {...registerReset('newPassword')}
-                  type="password"
-                  placeholder="영문+숫자 조합 *~20자"
-                  maxLength={20}
-                />
+                <div className="relative">
+                  <PrimaryInput
+                    {...registerReset('newPassword', {
+                      onChange: () => setResetError(''),
+                    })}
+                    type="password"
+                    placeholder="영문+숫자 조합 *~20자"
+                    maxLength={20}
+                    onFocus={() => setIsNewPasswordFocused(true)}
+                    onBlur={() => setIsNewPasswordFocused(false)}
+                  />
+                  {isNewPasswordFocused && (
+                    <InputEyeIcon
+                      className="absolute right-14 top-14 size-24 pointer-events-none"
+
+                    />
+                  )}
+                </div>
                 {hasResetSubmitted && resetErrors.newPassword && (
                   <p className="font-body-3-r text-warning">
                     {resetErrors.newPassword.message}
@@ -372,7 +386,9 @@ const FindPasswordPage = () => {
               <div className="flex flex-col gap-10">
                 <p className="font-body-3-sm text-black">새 비밀번호 확인</p>
                 <PrimaryInput
-                  {...registerReset('newPasswordConfirm')}
+                  {...registerReset('newPasswordConfirm', {
+                    onChange: () => setResetError(''),
+                  })}
                   type="password"
                   placeholder="비밀번호를 한 번 더 입력해 주세요"
                   maxLength={20}
@@ -381,6 +397,9 @@ const FindPasswordPage = () => {
                   <p className="font-body-3-r text-warning">
                     {resetErrors.newPasswordConfirm.message}
                   </p>
+                )}
+                {resetError && (
+                  <p className="font-body-3-r text-warning">{resetError}</p>
                 )}
               </div>
             </div>
@@ -394,9 +413,6 @@ const FindPasswordPage = () => {
                   !isResetPending ? 'bg-blue-600 hover:bg-blue-500' : ''
                 }`}
               />
-              {resetError && (
-                <p className="font-body-3-r text-warning">{resetError}</p>
-              )}
             </div>
           </form>
         </div>
