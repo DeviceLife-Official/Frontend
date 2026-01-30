@@ -352,7 +352,7 @@ const DeviceSearchPage = () => {
                         {/* Name & Price */}
                         <div className="flex flex-col gap-12">
                           <p className="font-heading-1 text-blue-600">{selectedProduct.name}</p>
-                          <div className="flex items-center gap-8 font-heading-2 text-gray-500">
+                          <div className="flex items-center gap-8 font-heading-2 text-black">
                             <p>₩</p>
                             <p>{selectedProduct.price.toLocaleString()}</p>
                           </div>
@@ -372,9 +372,9 @@ const DeviceSearchPage = () => {
                     </div>
 
                     {/* Right Section */}
-                    <div className="w-302 flex flex-col gap-40 pt-126">
+                    <div className="w-303 flex flex-col gap-40 pt-118">
                       {/* Product Info Table */}
-                      <div className="flex flex-col justify-between h-400 pl-16">
+                      <div className="flex flex-col gap-20 pl-16">
                         <div className="flex items-center gap-24">
                           <p className="font-body-2-r text-gray-400 w-80">모델명</p>
                           <p className="font-body-2-r text-black">{selectedProduct.name}</p>
