@@ -39,6 +39,7 @@ const FindPasswordPage = () => {
   const { mutateAsync: verifyCode, isPending: isVerifyPending } = usePostVerifyCode();
   const { mutateAsync: resetPassword, isPending: isResetPending } = usePostResetPassword();
 
+  // Step1: 인증번호 받기 폼
   const {
     register,
     handleSubmit,
@@ -62,14 +63,14 @@ const FindPasswordPage = () => {
     reValidateMode: 'onChange',
   });
 
-  // 타이머 포맷팅 (mm:ss)
+  // 타이머 포맷팅 (mm:ss) 함수
   const formatTime = (seconds: number) => {
     const min = Math.floor(seconds / 60);
     const sec = seconds % 60;
     return `${min.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`;
   };
 
-  // 타이머 시작
+  // 타이머 시작 함수
   const startTimer = useCallback(() => {
     setTimeLeft(TIMER_SECONDS);
     setIsTimerRunning(true);
@@ -77,6 +78,7 @@ const FindPasswordPage = () => {
 
   // 타이머 useEffect
   useEffect(() => {
+    // 타이머 실행 중이지 않거나 시간이 만료되었을 때
     if (!isTimerRunning || timeLeft <= 0) {
       if (timeLeft <= 0) {
         setIsTimerRunning(false);
@@ -88,10 +90,12 @@ const FindPasswordPage = () => {
       return;
     }
 
+    // 타이머 설정 및 매 초마다 timeLeft 값 감소
     const timer = setInterval(() => {
       setTimeLeft((prev) => prev - 1);
     }, 1000);
 
+    // 타이머 종료 시 타이머 정리
     return () => clearInterval(timer);
   }, [isTimerRunning, timeLeft, step]);
 
@@ -187,11 +191,6 @@ const FindPasswordPage = () => {
       }
       alert('오류가 발생했습니다. 다시 시도해 주세요.');
     }
-  };
-
-  // Step3: 유효성 검사 실패 시 (실시간 검사이므로 별도 처리 불필요)
-  const onResetPasswordInvalid = () => {
-    // 실시간 검사로 에러가 이미 표시되므로 별도 처리 불필요
   };
 
   return (
@@ -336,7 +335,7 @@ const FindPasswordPage = () => {
 
           {/* 입력 필드 + 버튼 영역 */}
           <form
-            onSubmit={handleResetSubmit(onResetPasswordValid, onResetPasswordInvalid)}
+            onSubmit={handleResetSubmit(onResetPasswordValid)}
             className="flex flex-col gap-40 w-400"
           >
             {/* 입력 필드들 */}
