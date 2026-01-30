@@ -34,6 +34,7 @@ const FindPasswordPage = () => {
   const [verifyError, setVerifyError] = useState<string>('');
   const [resetError, setResetError] = useState<string>('');
   const [isNewPasswordFocused, setIsNewPasswordFocused] = useState(false);
+  const [isNewPasswordVisible, setIsNewPasswordVisible] = useState(false);
 
   const { mutateAsync: sendMail, isPending } = usePostSendMail();
   const { mutateAsync: verifyCode, isPending: isVerifyPending } = usePostVerifyCode();
@@ -362,7 +363,7 @@ const FindPasswordPage = () => {
                     {...registerReset('newPassword', {
                       onChange: () => setResetError(''),
                     })}
-                    type="password"
+                    type={isNewPasswordVisible ? 'text' : 'password'}
                     placeholder="영문+숫자 조합 *~20자"
                     maxLength={20}
                     onFocus={() => setIsNewPasswordFocused(true)}
@@ -370,8 +371,11 @@ const FindPasswordPage = () => {
                   />
                   {isNewPasswordFocused && (
                     <InputEyeIcon
-                      className="absolute right-14 top-14 size-24 pointer-events-none"
-
+                      className="absolute right-14 top-14 size-24 cursor-pointer"
+                      onMouseDown={(e) => {
+                        e.preventDefault();
+                        setIsNewPasswordVisible((prev) => !prev);
+                      }}
                     />
                   )}
                 </div>
