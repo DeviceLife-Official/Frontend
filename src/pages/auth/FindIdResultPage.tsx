@@ -8,6 +8,7 @@ import WarningIcon from "@/assets/icons/warning.svg?react";
 type FindIdResultState = {
   success?: boolean;
   email?: string | null;
+  message?: string;
 };
 
 const FindIdResultPage = () => {
@@ -15,7 +16,7 @@ const FindIdResultPage = () => {
   const location = useLocation();
 
   // 라우터 state에서 결과 정보 가져오기
-  const { success, email } = (location.state || {}) as FindIdResultState;
+  const { success, email, message } = (location.state || {}) as FindIdResultState;
   const isSuccess = success && email;
 
   return (
@@ -67,9 +68,9 @@ const FindIdResultPage = () => {
               {/* 실패 아이콘 영역 - 실제 아이콘 컴포넌트는 추후 공통 컴포넌트로 분리 가능 */}
               <WarningIcon className="size-34" />
 
-              {/* 실패 메시지 텍스트 */}
+              {/* 실패 메시지 텍스트 (백엔드 message 있으면 표시, 없으면 기본 문구) */}
               <p className="font-body-2-r text-black">
-                조회결과가 없습니다
+                {message || '조회결과가 없습니다'}
               </p>
             </div>
 
