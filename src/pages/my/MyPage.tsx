@@ -240,9 +240,9 @@ const MyPage = () => {
                   setDeleteTargetIndex(detailViewIndex);
                   setShowCombinationDeleteModal(true);
                 }}
-                className="w-280 h-72 border-2 border-red-500 rounded-button flex items-center justify-center cursor-pointer hover:bg-red-50 transition-colors"
+                className="w-280 h-52 border-2 border-warning rounded-button flex items-center justify-center cursor-pointer hover:bg-warning/10 transition-colors"
               >
-                <span className="font-body-2-sm text-red-500">조합 삭제하기</span>
+                <span className="font-body-2-sm text-warning">조합 삭제하기</span>
               </button>
             ) : (
               <PrimaryButton
@@ -451,8 +451,13 @@ const MyPage = () => {
                           </div>
                         </div>
 
+                        {/* 안내 텍스트 */}
+                        <p className="px-56 pt-36 font-caption-r text-blue-800">
+                          *마우스를 기기 위에 올려서 기기 상세정보를 확인하실 수도 있습니다.
+                        </p>
+
                         {/* 기기 그리드 (체크박스 포함) */}
-                        <div className="px-56 pt-56 pb-36">
+                        <div className="px-56 pt-36 pb-36">
                           <div
                             className={`grid ${columns === 4 ? 'grid-cols-4' : 'grid-cols-3'} gap-x-28 gap-y-12`}
                           >
