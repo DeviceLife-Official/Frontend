@@ -43,3 +43,11 @@ export type GetCombosResponse = CommonResponse<GetCombosResult>;
 
 export type GetComboResult = ComboDetail;
 export type GetComboResponse = CommonResponse<GetComboResult>;
+
+// 조합 수정 요청/응답 타입
+export type PutComboRequest = {
+  comboName: string;
+};
+
+export type PutComboResult = null;
+export type PutComboResponse = CommonResponse<PutComboResult>;

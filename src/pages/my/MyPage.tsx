@@ -22,6 +22,7 @@ import TopIcon from '@/assets/icons/top.svg?react';
 import Logo from '@/assets/logos/logo.svg?react';
 import { useGetCombos } from '@/apis/combo/getCombos';
 import { useGetCombo } from '@/apis/combo/getCombo';
+import { usePutCombo } from '@/apis/combo/putCombo';
 import type { ComboListItem } from '@/types/combo/combo';
 
 // 조합 평가 Mock 데이터
@@ -82,6 +83,7 @@ const MyPage = () => {
   // API 호출
   const { data: combos = [], isLoading, isError } = useGetCombos();
   const { data: comboDetail } = useGetCombo(detailViewComboId);
+  const { mutate: updateCombo, isPending: isUpdating } = usePutCombo();
 
   // 정렬된 조합 목록
   const sortedCombos = useMemo(() => {
@@ -219,10 +221,20 @@ const MyPage = () => {
 
   // 조합명 저장 핸들러
   const handleSaveCombinationName = () => {
-    // API 연동 시 실제 저장 로직 추가
-    console.log('저장할 조합 comboId:', editingComboId, '새 조합명:', editingCombinationName);
-    setShowSaveModal(false);
-    setEditingComboId(null);
+    if (editingComboId === null) return;
+
+    updateCombo(
+      { comboId: editingComboId, comboName: editingCombinationName },
+      {
+        onSuccess: () => {
+          setShowSaveModal(false);
+          setEditingComboId(null);
+        },
+        onError: (error) => {
+          console.error('조합명 수정 실패:', error);
+        },
+      }
+    );
   };
 
   // 맨 위로 스크롤
@@ -912,13 +924,17 @@ const MyPage = () => {
               <div className="flex gap-20 mt-60">
                 <button
                   onClick={handleSaveCombinationName}
-                  className="w-168 h-52 bg-blue-600 hover:bg-blue-500 rounded-button flex items-center justify-center cursor-pointer transition-colors"
+                  disabled={isUpdating}
+                  className="w-168 h-52 bg-blue-600 hover:bg-blue-500 disabled:bg-blue-400 disabled:cursor-not-allowed rounded-button flex items-center justify-center cursor-pointer transition-colors"
                 >
-                  <span className="font-body-2-sm text-white">확인</span>
+                  <span className="font-body-2-sm text-white">
+                    {isUpdating ? '저장 중...' : '확인'}
+                  </span>
                 </button>
                 <button
                   onClick={() => setShowSaveModal(false)}
-                  className="w-168 h-52 bg-gray-100 hover:bg-gray-200 rounded-button flex items-center justify-center cursor-pointer transition-colors"
+                  disabled={isUpdating}
+                  className="w-168 h-52 bg-gray-100 hover:bg-gray-200 disabled:cursor-not-allowed rounded-button flex items-center justify-center cursor-pointer transition-colors"
                 >
                   <span className="font-body-2-sm text-black">취소</span>
                 </button>
