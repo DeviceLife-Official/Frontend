@@ -19,6 +19,7 @@ import CheckboxOnIcon from '@/assets/icons/checkbox_on.svg?react';
 import TrashIcon from '@/assets/icons/trash.svg?react';
 import RemoveIcon from '@/assets/icons/remove.svg?react';
 import SaveIcon from '@/assets/icons/save.svg?react';
+import TopIcon from '@/assets/icons/top.svg?react';
 import Logo from '@/assets/logos/logo.svg?react';
 import { MOCK_COMBINATIONS, MOCK_COMBINATION_DEVICES } from '@/constants/mockData';
 
@@ -63,16 +64,25 @@ const MyPage = () => {
   const [editingCombinationIndex, setEditingCombinationIndex] = useState<number | null>(null);
   const [editingCombinationName, setEditingCombinationName] = useState('');
   const [showSaveModal, setShowSaveModal] = useState(false);
+  const [showTopButton, setShowTopButton] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const sidebarContentRef = useRef<HTMLDivElement>(null);
+  const combinationListRef = useRef<HTMLDivElement>(null);
 
-  // 스크롤 감지 (하단 그라데이션용)
+  // 스크롤 감지 (하단 그라데이션용 + Top 버튼용)
   useEffect(() => {
     const handleScroll = () => {
       const scrollTop = window.scrollY;
       const windowHeight = window.innerHeight;
       const documentHeight = document.documentElement.scrollHeight;
       setIsAtBottom(scrollTop + windowHeight >= documentHeight - 50);
+
+      // 조합 3개 정도 스크롤 시 Top 버튼 표시 (약 800px)
+      if (combinationListRef.current) {
+        const listTop = combinationListRef.current.offsetTop;
+        const thirdCombinationVisible = scrollTop + windowHeight >= listTop + 800;
+        setShowTopButton(thirdCombinationVisible);
+      }
     };
     window.addEventListener('scroll', handleScroll);
     handleScroll();
@@ -168,6 +178,11 @@ const MyPage = () => {
     console.log('저장된 조합명:', editingCombinationName);
     setShowSaveModal(false);
     setEditingCombinationIndex(null);
+  };
+
+  // 맨 위로 스크롤
+  const handleScrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   return (
@@ -267,7 +282,7 @@ const MyPage = () => {
           </div>
 
           {/* 조합 카드 목록 */}
-          <div className="mt-76 flex flex-col gap-40">
+          <div ref={combinationListRef} className="mt-76 flex flex-col gap-40">
             {MOCK_COMBINATIONS.map((combination, index) => {
               const devices = MOCK_COMBINATION_DEVICES[combination.id] || [];
               const hasDevices = devices.length > 0;
@@ -744,6 +759,17 @@ const MyPage = () => {
               );
             })}
           </div>
+
+          {/* Top Button - 조합 3개 정도 스크롤 시 표시 */}
+          {showTopButton && (
+            <button
+              onClick={handleScrollToTop}
+              className="fixed right-48 bottom-48 w-48 h-48 flex items-center justify-center cursor-pointer hover:opacity-80 transition-all duration-300"
+              aria-label="맨 위로 이동"
+            >
+              <TopIcon className="w-48 h-48 text-gray-300" />
+            </button>
+          )}
 
           {/* 하단 여백 */}
           <div className="h-268" />
