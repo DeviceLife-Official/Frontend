@@ -66,24 +66,27 @@ const FindPasswordPage = () => {
   // Step1: 인증번호 받기 제출 핸들러 (유효할 때만 호출)
   const onSubmitValid = async (data: FindPasswordFormData) => {
     try {
-      const response = await sendMail({ email: data.email });
+      await sendMail({ email: data.email });
 
-      if (response.success) {
-        setStep(2);
-        startTimer();
-      } else {
+      // 성공 시 step2로 이동
+      setStep(2);
+      startTimer();
+    } catch (error: unknown) {
+      // axios 에러 타입: response가 있으면 API 응답은 왔지만 실패 (4xx, 5xx)
+      const axiosError = error as { response?: unknown };
+
+      // API 응답이 있는 경우 → 에러 메시지 표시
+      if (axiosError.response) {
         setHasSubmitted(true);
         setError('email', {
           type: 'manual',
-          message: response.message ?? '인증번호 발송에 실패했습니다. 다시 시도해주세요.',
+          message: '입력하신 정보와 일치하는 계정을 찾을 수 없습니다.',
         });
+        return;
       }
-    } catch {
-      setHasSubmitted(true);
-      setError('email', {
-        type: 'manual',
-        message: '오류가 발생했습니다. 다시 시도해주세요.',
-      });
+
+      // 네트워크 오류 등 응답 자체가 없는 경우 → alert
+      alert('오류가 발생했습니다. 다시 시도해 주세요.');
     }
   };
 

@@ -40,11 +40,11 @@ const FindIdPage = () => {
         },
       });
     } catch (error: unknown) {
-      // axios 에러에서 응답 데이터 확인
-      const axiosError = error as { response?: { data?: { success?: boolean } } };
+      // axios 에러 타입: response가 있으면 API 응답은 왔지만 실패 (4xx, 5xx)
+      const axiosError = error as { response?: unknown };
 
-      // API 응답이 있는 경우 (4xx 에러 등) → 실패 화면으로 이동
-      if (axiosError.response?.data) {
+      // API 응답이 있는 경우 → 실패 화면으로 이동
+      if (axiosError.response) {
         navigate(ROUTES.auth.findIdResult, {
           state: {
             success: false,
