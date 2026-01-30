@@ -104,22 +104,16 @@ const FindPasswordPage = () => {
       setStep(2);
       startTimer();
     } catch (error: unknown) {
-      // axios 에러 타입: response가 있으면 API 응답은 왔지만 실패 (4xx, 5xx)
-      const axiosError = error as {
-        response?: { data?: { message?: string } };
-      };
-
-      // API 응답이 있는 경우 → 응답의 message를 에러 문구로 표시
+      const axiosError = error as { response?: { data?: { message?: string } } };
+      // response 있으면 서버 응답 에러, 없으면 네트워크/환경 에러
       if (axiosError.response) {
         setHasSubmitted(true);
         setError('email', {
           type: 'manual',
-          message: axiosError.response.data?.message
+          message: axiosError.response.data?.message ?? '인증번호 발송에 실패했습니다. 다시 시도해 주세요.',
         });
         return;
       }
-
-      // 네트워크 오류 등 응답 자체가 없는 경우 → alert
       alert('오류가 발생했습니다. 다시 시도해 주세요.');
     }
   };
@@ -138,8 +132,10 @@ const FindPasswordPage = () => {
       startTimer(); // 타이머 3분으로 리셋
       setVerificationCode('');
     } catch (error: unknown) {
-      const axiosError = error as { response?: unknown };
-      if (axiosError.response) {
+      const axiosError = error as { response?: { data?: { message?: string } } };
+      if (axiosError.response?.data?.message) {
+        alert(axiosError.response.data.message);
+      } else if (axiosError.response) {
         alert('인증번호 재전송에 실패했습니다. 다시 시도해 주세요.');
       } else {
         alert('오류가 발생했습니다. 다시 시도해 주세요.');
@@ -160,17 +156,12 @@ const FindPasswordPage = () => {
         setStep(3);
       }
     } catch (error: unknown) {
-      const axiosError = error as {
-        response?: { data?: { message?: string } };
-      };
-
-      // API 응답이 있는 경우 → 응답의 message를 에러 문구로 표시
-      if (axiosError.response?.data?.message) {
-        setVerifyError(axiosError.response.data.message);
+      const axiosError = error as { response?: { data?: { message?: string } } };
+      // response 있으면 서버 응답 에러, 없으면 네트워크/환경 에러
+      if (axiosError.response) {
+        setVerifyError(axiosError.response.data?.message ?? '인증에 실패했습니다. 다시 시도해 주세요.');
         return;
       }
-
-      // 네트워크 오류 등 응답 자체가 없는 경우 → alert
       alert('오류가 발생했습니다. 다시 시도해 주세요.');
     }
   };
@@ -188,17 +179,12 @@ const FindPasswordPage = () => {
       // 성공 시 로그인 화면으로 이동
       navigate(ROUTES.auth.login);
     } catch (error: unknown) {
-      const axiosError = error as {
-        response?: { data?: { message?: string } };
-      };
-
-      // API 응답이 있는 경우 → 응답의 message를 에러 문구로 표시
-      if (axiosError.response?.data?.message) {
-        setResetError(axiosError.response.data.message);
+      const axiosError = error as { response?: { data?: { message?: string } } };
+      // response 있으면 서버 응답 에러, 없으면 네트워크/환경 에러
+      if (axiosError.response) {
+        setResetError(axiosError.response.data?.message ?? '비밀번호 변경에 실패했습니다. 다시 시도해 주세요.');
         return;
       }
-
-      // 네트워크 오류 등 응답 자체가 없는 경우 → alert
       alert('오류가 발생했습니다. 다시 시도해 주세요.');
     }
   };
