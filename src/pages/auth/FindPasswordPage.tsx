@@ -14,7 +14,8 @@ const TIMER_SECONDS = 180; // 3분
 
 const FindPasswordPage = () => {
   const navigate = useNavigate();
-  const [step, setStep] = useState<1 | 2 | 3>(3);
+  const [step, setStep] = useState<1 | 2 | 3>(1);
+  const [hasSubmitted, setHasSubmitted] = useState(false);
   const [verificationCode, setVerificationCode] = useState('');
   const [timeLeft, setTimeLeft] = useState(TIMER_SECONDS);
   const [isTimerRunning, setIsTimerRunning] = useState(false);
@@ -26,11 +27,13 @@ const FindPasswordPage = () => {
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitted },
+    formState: { errors },
     getValues,
+    setError,
   } = useForm<FindPasswordFormData>({
     resolver: zodResolver(findPasswordSchema),
-    mode: 'onSubmit', // 제출 시에만 검사
+    mode: 'onSubmit',
+    reValidateMode: 'onChange', // 한 번 제출 후에는 입력 시마다 재검사
   });
 
   // 타이머 포맷팅 (mm:ss)
@@ -60,21 +63,33 @@ const FindPasswordPage = () => {
     return () => clearInterval(timer);
   }, [isTimerRunning, timeLeft]);
 
-  // Step1: 인증번호 받기 제출 핸들러
-  const onSubmit = async (data: FindPasswordFormData) => {
+  // Step1: 인증번호 받기 제출 핸들러 (유효할 때만 호출)
+  const onSubmitValid = async (data: FindPasswordFormData) => {
     try {
       const response = await sendMail({ email: data.email });
 
       if (response.success) {
-        // 성공 시 step2로 이동
         setStep(2);
         startTimer();
       } else {
-        alert('인증번호 발송에 실패했습니다. 다시 시도해주세요.');
+        setHasSubmitted(true);
+        setError('email', {
+          type: 'manual',
+          message: response.message ?? '인증번호 발송에 실패했습니다. 다시 시도해주세요.',
+        });
       }
     } catch {
-      alert('오류가 발생했습니다. 다시 시도해주세요.');
+      setHasSubmitted(true);
+      setError('email', {
+        type: 'manual',
+        message: '오류가 발생했습니다. 다시 시도해주세요.',
+      });
     }
+  };
+
+  // 유효성 검사 실패 시 한 번이라도 제출했음을 표시 → 이후 실시간 검사
+  const onSubmitInvalid = () => {
+    setHasSubmitted(true);
   };
 
   // Step2: 인증번호 재전송 핸들러
@@ -113,15 +128,14 @@ const FindPasswordPage = () => {
 
             {/* 폼 컨테이너 */}
             <form
-              onSubmit={handleSubmit(onSubmit)}
+              onSubmit={handleSubmit(onSubmitValid, onSubmitInvalid)}
               noValidate
               className="flex flex-col items-center gap-20 w-400"
             >
               {/* 입력 영역 */}
               <div className="flex flex-col gap-8 w-full">
                 <PrimaryInput {...register('email')} type="email" placeholder="이메일(ID)" />
-                {/* 에러 메시지 - 제출 시에만 표시 */}
-                {isSubmitted && errors.email && (
+                {hasSubmitted && errors.email && (
                   <p className="font-body-3-r text-warning">{errors.email.message}</p>
                 )}
               </div>
@@ -129,7 +143,7 @@ const FindPasswordPage = () => {
               {/* 인증번호 받기 버튼 */}
               <PrimaryButton
                 text={isPending ? '발송 중...' : '인증번호 받기'}
-                className="w-full bg-blue-600 hover:bg-blue-500"
+                className={`w-full bg-blue-600 ${!isPending ? 'hover:bg-blue-500' : ''}`}
                 disabled={isPending}
               />
             </form>

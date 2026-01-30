@@ -106,7 +106,7 @@ const FindIdPage = () => {
               {/* 아이디 찾기 버튼 */}
               <PrimaryButton
                 text={isPending ? '조회 중...' : '아이디 찾기'}
-                className="w-full bg-blue-600 hover:bg-blue-500"
+                className={`w-full bg-blue-600 ${!isPending ? 'hover:bg-blue-500' : ''}`}
                 disabled={isPending}
               />
             </div>
