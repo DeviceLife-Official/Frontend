@@ -32,26 +32,29 @@ const FindIdPage = () => {
         phoneNumber: data.phone,
       });
 
-      // 응답의 success 필드로 실제 성공/실패 판단
-      if (response.success && response.result?.emailInfo) {
-        // 아이디 찾기 성공
-        navigate(ROUTES.auth.findIdResult, {
-          state: {
-            success: true,
-            email: response.result.emailInfo,
-          },
-        });
-      } else {
-        // API 응답은 왔지만 아이디 찾기 실패
+      // 아이디 찾기 성공
+      navigate(ROUTES.auth.findIdResult, {
+        state: {
+          success: true,
+          email: response.result?.emailInfo,
+        },
+      });
+    } catch (error: unknown) {
+      // axios 에러에서 응답 데이터 확인
+      const axiosError = error as { response?: { data?: { success?: boolean } } };
+
+      // API 응답이 있는 경우 (4xx 에러 등) → 실패 화면으로 이동
+      if (axiosError.response?.data) {
         navigate(ROUTES.auth.findIdResult, {
           state: {
             success: false,
             email: null,
           },
         });
+        return;
       }
-    } catch {
-      // HTTP 에러 발생 시
+
+      // 네트워크 오류 등 응답 자체가 없는 경우 → alert
       alert('오류가 발생했습니다. 다시 시도해 주세요.');
     }
   };
