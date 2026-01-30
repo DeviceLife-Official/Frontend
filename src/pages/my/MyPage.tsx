@@ -6,6 +6,7 @@ import SecondaryButton from '@/components/Button/SecondaryButton';
 import SortDropdown from '@/components/Filter/SortDropdown';
 import CombinationTag from '@/components/Combination/CombinationTag';
 import RoundedLifestyleTag from '@/components/Lifestyle/RoundedLifestyleTag';
+import RecentlyViewedFloating from '@/components/RecentlyViewed/RecentlyViewedFloating';
 import SettingIcon from '@/assets/icons/setting.svg?react';
 import SupportIcon from '@/assets/icons/support.svg?react';
 import SettingMoreIcon from '@/assets/icons/settingmore.svg?react';
@@ -63,6 +64,7 @@ const MyPage = () => {
   const [editingCombinationName, setEditingCombinationName] = useState('');
   const [showSaveModal, setShowSaveModal] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const sidebarContentRef = useRef<HTMLDivElement>(null);
 
   // 스크롤 감지 (하단 그라데이션용)
   useEffect(() => {
@@ -178,49 +180,61 @@ const MyPage = () => {
           className="flex-shrink-0 pt-64 w-280"
           style={{ marginLeft: 'clamp(80px, calc(80px + (100vw - 1440px) * 0.166667), 160px)' }}
         >
-          {/* MY Page 헤더 */}
-          <div className="flex items-center justify-between h-72">
-            <h1 className="font-heading-2 text-black">MY Page</h1>
-            <div className="flex items-center gap-8">
-              <a
-                href="https://lovely-potassium-7f2.notion.site/2f0c82f125c980fa8fa0d2ef430bbe79?pvs=74"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-42 h-42 flex items-center justify-center cursor-pointer hover:opacity-80">
-                <SupportIcon className="w-42 h-42 text-black" />
-              </a>
-              <button
-                onClick={() => navigate('/my/settings/profile')}
-                className="w-44 h-44 flex items-center justify-center cursor-pointer hover:opacity-80"
-              >
-                <SettingIcon className="w-44 h-44 text-black" />
-              </button>
+          {/* 사이드바 콘텐츠 wrapper */}
+          <div ref={sidebarContentRef}>
+            {/* MY Page 헤더 */}
+            <div className="flex items-center justify-between h-72">
+              <h1 className="font-heading-2 text-black">MY Page</h1>
+              <div className="flex items-center gap-8">
+                <a
+                  href="https://lovely-potassium-7f2.notion.site/2f0c82f125c980fa8fa0d2ef430bbe79?pvs=74"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-42 h-42 flex items-center justify-center cursor-pointer hover:opacity-80">
+                  <SupportIcon className="w-42 h-42 text-black" />
+                </a>
+                <button
+                  onClick={() => navigate('/my/settings/profile')}
+                  className="w-44 h-44 flex items-center justify-center cursor-pointer hover:opacity-80"
+                >
+                  <SettingIcon className="w-44 h-44 text-black" />
+                </button>
+              </div>
             </div>
-          </div>
 
-          {/* 프로필 카드 */}
-          <div className="mt-60 h-100 rounded-card border border-blue-300 flex items-center justify-center gap-30">
-            <Logo className="w-48 h-48 flex-shrink-0" />
-            <p className="font-heading-2 text-black">000 님</p>
-          </div>
+            {/* 프로필 카드 */}
+            <div className="mt-60 h-100 rounded-card border border-blue-300 flex items-center justify-center gap-30">
+              <Logo className="w-48 h-48 flex-shrink-0" />
+              <p className="font-heading-2 text-black">000 님</p>
+            </div>
 
-          {/* 사용자 정보 */}
-          <div className="mt-44 flex flex-col gap-16">
-            <div className="flex items-center gap-24">
-              <p className="font-body-2-sm text-black whitespace-nowrap">가입일</p>
-              <p className="font-body-2-r text-black">2023.12.22</p>
-            </div>
-            <div className="flex items-center gap-24">
-              <p className="font-body-2-sm text-black whitespace-nowrap">이메일</p>
-              <p className="font-body-2-r text-black truncate">example@devicelife.com</p>
-            </div>
-            <div className="flex items-center gap-24">
-              <p className="font-body-2-sm text-black whitespace-nowrap">라이프스타일</p>
-              <div className="flex flex-wrap gap-12 content-start">
-                <RoundedLifestyleTag label="Office" />
+            {/* 사용자 정보 */}
+            <div className="mt-44 flex flex-col gap-16">
+              <div className="flex items-center gap-24">
+                <p className="font-body-2-sm text-black whitespace-nowrap">가입일</p>
+                <p className="font-body-2-r text-black">2023.12.22</p>
+              </div>
+              <div className="flex items-center gap-24">
+                <p className="font-body-2-sm text-black whitespace-nowrap">이메일</p>
+                <p className="font-body-2-r text-black truncate">example@devicelife.com</p>
+              </div>
+              <div className="flex items-center gap-24">
+                <p className="font-body-2-sm text-black whitespace-nowrap">라이프스타일</p>
+                <div className="flex flex-wrap gap-12 content-start">
+                  <RoundedLifestyleTag label="Office" />
+                </div>
               </div>
             </div>
           </div>
+<<<<<<< HEAD
+=======
+
+          {/* 최근에 본 기기 플로팅 섹션 */}
+          <RecentlyViewedFloating
+            userName="000"
+            sidebarContentRef={sidebarContentRef}
+          />
+>>>>>>> b3657c6 (feat: 마이페이지 좌측 플로팅 구현)
         </aside>
 
         {/* 우측 메인 콘텐츠 */}
@@ -317,8 +331,7 @@ const MyPage = () => {
                           /* 수정 모드: 저장하기 버튼 */
                           <SecondaryButton
                             text="저장하기"
-                            onClick={(e) => {
-                              e?.stopPropagation?.();
+                            onClick={() => {
                               setShowSaveModal(true);
                             }}
                             className="w-150"
