@@ -164,3 +164,9 @@ export const MOCK_COMBINATION_DEVICES: Record<number, DeviceSummary[]> = {
     { id: 402, name: 'Apple Watch Series 9', chargingType: 'MagSafe', color: '미드나이트', image: null },
   ],
 };
+
+// 최근에 본 기기 Mock 데이터
+export const MOCK_RECENTLY_VIEWED_DEVICES = [
+  { id: 1, name: 'iPhone 15 pro', category: '스마트폰', price: 1550000, image: null, viewedAt: Date.now() },
+  { id: 2, name: 'Galaxy S24', category: '스마트폰', price: 1200000, image: null, viewedAt: Date.now() - 1000 },
+];
