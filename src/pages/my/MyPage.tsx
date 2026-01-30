@@ -291,12 +291,16 @@ const MyPage = () => {
 
                   {/* 조합 카드 */}
                   <div
+<<<<<<< HEAD
                     onClick={() => {
                       // 상세보기가 아닐 때, 카드를 클릭하면 상세보기로 진입
                       if (!isDetailView) {
                         handleDetailView(index);
                       }
                     }}
+=======
+                    onClick={() => !isDetailView && editingCombinationIndex !== index && handleDetailView(index)}
+>>>>>>> a8799cc (feat: 조합명 수정하기 구현, 저장팝업 구현)
                     className={`rounded-card relative ${
                       isDetailView
                         ? 'bg-blue-100'
@@ -307,17 +311,30 @@ const MyPage = () => {
                     {!isDetailView && (
                       <div
                         ref={openMenuIndex === index ? menuRef : null}
-                        className="absolute right-56 top-36"
+                        className={`absolute right-56 ${editingCombinationIndex === index ? 'top-28' : 'top-36'}`}
                       >
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setOpenMenuIndex(openMenuIndex === index ? null : index);
-                          }}
-                          className="cursor-pointer hover:opacity-80"
-                        >
-                          <SettingMoreIcon className="w-36 h-36 text-gray-400" />
-                        </button>
+                        {editingCombinationIndex === index ? (
+                          /* 수정 모드: 저장하기 버튼 */
+                          <SecondaryButton
+                            text="저장하기"
+                            onClick={(e) => {
+                              e?.stopPropagation?.();
+                              setShowSaveModal(true);
+                            }}
+                            className="w-150"
+                          />
+                        ) : (
+                          /* 일반 모드: ... 버튼 */
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setOpenMenuIndex(openMenuIndex === index ? null : index);
+                            }}
+                            className="cursor-pointer hover:opacity-80"
+                          >
+                            <SettingMoreIcon className="w-36 h-36 text-gray-400" />
+                          </button>
+                        )}
 
                         {/* 드롭다운 메뉴 */}
                         {openMenuIndex === index && (
@@ -582,22 +599,36 @@ const MyPage = () => {
                         {hasDevices ? (
                           <div className="px-36 pt-24 pb-36">
                             {/* 조합 정보 (생성일 포함) */}
-                            <div className="flex flex-col gap-24 pl-20 py-24">
-                              {/* 조합 번호 + 생성일 + 조합명 */}
-                              <div className="flex flex-col gap-8">
-                                <div className="flex items-center gap-16">
-                                  <p className="font-body-3-r text-gray-400">{combination.label}</p>
-                                  {combination.createdAt && (
-                                    <p className="font-body-3-r text-gray-400">
-                                      생성일: {combination.createdAt}
-                                    </p>
-                                  )}
+                            <div className="flex flex-col gap-13 pl-20 py-24">
+                              {editingCombinationIndex === index ? (
+                                /* 수정 모드: 인풋박스 + 별 아이콘 */
+                                <div className="flex items-center gap-8 min-h-48">
+                                  <input
+                                    type="text"
+                                    value={editingCombinationName}
+                                    onChange={(e) => setEditingCombinationName(e.target.value)}
+                                    onClick={(e) => e.stopPropagation()}
+                                    className="h-52 px-12 border border-blue-600 rounded-button font-body-1-sm text-gray-300 focus:outline-none"
+                                  />
+                                  {combination.isMain && <StarIcon className="w-22 h-22" />}
                                 </div>
-                                <div className="flex items-center gap-8">
-                                  <p className="font-body-1-sm text-black">{combination.name}</p>
-                                  {combination.isMain && <StarIcon className="w-27 h-27" />}
+                              ) : (
+                                /* 일반 모드: 조합 번호 + 생성일 + 조합명 */
+                                <div className="flex flex-col gap-8">
+                                  <div className="flex items-center gap-16">
+                                    <p className="font-body-3-r text-gray-400">{combination.label}</p>
+                                    {combination.createdAt && (
+                                      <p className="font-body-3-r text-gray-400">
+                                        생성일: {combination.createdAt}
+                                      </p>
+                                    )}
+                                  </div>
+                                  <div className="flex items-center gap-8">
+                                    <p className="font-body-1-sm text-black">{combination.name}</p>
+                                    {combination.isMain && <StarIcon className="w-27 h-27" />}
+                                  </div>
                                 </div>
-                              </div>
+                              )}
                               {/* Tags */}
                               <div className="flex gap-12 -ml-4">
                                 {combination.tags.map((tag) => (
