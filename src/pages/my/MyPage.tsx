@@ -317,11 +317,11 @@ const MyPage = () => {
 
                   {/* 조합 카드 */}
                   <div
-                    onClick={() => !isDetailView && editingCombinationIndex !== index && handleDetailView(index)}
+                    onClick={() => !isDetailView && editingCombinationIndex !== index && hasDevices && handleDetailView(index)}
                     className={`rounded-card relative ${
                       isDetailView
                         ? 'bg-blue-100'
-                        : 'bg-white shadow-[0_0_10px_rgba(0,0,0,0.1)] cursor-pointer hover:bg-gray-50 transition-colors'
+                        : `bg-white shadow-[0_0_10px_rgba(0,0,0,0.1)] transition-colors ${hasDevices ? 'cursor-pointer hover:bg-gray-50' : ''}`
                     }`}
                   >
                     {/* 일반 모드: Setting More 버튼 + 드롭다운 또는 저장하기 버튼 */}
@@ -383,7 +383,7 @@ const MyPage = () => {
                               }}
                               onMouseEnter={() => setHoveredMenuItem('rename')}
                               onMouseLeave={() => setHoveredMenuItem(null)}
-                              className="relative font-body-1-sm text-black text-left py-12 whitespace-nowrap cursor-pointer border-b border-black/50"
+                              className={`relative font-body-1-sm text-black text-left py-12 whitespace-nowrap cursor-pointer ${hasDevices ? 'border-b border-black/50' : ''}`}
                             >
                               {hoveredMenuItem === 'rename' && (
                                 <div className="absolute -inset-x-4 inset-y-4 bg-gray-100 rounded-button -z-10" />
@@ -391,21 +391,23 @@ const MyPage = () => {
                               조합명 수정하기
                             </button>
 
-                            {/* 자세히보기 */}
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleDetailView(index);
-                              }}
-                              onMouseEnter={() => setHoveredMenuItem('detail')}
-                              onMouseLeave={() => setHoveredMenuItem(null)}
-                              className="relative font-body-1-sm text-black text-left py-12 whitespace-nowrap cursor-pointer"
-                            >
-                              {hoveredMenuItem === 'detail' && (
-                                <div className="absolute -inset-x-4 inset-y-4 bg-gray-100 rounded-button -z-10" />
-                              )}
-                              자세히보기
-                            </button>
+                            {/* 자세히보기 - 기기가 있을 때만 표시 */}
+                            {hasDevices && (
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleDetailView(index);
+                                }}
+                                onMouseEnter={() => setHoveredMenuItem('detail')}
+                                onMouseLeave={() => setHoveredMenuItem(null)}
+                                className="relative font-body-1-sm text-black text-left py-12 whitespace-nowrap cursor-pointer"
+                              >
+                                {hoveredMenuItem === 'detail' && (
+                                  <div className="absolute -inset-x-4 inset-y-4 bg-gray-100 rounded-button -z-10" />
+                                )}
+                                자세히보기
+                              </button>
+                            )}
                           </div>
                         )}
                       </div>
