@@ -78,7 +78,7 @@ const FindIdResultPage = () => {
               <PrimaryButton
                 text="확인"
                 className="w-400 bg-blue-600 hover:bg-blue-500"
-                onClick={() => navigate(ROUTES.auth.findId)}
+                onClick={() => navigate(ROUTES.auth.login)}
               />
               <div className="flex items-center gap-16 font-body-2-r text-gray-400">
                 <span>아직 Device Life 회원이 아니신가요?</span>
