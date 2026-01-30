@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import PrimaryButton from '@/components/Button/PrimaryButton';
 import PrimaryInput from '@/components/Input/PrimaryInput';
 import { ROUTES } from '@/constants/routes';
@@ -10,19 +11,21 @@ import { usePostFindId } from '@/apis/findCredential/postFindId';
 
 const FindIdPage = () => {
   const navigate = useNavigate();
+  const [hasSubmitted, setHasSubmitted] = useState(false);
   const { mutateAsync: findId, isPending } = usePostFindId();
 
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitted },
+    formState: { errors },
   } = useForm<FindIdFormData>({
     resolver: zodResolver(findIdSchema),
-    mode: 'onSubmit', // 제출 시에만 검사
+    mode: 'onSubmit',
+    reValidateMode: 'onChange', // 한 번 제출 후에는 입력 시마다 재검사
   });
 
-  // 아이디 찾기 제출 핸들러
-  const onSubmit = async (data: FindIdFormData) => {
+  // 아이디 찾기 제출 핸들러 (유효할 때만 호출)
+  const onSubmitValid = async (data: FindIdFormData) => {
     try {
       const response = await findId({
         username: data.name,
@@ -53,6 +56,11 @@ const FindIdPage = () => {
     }
   };
 
+  // 유효성 검사 실패 시 한 번이라도 제출했음을 표시 → 이후 실시간 검사
+  const onSubmitInvalid = () => {
+    setHasSubmitted(true);
+  };
+
   return (
     <div className="flex flex-col items-center justify-center h-[calc(100vh-80px)]">
       {/* 전체 컨테이너 */}
@@ -64,26 +72,30 @@ const FindIdPage = () => {
 
           {/* 폼 컨테이너 */}
           <form
-            onSubmit={handleSubmit(onSubmit)}
+            onSubmit={handleSubmit(onSubmitValid, onSubmitInvalid)}
             className="flex flex-col items-center gap-24 w-400"
           >
             {/* 입력 + 버튼 영역 */}
             <div className="flex flex-col w-full">
               {/* 입력창들 */}
-              <div className="relative flex flex-col gap-8 mb-56">
-                <PrimaryInput {...register('name')} type="text" placeholder="이름" />
-                <div className="relative">
+              <div className="flex flex-col gap-8 mb-56">
+                {/* 이름 */}
+                <div className="flex flex-col gap-8">
+                  <PrimaryInput {...register('name')} type="text" placeholder="이름" />
+                  {hasSubmitted && errors.name && (
+                    <p className="font-body-3-r text-warning">{errors.name.message}</p>
+                  )}
+                </div>
+                {/* 휴대폰 번호 */}
+                <div className="flex flex-col gap-8">
                   <PrimaryInput
                     {...register('phone')}
                     type="tel"
                     placeholder="휴대폰 번호"
                     maxLength={11}
                   />
-                  {/* 에러 메시지 - 휴대폰 번호 입력창 바로 아래 gap-8 (첫 번째 에러만, absolute) */}
-                  {isSubmitted && (errors.name || errors.phone) && (
-                    <p className="absolute top-full mt-8 left-0 font-body-3-r text-warning">
-                      {errors.name?.message || errors.phone?.message}
-                    </p>
+                  {hasSubmitted && errors.phone && (
+                    <p className="font-body-3-r text-warning">{errors.phone.message}</p>
                   )}
                 </div>
               </div>
