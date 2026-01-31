@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '@/constants/routes';
 import {
@@ -10,9 +10,10 @@ import {
   usePostVerifyCode,
   usePostResetPassword,
 } from '@/apis/findCredential/postFindPassword';
-import Step1Form from '@/components/Auth/FindPassword/Step1Form';
-import Step2Verification from '@/components/Auth/FindPassword/Step2Verification';
-import Step3Reset from '@/components/Auth/FindPassword/Step3Reset';
+import Step1Form from '@/components/Auth/FindPasswordStep/Step1Form';
+import Step2Verification from '@/components/Auth/FindPasswordStep/Step2Verification';
+import Step3Reset from '@/components/Auth/FindPasswordStep/Step3Reset';
+import useTimer from '@/hooks/useTimer';
 
 const TIMER_SECONDS = 180; // 3분
 
@@ -22,8 +23,6 @@ const FindPasswordPage = () => {
   const [hasSubmitted, setHasSubmitted] = useState(false);
   const [email, setEmail] = useState<string>('');
   const [verificationCode, setVerificationCode] = useState('');
-  const [timeLeft, setTimeLeft] = useState(TIMER_SECONDS);
-  const [isTimerRunning, setIsTimerRunning] = useState(false);
   const [verifyToken, setVerifyToken] = useState<string>('');
   const [verifyError, setVerifyError] = useState<string>('');
   const [resetError, setResetError] = useState<string>('');
@@ -39,34 +38,15 @@ const FindPasswordPage = () => {
     return `${min.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`;
   };
 
-  // 타이머 시작 함수
-  const startTimer = useCallback(() => {
-    setTimeLeft(TIMER_SECONDS);
-    setIsTimerRunning(true);
-  }, []);
-
-  // 타이머 useEffect
-  useEffect(() => {
-    // 타이머 실행 중이지 않거나 시간이 만료되었을 때
-    if (!isTimerRunning || timeLeft <= 0) {
-      if (timeLeft <= 0) {
-        setIsTimerRunning(false);
-        // 시간 만료 시 에러 메시지 표시
-        if (step === 2) {
-          setVerifyError('인증 시간이 만료되었어요. 인증번호를 다시 받아주세요.');
-        }
-      }
-      return;
-    }
-
-    // 타이머 설정 및 매 초마다 timeLeft 값 감소
-    const timer = setInterval(() => {
-      setTimeLeft((prev) => prev - 1);
-    }, 1000);
-
-    // 타이머 종료 시 타이머 정리
-    return () => clearInterval(timer);
-  }, [isTimerRunning, timeLeft, step]);
+  // 타이머 훅 사용 (step이 2일 때만 활성화)
+  const { timeLeft, start: startTimer } = useTimer({
+    initialSeconds: TIMER_SECONDS,
+    enabled: step === 2,
+    onExpire: () => {
+      // 타이머 만료 시 에러 메시지 표시
+      setVerifyError('인증 시간이 만료되었어요. 인증번호를 다시 받아주세요.');
+    },
+  });
 
   // Step1: 인증번호 받기 제출 핸들러
   const handleStep1Submit = async (data: FindPasswordFormData) => {
@@ -74,7 +54,7 @@ const FindPasswordPage = () => {
       await sendMail({ email: data.email });
       setEmail(data.email);
       setStep(2);
-      startTimer();
+      startTimer(); // 타이머 시작
     } catch (error: unknown) {
       throw error; // Step1Form에서 에러 처리하도록 전달
     }
@@ -90,7 +70,7 @@ const FindPasswordPage = () => {
     setVerifyError('');
     try {
       await sendMail({ email });
-      startTimer();
+      startTimer(); // 타이머 재시작 (3분으로)
       setVerificationCode('');
     } catch (error: unknown) {
       const axiosError = error as { response?: { data?: { message?: string } } };

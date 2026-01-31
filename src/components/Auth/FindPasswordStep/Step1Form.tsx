@@ -3,7 +3,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { findPasswordSchema, type FindPasswordFormData } from '@/schemas/authSchema';
 import PrimaryInput from '@/components/Input/PrimaryInput';
 import PrimaryButton from '@/components/Button/PrimaryButton';
-import SecondaryButton from '@/components/Button/SecondaryButton';
 import GoogleLoginButton from '@/components/Button/GoogleLoginButton';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '@/constants/routes';
