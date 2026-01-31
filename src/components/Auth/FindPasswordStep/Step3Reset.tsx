@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { resetPasswordSchema, type ResetPasswordFormData } from '@/schemas/authSchema';
 import PrimaryInput from '@/components/Input/PrimaryInput';
 import PrimaryButton from '@/components/Button/PrimaryButton';
-import InputEyeIcon from '@/assets/icons/input_eye.svg?react';
+import InputEyeIcon from '@/assets/icons/eye.svg?react';
 
 type Step3ResetProps = {
   onSubmit: (data: ResetPasswordFormData) => Promise<void>;
