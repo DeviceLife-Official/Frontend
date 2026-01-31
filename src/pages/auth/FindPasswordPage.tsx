@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '@/constants/routes';
 import {
@@ -32,14 +32,16 @@ const FindPasswordPage = () => {
   const { mutateAsync: verifyCode, isPending: isVerifyPending } = usePostVerifyCode();
   const { mutateAsync: resetPassword, isPending: isResetPending } = usePostResetPassword();
 
+  // 타이머 만료 시 에러 메시지 표시 (useCallback으로 참조 안정화)
+  const handleTimerExpire = useCallback(() => {
+    setVerifyError('인증 시간이 만료되었어요. 인증번호를 다시 받아주세요.');
+  }, []);
+
   // 타이머 훅 사용 (step이 2일 때만 활성화)
   const { timeLeft, start: startTimer } = useTimer({
     initialSeconds: TIMER_SECONDS,
     enabled: step === 2,
-    onExpire: () => {
-      // 타이머 만료 시 에러 메시지 표시
-      setVerifyError('인증 시간이 만료되었어요. 인증번호를 다시 받아주세요.');
-    },
+    onExpire: handleTimerExpire,
   });
 
   // Step1: 인증번호 받기 제출 핸들러
