@@ -24,6 +24,7 @@ export type ComboListItem = {
   deviceCount: number;
   createdAt: string;
   updatedAt: string;
+  devices: ComboDevice[];
 };
 
 // 조합 상세 정보

@@ -734,17 +734,49 @@ const MyPage = () => {
                               {/* Tags - API에서 태그 정보 제공 시 구현 */}
                             </div>
 
-                            {/* 기기 그리드 - 일반 모드에서는 deviceCount만 표시 */}
+                            {/* 기기 그리드 - 일반 모드에서도 기기 카드 표시 (그라데이션 포함) */}
                             <div className="pl-8 mt-24 relative">
-                              <div className="flex items-center gap-8">
-                                <p className="font-body-2-r text-gray-400">
-                                  등록된 기기: {combination.deviceCount}개
-                                </p>
-                                <p className="font-body-2-r text-gray-400">|</p>
-                                <p className="font-body-2-r text-gray-400">
-                                  자세히 보려면 클릭하세요
-                                </p>
-                              </div>
+                              {(() => {
+                                // 그라데이션 임계값 설정
+                                const gradientThreshold = columns === 4 ? 9 : 7;
+                                const shouldShowGradient = combination.devices.length >= gradientThreshold;
+                                const maxDisplay = columns === 4 ? 8 : 6;
+                                const displayedDevices = shouldShowGradient
+                                  ? combination.devices.slice(0, maxDisplay)
+                                  : combination.devices;
+
+                                return (
+                                  <>
+                                    <div className={`grid ${columns === 4 ? 'grid-cols-4' : 'grid-cols-3'} gap-x-28 gap-y-12`}>
+                                      {displayedDevices.map((device) => (
+                                        <div
+                                          key={device.deviceId}
+                                          className="bg-white rounded-card shadow-[0_0_4px_rgba(0,0,0,0.1)] p-12 w-244 flex items-center gap-12"
+                                        >
+                                          <div className="w-64 h-64 bg-gray-200 flex-shrink-0" />
+                                          <div className="flex flex-col gap-4 flex-1">
+                                            <p className="font-body-3-sm text-black truncate w-120">
+                                              {device.name}
+                                            </p>
+                                            <p className="font-body-4-r text-gray-300">{device.brandName}</p>
+                                            <p className="font-body-3-r text-gray-300">{device.deviceType}</p>
+                                          </div>
+                                        </div>
+                                      ))}
+                                    </div>
+
+                                    {/* 그라데이션 오버레이 */}
+                                    {shouldShowGradient && (
+                                      <div
+                                        className="absolute right-0 bottom-0 w-244 h-80 rounded-card pointer-events-none"
+                                        style={{
+                                          background: 'linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 70%)',
+                                        }}
+                                      />
+                                    )}
+                                  </>
+                                );
+                              })()}
                             </div>
                           </div>
                         ) : (
