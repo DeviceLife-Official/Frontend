@@ -46,9 +46,16 @@ const Step3Reset = ({ onSubmit, resetError, isResetPending, onResetErrorClear }:
             <p className="font-body-3-sm text-black">새 비밀번호</p>
             <div className="relative">
               <PrimaryInput
-                {...registerReset('newPassword', {
-                  onChange: () => {},
-                })}
+                {...(() => {
+                  const { onChange, ...rest } = registerReset('newPassword');
+                  return {
+                    ...rest,
+                    onChange: (e) => {
+                      onChange(e);
+                      onResetErrorClear?.();
+                    },
+                  };
+                })()}
                 type={isNewPasswordVisible ? 'text' : 'password'}
                 placeholder="영문+숫자 조합 *~20자"
                 maxLength={20}
@@ -76,11 +83,16 @@ const Step3Reset = ({ onSubmit, resetError, isResetPending, onResetErrorClear }:
           <div className="flex flex-col gap-10">
             <p className="font-body-3-sm text-black">새 비밀번호 확인</p>
             <PrimaryInput
-              {...registerReset('newPasswordConfirm', {
-                onChange: () => {
-                  onResetErrorClear?.();
-                },
-              })}
+              {...(() => {
+                const { onChange, ...rest } = registerReset('newPasswordConfirm');
+                return {
+                  ...rest,
+                  onChange: (e) => {
+                    onChange(e);
+                    onResetErrorClear?.();
+                  },
+                };
+              })()}
               type="password"
               placeholder="비밀번호를 한 번 더 입력해 주세요"
               maxLength={20}
