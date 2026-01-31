@@ -1,7 +1,7 @@
 import PrimaryButton from "@/components/Button/PrimaryButton";
 import OnboardingLifestyleTag from "@/components/Lifestyle/OnboardingLifestyleTag";
 import { ROUTES } from "@/constants/routes";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, Navigate } from "react-router-dom";
 import WarningIcon from "@/assets/icons/warning.svg?react";
 
 // 라우터 state 타입
@@ -16,7 +16,14 @@ const FindIdResultPage = () => {
   const location = useLocation();
 
   // 라우터 state에서 결과 정보 가져오기
-  const { success, email, message } = (location.state || {}) as FindIdResultState;
+  const state = location.state as FindIdResultState | null;
+
+  // 라우터 state가 없으면 아이디 찾기 페이지로 이동
+  if (!state) {
+    return <Navigate to={ROUTES.auth.findId} replace />;
+  }
+
+  const { success, email, message } = state;
   const isSuccess = success && email;
 
   return (
