@@ -1,13 +1,16 @@
 import type { CommonResponse } from '@/types/common';
 
-// 기기 타입 (기본 구조 - 추후 수정 가능)
+// 조합 내 기기 타입 (API 응답 구조)
 export type ComboDevice = {
   deviceId: number;
-  deviceName: string;
-  chargingType?: string;
-  color?: string;
-  price?: number;
-  imageUrl?: string;
+  name: string;
+  modelCode: string;
+  brandName: string;
+  deviceType: string;
+  price: number;
+  priceCurrency: string;
+  imageUrl: string;
+  addedAt: string;
 };
 
 // 조합 목록 아이템
@@ -51,3 +54,11 @@ export type PutComboRequest = {
 
 export type PutComboResult = null;
 export type PutComboResponse = CommonResponse<PutComboResult>;
+
+// 조합에 기기 추가 요청/응답 타입
+export type PostComboDeviceRequest = {
+  deviceId: number;
+};
+
+export type PostComboDeviceResult = ComboDetail;
+export type PostComboDeviceResponse = CommonResponse<PostComboDeviceResult>;

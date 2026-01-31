@@ -567,7 +567,7 @@ const MyPage = () => {
                                 <div className="flex flex-col gap-4 flex-1">
                                   <div className="flex items-center justify-between">
                                     <p className="font-body-3-sm text-black truncate w-120">
-                                      {device.deviceName}
+                                      {device.name}
                                     </p>
                                     {/* 체크박스 - 기기명과 같은 높이 */}
                                     <button
@@ -584,8 +584,8 @@ const MyPage = () => {
                                       )}
                                     </button>
                                   </div>
-                                  <p className="font-body-4-r text-gray-300">{device.chargingType || '-'}</p>
-                                  <p className="font-body-3-r text-gray-300">{device.color || '-'}</p>
+                                  <p className="font-body-4-r text-gray-300">{device.brandName || '-'}</p>
+                                  <p className="font-body-3-r text-gray-300">{device.deviceType || '-'}</p>
                                 </div>
                               </div>
                             ))}
