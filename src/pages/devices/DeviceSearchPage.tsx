@@ -26,8 +26,8 @@ import {
 import { MOCK_PRODUCTS } from '@/constants/mockData';
 import { type AuthStatus, type ModalView } from '@/types/devices';
 import { useGetCombos } from '@/apis/combo/getCombos';
-import { useGetCombo } from '@/apis/combo/getCombo';
-import { usePostComboDevice } from '@/apis/combo/postComboDevice';
+import { useGetCombo } from '@/apis/combo/getComboId';
+import { usePostComboDevice } from '@/apis/combo/postComboDevices';
 
 const DeviceSearchPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();

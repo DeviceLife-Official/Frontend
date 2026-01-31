@@ -21,8 +21,8 @@ import SaveIcon from '@/assets/icons/save.svg?react';
 import TopIcon from '@/assets/icons/top.svg?react';
 import Logo from '@/assets/logos/logo.svg?react';
 import { useGetCombos } from '@/apis/combo/getCombos';
-import { useGetCombo } from '@/apis/combo/getCombo';
-import { usePutCombo } from '@/apis/combo/putCombo';
+import { useGetCombo } from '@/apis/combo/getComboId';
+import { usePutCombo } from '@/apis/combo/putCombos';
 import type { ComboListItem } from '@/types/combo/combo';
 
 // 조합 평가 Mock 데이터
@@ -330,6 +330,7 @@ const MyPage = () => {
             ) : (
               <PrimaryButton
                 text="새 조합 추가하기"
+                onClick={() => navigate('/combination/create')}
                 className="w-280 bg-blue-600 hover:bg-blue-500"
               />
             )}
