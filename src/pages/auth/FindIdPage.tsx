@@ -8,6 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { findIdSchema, type FindIdFormData } from '@/schemas/authSchema';
 import GoogleLoginButton from '@/components/Button/GoogleLoginButton';
 import { usePostFindId } from '@/apis/findCredential/postFindId';
+import { parseApiError } from '@/utils/error';
 
 const FindIdPage = () => {
   const navigate = useNavigate();
@@ -40,18 +41,15 @@ const FindIdPage = () => {
         },
       });
     } catch (error: unknown) {
-      // axios 에러 타입: response가 있으면 API 응답은 왔지만 실패 (4xx, 5xx)
-      const axiosError = error as {
-        response?: { data?: { message?: string } };
-      };
+      const { hasResponse, message } = parseApiError(error);
 
       // API 응답이 있는 경우 → 실패 화면으로 이동 (백엔드 message 전달)
-      if (axiosError.response) {
+      if (hasResponse) {
         navigate(ROUTES.auth.findIdResult, {
           state: {
             success: false,
             email: null,
-            message: axiosError.response.data?.message,
+            message,
           },
         });
         return;

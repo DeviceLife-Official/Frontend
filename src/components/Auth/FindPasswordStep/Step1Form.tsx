@@ -6,6 +6,7 @@ import PrimaryButton from '@/components/Button/PrimaryButton';
 import GoogleLoginButton from '@/components/Button/GoogleLoginButton';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '@/constants/routes';
+import { parseApiError } from '@/utils/error';
 
 type Step1FormProps = {
   onSubmit: (data: FindPasswordFormData) => Promise<void>;
@@ -32,11 +33,11 @@ const Step1Form = ({ onSubmit, onInvalid, isPending, hasSubmitted }: Step1FormPr
     try {
       await onSubmit(data);
     } catch (error: unknown) {
-      const axiosError = error as { response?: { data?: { message?: string } } };
-      if (axiosError.response) {
+      const { hasResponse, message } = parseApiError(error);
+      if (hasResponse) {
         setError('email', {
           type: 'manual',
-          message: axiosError.response.data?.message ?? '인증번호 발송에 실패했습니다. 다시 시도해 주세요.',
+          message: message ?? '인증번호 발송에 실패했습니다. 다시 시도해 주세요.',
         });
       } else {
         // 네트워크/환경 에러는 상위로 전달하지 않고 alert로 처리

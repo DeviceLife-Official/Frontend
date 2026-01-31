@@ -14,6 +14,7 @@ import Step1Form from '@/components/Auth/FindPasswordStep/Step1Form';
 import Step2Verification from '@/components/Auth/FindPasswordStep/Step2Verification';
 import Step3Reset from '@/components/Auth/FindPasswordStep/Step3Reset';
 import useTimer from '@/hooks/useTimer';
+import { parseApiError } from '@/utils/error';
 
 const TIMER_SECONDS = 180; // 3분
 
@@ -68,15 +69,15 @@ const FindPasswordPage = () => {
   // Step2: 인증번호 재전송
   const handleResend = async () => {
     setVerifyError('');
-    try {
+    try { 
       await sendMail({ email });
-      startTimer(); // 타이머 재시작 (3분으로)
+      startTimer();
       setVerificationCode('');
     } catch (error: unknown) {
-      const axiosError = error as { response?: { data?: { message?: string } } };
-      if (axiosError.response?.data?.message) {
-        alert(axiosError.response.data.message);
-      } else if (axiosError.response) {
+      const { hasResponse, message } = parseApiError(error);
+      if (hasResponse && message) {
+        alert(message);
+      } else if (hasResponse) {
         alert('인증번호 재전송에 실패했습니다. 다시 시도해 주세요.');
       } else {
         alert('오류가 발생했습니다. 다시 시도해 주세요.');
@@ -123,9 +124,9 @@ const FindPasswordPage = () => {
 
       navigate(ROUTES.auth.login);
     } catch (error: unknown) {
-      const axiosError = error as { response?: { data?: { message?: string } } };
-      if (axiosError.response) {
-        setResetError(axiosError.response.data?.message ?? '비밀번호 변경에 실패했습니다. 다시 시도해 주세요.');
+      const { hasResponse, message } = parseApiError(error);
+      if (hasResponse) {
+        setResetError(message ?? '비밀번호 변경에 실패했습니다. 다시 시도해 주세요.');
         return;
       }
       alert('오류가 발생했습니다. 다시 시도해 주세요.');
