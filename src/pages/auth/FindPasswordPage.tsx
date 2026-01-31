@@ -32,13 +32,6 @@ const FindPasswordPage = () => {
   const { mutateAsync: verifyCode, isPending: isVerifyPending } = usePostVerifyCode();
   const { mutateAsync: resetPassword, isPending: isResetPending } = usePostResetPassword();
 
-  // 타이머 포맷팅 (mm:ss) 함수
-  const formatTime = (seconds: number) => {
-    const min = Math.floor(seconds / 60);
-    const sec = seconds % 60;
-    return `${min.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`;
-  };
-
   // 타이머 훅 사용 (step이 2일 때만 활성화)
   const { timeLeft, start: startTimer } = useTimer({
     initialSeconds: TIMER_SECONDS,
@@ -153,7 +146,6 @@ const FindPasswordPage = () => {
           timeLeft={timeLeft}
           verifyError={verifyError}
           isVerifyPending={isVerifyPending}
-          formatTime={formatTime}
         />
       )}
 

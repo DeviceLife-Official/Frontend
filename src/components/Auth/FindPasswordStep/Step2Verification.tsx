@@ -1,6 +1,7 @@
 import PrimaryInput from '@/components/Input/PrimaryInput';
 import PrimaryButton from '@/components/Button/PrimaryButton';
 import SecondaryButton from '@/components/Button/SecondaryButton';
+import { formatTime } from '@/utils/format';
 
 type Step2VerificationProps = {
   verificationCode: string;
@@ -10,7 +11,6 @@ type Step2VerificationProps = {
   timeLeft: number;
   verifyError: string;
   isVerifyPending: boolean;
-  formatTime: (seconds: number) => string;
 };
 
 const Step2Verification = ({
@@ -21,7 +21,6 @@ const Step2Verification = ({
   timeLeft,
   verifyError,
   isVerifyPending,
-  formatTime,
 }: Step2VerificationProps) => {
   return (
     <div className="flex flex-col items-center gap-56">
