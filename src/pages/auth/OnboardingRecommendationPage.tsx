@@ -1,6 +1,19 @@
 import PrimaryButton from '@/components/Button/PrimaryButton';
+import RecentlyViewedCard from '@/components/RecentlyViewed/RecentlyViewedCard';
+import { MOCK_PRODUCTS } from '@/constants/mockData';
+import type { RecentlyViewedDevice } from '@/types/recentlyViewed';
 
 const OnboardingRecommendationPage = () => {
+  // MOCK_PRODUCTS에서 3개만 가져와서 사용
+  const dummyDevices: RecentlyViewedDevice[] = MOCK_PRODUCTS.slice(0, 3).map((product) => ({
+    id: product.id,
+    name: product.name,
+    category: product.category,
+    price: product.price,
+    image: product.image,
+    viewedAt: Date.now(),
+  }));
+
   return (
     <div className="flex flex-col items-center justify-center h-[calc(100vh-80px)]">
       {/* 메인 컨테이너 */}
@@ -19,8 +32,15 @@ const OnboardingRecommendationPage = () => {
             </p>
           </div>
 
-          {/* 다음 버튼 */}
-          <PrimaryButton text="다음" className="w-280 bg-blue-600 hover:bg-blue-500" />
+          {/* 기기 카드 영역 - 가로 3개 */}
+          <div className="flex gap-20 justify-center">
+            {dummyDevices.map((device) => (
+              <RecentlyViewedCard key={device.id} device={device} />
+            ))}
+          </div>
+
+          {/* 내 조합에 담기 버튼 */}
+          <PrimaryButton text="내 조합에 담기" className="w-280 bg-blue-600 hover:bg-blue-500" />
         </div>
       </div>
     </div>
