@@ -1,15 +1,10 @@
 import PrimaryButton from '@/components/Button/PrimaryButton';
 import PrimaryInput from '@/components/Input/PrimaryInput';
-import { ROUTES } from '@/constants/routes';
-import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { findIdSchema, type FindIdFormData } from '@/schemas/authSchema';
-import GoogleLoginButton from '@/components/Button/GoogleLoginButton';
 
 const FindIdPage = () => {
-  const navigate = useNavigate();
-
   const {
     register,
     handleSubmit,
@@ -65,43 +60,6 @@ const FindIdPage = () => {
               className="w-full bg-blue-600 hover:bg-blue-500"
             />
           </form>
-        </div>
-
-        {/* 아이디/비밀번호 찾기 + 소셜 로그인 + 회원가입 안내 */}
-        <div className="flex flex-col items-center gap-32">
-          {/* 아이디/비밀번호 찾기 */}
-          <div className="flex items-center gap-16 font-body-2-r text-gray-400">
-            <button
-              type="button"
-              className="cursor-pointer hover:opacity-80"
-              onClick={() => navigate(ROUTES.auth.findId)}
-            >
-              아이디 찾기
-            </button>
-            <span>|</span>
-            <button
-              type="button"
-              className="cursor-pointer hover:opacity-80"
-              onClick={() => navigate(ROUTES.auth.findPassword)}
-            >
-              비밀번호 찾기
-            </button>
-          </div>
-
-          {/* 소셜 로그인 */}
-          <GoogleLoginButton className="w-200 h-46" />
-
-          {/* 회원가입 안내 */}
-          <div className="flex items-center gap-16 font-body-2-r text-gray-400">
-            <span>아직 Device Life 회원이 아니신가요?</span>
-            <button
-              type="button"
-              className="underline underline-offset-4 cursor-pointer hover:opacity-80"
-              onClick={() => navigate(ROUTES.auth.signup.base)}
-            >
-              회원가입 하기
-            </button>
-          </div>
         </div>
       </div>
     </div>
