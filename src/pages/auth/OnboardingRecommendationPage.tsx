@@ -68,8 +68,12 @@ const OnboardingRecommendationPage = () => {
             ))}
           </div>
 
-          {/* 내 조합에 담기 버튼 */}
-          <PrimaryButton text="내 조합에 담기" className="w-280 bg-blue-600 hover:bg-blue-500" />
+          <div className="flex flex-col items-center gap-12 ">
+            {/* 내 조합에 담기 버튼 */}
+            <PrimaryButton text="내 조합에 담기" className="w-280 bg-blue-500 hover:bg-blue-400" />
+            {/* 다음에 하기 버튼 */}
+            <PrimaryButton text="다음에 하기" className="w-280 bg-gray-100 hover:bg-gray-200 !text-black" />
+          </div>
         </div>
       </div>
     </div>
