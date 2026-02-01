@@ -23,10 +23,7 @@ export const nameSchema = z
 export const phoneSchema = z
   .string()
   .min(1, '휴대폰 번호를 입력해주세요')
-  .refine(
-    (value) => /^[0-9]+$/.test(value) && value.length >= 10 && value.length <= 11,
-    '휴대폰 번호 형식을 확인해주세요'
-  );
+  .regex(/^[0-9]{10,11}$/, '휴대폰 번호 형식을 확인해주세요');
 
 // 로그인 스키마
 export const loginSchema = z.object({
@@ -50,6 +47,19 @@ export const findPasswordSchema = z.object({
 });
 
 export type FindPasswordFormData = z.infer<typeof findPasswordSchema>;
+
+// 비밀번호 재설정 스키마
+export const resetPasswordSchema = z
+  .object({
+    newPassword: passwordSchema,
+    newPasswordConfirm: z.string().min(1, '비밀번호 확인을 입력하세요'),
+  })
+  .refine((data) => data.newPassword === data.newPasswordConfirm, {
+    message: '비밀번호가 일치하지 않습니다',
+    path: ['newPasswordConfirm'], // 에러를 newPasswordConfirm 필드에만 표시
+  });
+
+export type ResetPasswordFormData = z.infer<typeof resetPasswordSchema>;
 
 // 회원가입 - 계정 정보 스키마
 export const signupAccountSchema = z

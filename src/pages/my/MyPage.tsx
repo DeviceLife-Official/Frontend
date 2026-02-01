@@ -471,7 +471,7 @@ const MyPage = () => {
                     {!isDetailView && (
                       <div
                         ref={openMenuIndex === combination.comboId ? menuRef : null}
-                        className={`absolute right-56 ${editingComboId === combination.comboId ? 'top-28' : 'top-36'}`}
+                        className={`absolute right-56 ${editingComboId === combination.comboId ? 'top-48' : 'top-72'}`}
                       >
                         {editingComboId === combination.comboId ? (
                           /* 수정 모드: 저장하기 버튼 */
@@ -588,7 +588,7 @@ const MyPage = () => {
                             </div>
                             <div className="flex items-center gap-8">
                               <p className="font-heading-3 text-black">{combination.comboName}</p>
-                              {combination.isPinned && <StarIcon className="w-27 h-27" />}
+                              {combination.isPinned && <StarIcon className="w-22 h-22 -mt-2" />}
                             </div>
                           </div>
                         </div>
@@ -801,7 +801,7 @@ const MyPage = () => {
                                       }`}
                                       autoFocus
                                     />
-                                    {combination.isPinned && <StarIcon className="w-22 h-22" />}
+                                    {combination.isPinned && <StarIcon className="w-22 h-22 -mt-2" />}
                                   </div>
                                   {comboNameError && (
                                     <p className="pl-12 font-body-4-r text-warning">{comboNameError}</p>
@@ -818,7 +818,7 @@ const MyPage = () => {
                                   </div>
                                   <div className="flex items-center gap-8">
                                     <p className="font-body-1-sm text-black">{combination.comboName}</p>
-                                    {combination.isPinned && <StarIcon className="w-27 h-27" />}
+                                    {combination.isPinned && <StarIcon className="w-22 h-22 -mt-2" />}
                                   </div>
                                 </div>
                               )}
@@ -884,7 +884,7 @@ const MyPage = () => {
                                 </div>
                                 <div className="flex items-center gap-8">
                                   <p className="font-body-1-sm text-black">{combination.comboName}</p>
-                                  {combination.isPinned && <StarIcon className="w-27 h-27" />}
+                                  {combination.isPinned && <StarIcon className="w-22 h-22 -mt-2" />}
                                 </div>
                               </div>
                               {/* Tags - API에서 태그 정보 제공 시 구현 */}
