@@ -84,7 +84,7 @@ const FilterDropdown = ({
     <div ref={dropdownRef} className="relative flex flex-col gap-16">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className={`flex items-center justify-center gap-16 pl-16 pr-8 py-8 rounded-button cursor-pointer ${
+        className={`h-44 min-w-124 flex items-center justify-center gap-16 pl-16 pr-8 rounded-button cursor-pointer ${
           hasSelection
             ? 'border-2 border-blue-600'
             : isOpen
