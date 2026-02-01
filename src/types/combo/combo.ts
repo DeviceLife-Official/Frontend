@@ -63,3 +63,7 @@ export type PostComboDeviceRequest = {
 
 export type PostComboDeviceResult = ComboDetail;
 export type PostComboDeviceResponse = CommonResponse<PostComboDeviceResult>;
+
+// 조합 삭제 응답 타입
+export type DeleteComboResult = null;
+export type DeleteComboResponse = CommonResponse<DeleteComboResult>;

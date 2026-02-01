@@ -23,6 +23,7 @@ import Logo from '@/assets/logos/logo.svg?react';
 import { useGetCombos } from '@/apis/combo/getCombos';
 import { useGetCombo } from '@/apis/combo/getComboId';
 import { usePutCombo } from '@/apis/combo/putCombos';
+import { useDeleteCombo } from '@/apis/combo/deleteCombo';
 import type { ComboListItem } from '@/types/combo/combo';
 
 // 조합 평가 Mock 데이터
@@ -85,6 +86,7 @@ const MyPage = () => {
   const { data: combos = [], isLoading, isError } = useGetCombos();
   const { data: comboDetail } = useGetCombo(detailViewComboId);
   const { mutate: updateCombo, isPending: isUpdating } = usePutCombo();
+  const { mutate: deleteCombo, isPending: isDeleting } = useDeleteCombo();
 
   // 정렬된 조합 목록
   const sortedCombos = useMemo(() => {
@@ -265,15 +267,24 @@ const MyPage = () => {
 
   // 조합 삭제 핸들러
   const handleDeleteCombination = () => {
-    // API 연동 시 실제 삭제 로직 추가
-    console.log('삭제할 조합 comboId:', deleteTargetComboId);
-    setShowCombinationDeleteModal(false);
-    setDeleteTargetComboId(null);
-    // 자세히보기 모드였다면 일반 모드로 복귀
-    if (detailViewComboId !== null) {
-      setDetailViewComboId(null);
-      setSelectedDevices([]);
-    }
+    if (deleteTargetComboId === null) return;
+
+    deleteCombo(deleteTargetComboId, {
+      onSuccess: () => {
+        console.log('조합 삭제 성공');
+        setShowCombinationDeleteModal(false);
+        setDeleteTargetComboId(null);
+
+        // 자세히보기 모드였다면 일반 모드로 복귀
+        if (detailViewComboId !== null) {
+          setDetailViewComboId(null);
+          setSelectedDevices([]);
+        }
+      },
+      onError: (error) => {
+        console.error('조합 삭제 실패:', error);
+      },
+    });
   };
 
   // 조합명 저장 핸들러
@@ -1002,9 +1013,14 @@ const MyPage = () => {
                 <div className="flex gap-20 mt-60">
                   <button
                     onClick={handleDeleteCombination}
-                    className="w-168 h-52 bg-red-500 hover:bg-red-400 rounded-button flex items-center justify-center cursor-pointer transition-colors"
+                    disabled={isDeleting}
+                    className={`w-168 h-52 bg-red-500 hover:bg-red-400 rounded-button flex items-center justify-center transition-colors ${
+                      isDeleting ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
+                    }`}
                   >
-                    <span className="font-body-2-sm text-white">삭제</span>
+                    <span className="font-body-2-sm text-white">
+                      {isDeleting ? '삭제 중...' : '삭제'}
+                    </span>
                   </button>
                   <button
                     onClick={() => {
