@@ -2,13 +2,15 @@ type SecondaryButtonProps = {
   text: string;
   onClick?: () => void;
   className?: string;
+  disabled?: boolean;
 };
 
-const SecondaryButton = ({ text, onClick, className = '' }: SecondaryButtonProps) => {
+const SecondaryButton = ({ text, onClick, className = '', disabled = false }: SecondaryButtonProps) => {
   return (
     <button
       type="button"
-      onClick={onClick}
+      onClick={disabled ? undefined : onClick}
+      disabled={disabled}
       className={`
         flex items-center justify-center
         h-52
@@ -17,6 +19,7 @@ const SecondaryButton = ({ text, onClick, className = '' }: SecondaryButtonProps
         font-body-2-sm text-blue-600
         cursor-pointer
         hover:bg-blue-200
+        disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-blue-100
         ${className}
       `}
     >

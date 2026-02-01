@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useMemo } from 'react';
+import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import GNB from '@/components/Home/GNB';
 import PrimaryButton from '@/components/Button/PrimaryButton';
@@ -74,6 +74,7 @@ const MyPage = () => {
   const [deleteTargetComboId, setDeleteTargetComboId] = useState<number | null>(null);
   const [editingComboId, setEditingComboId] = useState<number | null>(null);
   const [editingCombinationName, setEditingCombinationName] = useState('');
+  const [comboNameError, setComboNameError] = useState<string | null>(null);
   const [showSaveModal, setShowSaveModal] = useState(false);
   const [showTopButton, setShowTopButton] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -159,6 +160,62 @@ const MyPage = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  // 조합명 유효성 검사 함수
+  const validateComboName = useCallback((name: string): string | null => {
+    // 1. 빈 값 체크
+    if (name.length === 0) {
+      return '조합명을 입력해주세요.';
+    }
+
+    // 2. 공백만 입력 체크
+    if (name.trim().length === 0) {
+      return '조합명을 한 글자 이상 입력해주세요.';
+    }
+
+    // 3. 최대 길이 체크 (20자)
+    if (name.length > 20) {
+      return '조합명은 최대 20자까지 입력 가능합니다.';
+    }
+
+    // 4. 중복 체크 (현재 수정 중인 조합 제외, trim 후 대소문자 구분 없이 비교)
+    if (editingComboId !== null) {
+      const isDuplicate = combos.some(
+        c => c.comboId !== editingComboId &&
+             c.comboName.trim().toLowerCase() === name.trim().toLowerCase()
+      );
+      if (isDuplicate) {
+        return '이미 존재하는 조합명입니다. 다른 이름을 시도해주세요.';
+      }
+    }
+
+    return null; // 유효함
+  }, [combos, editingComboId]);
+
+  // 조합명이 유효한지 여부
+  const isComboNameValid = useMemo(() => {
+    return validateComboName(editingCombinationName) === null;
+  }, [editingCombinationName, validateComboName]);
+
+  // 조합명 입력 핸들러 (길이 제한 + 실시간 검사)
+  const handleComboNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = e.target.value;
+
+    // 최대 길이 20자로 제한 (입력 자체를 막음)
+    if (newValue.length > 20) {
+      return;
+    }
+
+    setEditingCombinationName(newValue);
+
+    // 실시간 검사 (입력 중에는 빈 값/공백만 에러는 표시하지 않음)
+    if (newValue.length > 0 && newValue.trim().length > 0) {
+      const error = validateComboName(newValue);
+      setComboNameError(error);
+    } else {
+      setComboNameError(null);
+    }
+  };
+
   // 자세히보기 클릭 핸들러
   const handleDetailView = (comboId: number) => {
     setSavedScrollPosition(window.scrollY);
@@ -223,12 +280,24 @@ const MyPage = () => {
   const handleSaveCombinationName = () => {
     if (editingComboId === null) return;
 
+    // 최종 검증
+    const finalError = validateComboName(editingCombinationName);
+    if (finalError) {
+      setComboNameError(finalError);
+      return;
+    }
+
+    // trim된 값으로 저장
+    const trimmedName = editingCombinationName.trim();
+
     updateCombo(
-      { comboId: editingComboId, comboName: editingCombinationName },
+      { comboId: editingComboId, comboName: trimmedName },
       {
         onSuccess: () => {
           setShowSaveModal(false);
           setEditingComboId(null);
+          setEditingCombinationName(''); // state 초기화
+          setComboNameError(null); // 에러 초기화
         },
         onError: (error) => {
           console.error('조합명 수정 실패:', error);
@@ -409,8 +478,15 @@ const MyPage = () => {
                           <SecondaryButton
                             text="저장하기"
                             onClick={() => {
-                              setShowSaveModal(true);
+                              // 최종 검증 후 모달 표시
+                              const error = validateComboName(editingCombinationName);
+                              setComboNameError(error);
+
+                              if (!error) {
+                                setShowSaveModal(true);
+                              }
                             }}
+                            disabled={!isComboNameValid || editingCombinationName.trim().length === 0}
                             className="w-150"
                           />
                         ) : (
@@ -454,6 +530,7 @@ const MyPage = () => {
                                 setEditingComboId(combination.comboId);
                                 setEditingCombinationName(combination.comboName);
                                 setOpenMenuIndex(null);
+                                setComboNameError(null); // 에러 초기화
                               }}
                               onMouseEnter={() => setHoveredMenuItem('rename')}
                               onMouseLeave={() => setHoveredMenuItem(null)}
@@ -705,16 +782,30 @@ const MyPage = () => {
                             {/* 조합 정보 (생성일 포함) */}
                             <div className="flex flex-col gap-13 pl-20 py-24">
                               {editingComboId === combination.comboId ? (
-                                /* 수정 모드: 인풋박스 + 별 아이콘 */
-                                <div className="flex items-center gap-8 min-h-48">
-                                  <input
-                                    type="text"
-                                    value={editingCombinationName}
-                                    onChange={(e) => setEditingCombinationName(e.target.value)}
-                                    onClick={(e) => e.stopPropagation()}
-                                    className="h-52 px-12 border border-blue-600 rounded-button font-body-1-sm text-gray-300 focus:outline-none"
-                                  />
-                                  {combination.isPinned && <StarIcon className="w-22 h-22" />}
+                                /* 수정 모드: 인풋박스 + 별 아이콘 + 에러 메시지 */
+                                <div className="flex flex-col gap-8">
+                                  <div className="flex items-center gap-8 min-h-48">
+                                    <input
+                                      type="text"
+                                      value={editingCombinationName}
+                                      onChange={handleComboNameChange}
+                                      onClick={(e) => e.stopPropagation()}
+                                      onBlur={() => {
+                                        // 포커스 아웃 시 최종 검증
+                                        const error = validateComboName(editingCombinationName);
+                                        setComboNameError(error);
+                                      }}
+                                      maxLength={20}
+                                      className={`h-52 px-12 rounded-button font-body-1-sm text-gray-300 focus:outline-none ${
+                                        comboNameError ? 'border-2 border-warning' : 'border border-blue-600'
+                                      }`}
+                                      autoFocus
+                                    />
+                                    {combination.isPinned && <StarIcon className="w-22 h-22" />}
+                                  </div>
+                                  {comboNameError && (
+                                    <p className="pl-12 font-body-4-r text-warning">{comboNameError}</p>
+                                  )}
                                 </div>
                               ) : (
                                 /* 일반 모드: 조합 번호 + 생성일 + 조합명 */
