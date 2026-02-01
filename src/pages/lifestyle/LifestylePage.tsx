@@ -1,5 +1,5 @@
-import { useCallback, useMemo, useState } from 'react';
-import { ROTATION_MS, TRANSITION_MS } from '@/constants/time';
+import { useCallback, useMemo, useState ,useRef } from 'react';
+import { ROTATION_MS, TRANSITION_MS, USER_INTERACTION_PAUSE_MS } from '@/constants/time';
 import LifestyleTag from '@/components/Lifestyle/LifestyleTag';
 import Office from '@/assets/images/lifestyle/office.jpg';
 import Developer from '@/assets/images/lifestyle/developer.jpg';
@@ -42,6 +42,8 @@ const LifestylePage = () => {
     transitionMs: TRANSITION_MS,
   });
   const getNextTag = useCallback((prev: Tag) => nextInArray(TAGS, prev), []);
+  const resumeTimerRef = useRef<number | null>(null);
+  const resumeAtRef = useRef<number | null>(null);
 
   useAutoRotate<Tag>({
     enabled: isAutoRotate && !isPaused,
@@ -50,10 +52,22 @@ const LifestylePage = () => {
     getNext: getNextTag,
   });
 
-  const handleClickTag = (label: Tag) => {
-    setSelectedLabel(label);
-    setIsAutoRotate(true);
-  };
+const handleClickTag = (label: Tag) => {
+  const now = Date.now();
+  setSelectedLabel(label);
+  setIsAutoRotate(false);
+  resumeAtRef.current = now + USER_INTERACTION_PAUSE_MS;
+  if (resumeTimerRef.current) {
+    clearTimeout(resumeTimerRef.current);
+  }
+  const delay = USER_INTERACTION_PAUSE_MS;
+  resumeTimerRef.current = window.setTimeout(() => {
+    if (Date.now() >= (resumeAtRef.current ?? 0)) {
+      setIsAutoRotate(true);
+    }
+  }, delay);
+};
+
 
   return (
     <div className="min-h-[calc(100vh-80px)] flex items-center justify-center">
