@@ -9,6 +9,7 @@ export const ROUTES = {
     base: '/auth',
     login: '/auth/login',
     findId: '/auth/find/id',
+    findIdResult: '/auth/find/id/result',
     findPassword: '/auth/find/password',
     signup: {
       base: '/auth/signup',

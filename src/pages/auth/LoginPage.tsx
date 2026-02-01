@@ -6,16 +6,25 @@ import PrimaryInput from '@/components/Input/PrimaryInput';
 import PrimaryButton from '@/components/Button/PrimaryButton';
 import Checkbox from '@/assets/icons/checkbox.svg?react';
 import CheckboxOn from '@/assets/icons/checkbox_on.svg?react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { ROUTES } from '@/constants/routes';
 import GoogleLoginButton from '@/components/Button/GoogleLoginButton';
 import { useLoginFlow } from '@/hooks/useLoginFlow';
 
+// 라우터 state 타입 (아이디 찾기에서 넘어올 때)
+type LoginPageState = {
+  prefillEmail?: string;
+};
+
 const LoginPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [keepLogin, setKeepLogin] = useState(false);
   const [isCapsLockOn, setIsCapsLockOn] = useState(false);
   const [loginError, setLoginError] = useState<string>('');
+
+  // 아이디 찾기에서 넘어온 이메일 (있으면 자동 입력)
+  const { prefillEmail } = (location.state || {}) as LoginPageState;
 
   // 로그인 폼 상태 관리
   const {
@@ -25,6 +34,9 @@ const LoginPage = () => {
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema), // zod 스키마로 검사해줘!
     mode: 'onChange', // 입력할 때마다 검사
+    defaultValues: {
+      email: prefillEmail || '',
+    },
   });
 
   // 비밀번호 입력 필드 등록

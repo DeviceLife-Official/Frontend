@@ -328,7 +328,7 @@ const MyPage = () => {
                     {!isDetailView && (
                       <div
                         ref={openMenuIndex === index ? menuRef : null}
-                        className={`absolute right-56 ${editingCombinationIndex === index ? 'top-28' : 'top-36'}`}
+                        className={`absolute right-56 ${editingCombinationIndex === index ? 'top-48' : 'top-72'}`}
                       >
                         {editingCombinationIndex === index ? (
                           /* 수정 모드: 저장하기 버튼 */
@@ -439,7 +439,7 @@ const MyPage = () => {
                             </div>
                             <div className="flex items-center gap-8">
                               <p className="font-heading-3 text-black">{combination.name}</p>
-                              {combination.isMain && <StarIcon className="w-27 h-27" />}
+                              {combination.isMain && <StarIcon className="w-22 h-22 -mt-2" />}
                             </div>
                           </div>
                         </div>
@@ -640,7 +640,7 @@ const MyPage = () => {
                                     onClick={(e) => e.stopPropagation()}
                                     className="h-52 px-12 border border-blue-600 rounded-button font-body-1-sm text-gray-300 focus:outline-none"
                                   />
-                                  {combination.isMain && <StarIcon className="w-22 h-22" />}
+                                  {combination.isMain && <StarIcon className="w-22 h-22 -mt-2" />}
                                 </div>
                               ) : (
                                 /* 일반 모드: 조합 번호 + 생성일 + 조합명 */
@@ -655,7 +655,7 @@ const MyPage = () => {
                                   </div>
                                   <div className="flex items-center gap-8">
                                     <p className="font-body-1-sm text-black">{combination.name}</p>
-                                    {combination.isMain && <StarIcon className="w-27 h-27" />}
+                                    {combination.isMain && <StarIcon className="w-22 h-22 -mt-2" />}
                                   </div>
                                 </div>
                               )}
@@ -717,7 +717,7 @@ const MyPage = () => {
                                 </div>
                                 <div className="flex items-center gap-8">
                                   <p className="font-body-1-sm text-black">{combination.name}</p>
-                                  {combination.isMain && <StarIcon className="w-27 h-27" />}
+                                  {combination.isMain && <StarIcon className="w-22 h-22 -mt-2" />}
                                 </div>
                               </div>
                               {/* Tags */}

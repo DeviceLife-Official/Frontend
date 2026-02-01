@@ -1,5 +1,6 @@
 import RootLayout from '@/layouts/RootLayout';
 import FindIdPage from '@/pages/auth/FindIdPage';
+import FindIdResultPage from '@/pages/auth/FindIdResultPage';
 import FindPasswordPage from '@/pages/auth/FindPasswordPage';
 import LoginPage from '@/pages/auth/LoginPage';
 import OnboardingCombinationPage from '@/pages/auth/OnboardingCombinationPage';
@@ -18,6 +19,7 @@ export const AuthFlowRoutes = [
     children: [
       { path: 'login', element: <LoginPage /> },
       { path: 'find/id', element: <FindIdPage /> },
+      { path: 'find/id/result', element: <FindIdResultPage /> },
       { path: 'find/password', element: <FindPasswordPage /> },
 
       // signup
