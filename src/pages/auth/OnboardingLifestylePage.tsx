@@ -4,43 +4,44 @@ import PrimaryButton from '@/components/Button/PrimaryButton';
 import OnboardingLifestyleTag from '@/components/Lifestyle/OnboardingLifestyleTag';
 import StepIndicator from '@/components/Auth/Indicator/StepIndicator';
 import { ROUTES } from '@/constants/routes';
+import { useGroupedTags } from '@/hooks/useGroupedTags';
+import { usePostUserTags } from '@/apis/tag/postTags';
 
 const OnboardingLifestylePage = () => {
   const navigate = useNavigate();
-  const [selectedPriorities, setSelectedPriorities] = useState<string[]>([]);
-  const [selectedUsages, setSelectedUsages] = useState<string[]>([]);
-  const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
-
-  const priorities = ['고성능', '가성비', '휴대성', '배터리 수명', '디자인/컬러'];
-  const usages = ['# Office', '# Study', '# Developer', '# Video-editing', '# Game', '# Tour/portability'];
-  const brands = ['Apple', 'Samsung', 'Sony', 'Logitech', '상관없음'];
+  const { tags } = useGroupedTags();
+  const { mutateAsync: saveTags, isPending } = usePostUserTags();
+  const [selectedInterest, setSelectedInterest] = useState<number[]>([]);
+  const [selectedLifestyle, setSelectedLifestyle] = useState<number[]>([]);
+  const [selectedBrand, setSelectedBrand] = useState<number[]>([]);
 
   const toggleSelection = (
-    item: string,
-    selectedItems: string[],
-    setSelectedItems: React.Dispatch<React.SetStateAction<string[]>>
+    tagId: number,
+    selectedItems: number[],
+    setSelectedItems: React.Dispatch<React.SetStateAction<number[]>>
   ) => {
-    if (selectedItems.includes(item)) {
+    if (selectedItems.includes(tagId)) {
       setSelectedItems([]); // 같은 항목 다시 클릭 시 선택 해제
     } else {
-      setSelectedItems([item]); // 새로운 항목으로 대체 (단일 선택)
+      setSelectedItems([tagId]); // 새로운 항목으로 대체 (단일 선택)
     }
   };
 
   // 각 섹션별 최소 1개씩 선택 여부 확인
   const isAllSelected =
-    selectedPriorities.length > 0 &&
-    selectedUsages.length > 0 &&
-    selectedBrands.length > 0;
+    selectedInterest.length > 0 &&
+    selectedLifestyle.length > 0 &&
+    selectedBrand.length > 0;
 
-  const handleNext = () => {
-    // TODO: 선택한 라이프스타일 저장 (Context/API)
-    console.log({
-      priorities: selectedPriorities,
-      usages: selectedUsages,
-      brands: selectedBrands,
-    });
-    navigate(ROUTES.auth.onboarding.combination, { replace: true });
+  const handleNext = async () => {
+    const allSelectedTagIds = [...selectedInterest, ...selectedLifestyle, ...selectedBrand];
+
+    try {
+      await saveTags({ tagIds: allSelectedTagIds });
+      navigate(ROUTES.auth.onboarding.combination, { replace: true });
+    } catch (error) {
+      alert('태그 저장에 실패했습니다. 잠시 후 다시 시도해주세요.');
+    }
   };
 
   return (
@@ -72,13 +73,13 @@ const OnboardingLifestylePage = () => {
                 중요하게 생각하는 것은?
               </p>
               <div className="flex flex-col gap-8 w-full">
-                {priorities.map((priority) => (
+                {tags.interest.map((tag) => (
                   <OnboardingLifestyleTag
-                    key={priority}
-                    label={priority}
-                    selected={selectedPriorities.includes(priority)}
+                    key={tag.tagId}
+                    label={tag.tagLabel}
+                    selected={selectedInterest.includes(tag.tagId)}
                     onClick={() =>
-                      toggleSelection(priority, selectedPriorities, setSelectedPriorities)
+                      toggleSelection(tag.tagId, selectedInterest, setSelectedInterest)
                     }
                     className="w-full h-50"
                   />
@@ -90,12 +91,12 @@ const OnboardingLifestylePage = () => {
             <div className="flex flex-col gap-28 items-center w-544 h-339">
               <p className="font-body-1-sm text-blue-800 text-center">나의 주된 용도는?</p>
               <div className="grid grid-cols-2 gap-x-16 place-content-between flex-1 w-full">
-                {usages.map((usage) => (
+                {tags.lifestyle.map((tag) => (
                   <OnboardingLifestyleTag
-                    key={usage}
-                    label={usage}
-                    selected={selectedUsages.includes(usage)}
-                    onClick={() => toggleSelection(usage, selectedUsages, setSelectedUsages)}
+                    key={tag.tagId}
+                    label={tag.tagLabel}
+                    selected={selectedLifestyle.includes(tag.tagId)}
+                    onClick={() => toggleSelection(tag.tagId, selectedLifestyle, setSelectedLifestyle)}
                     className="w-264 h-88"
                   />
                 ))}
@@ -108,12 +109,12 @@ const OnboardingLifestylePage = () => {
                 선호하는 브랜드는?
               </p>
               <div className="flex flex-col gap-8 w-full">
-                {brands.map((brand) => (
+                {tags.brand.map((tag) => (
                   <OnboardingLifestyleTag
-                    key={brand}
-                    label={brand}
-                    selected={selectedBrands.includes(brand)}
-                    onClick={() => toggleSelection(brand, selectedBrands, setSelectedBrands)}
+                    key={tag.tagId}
+                    label={tag.tagLabel}
+                    selected={selectedBrand.includes(tag.tagId)}
+                    onClick={() => toggleSelection(tag.tagId, selectedBrand, setSelectedBrand)}
                     className="w-full h-50"
                   />
                 ))}
@@ -124,8 +125,8 @@ const OnboardingLifestylePage = () => {
           {/* 다음 버튼 */}
           <PrimaryButton
             text="다음"
-            disabled={!isAllSelected}
-            className={`w-280 ${isAllSelected ? 'bg-blue-600 hover:bg-blue-500' : ''}`}
+            disabled={!isAllSelected || isPending}
+            className={`w-280 ${isAllSelected && !isPending ? 'bg-blue-600 hover:bg-blue-500' : ''}`}
             onClick={handleNext}
           />
         </div>

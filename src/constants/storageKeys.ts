@@ -1,0 +1,3 @@
+// localStorage 키 상수
+export const RECENTLY_VIEWED_DEVICES = 'RECENTLY_VIEWED_DEVICES';
+export const RECENTLY_VIEWED_MAX_COUNT = 10;

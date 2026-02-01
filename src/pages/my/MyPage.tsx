@@ -2,9 +2,11 @@ import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import GNB from '@/components/Home/GNB';
 import PrimaryButton from '@/components/Button/PrimaryButton';
+import SecondaryButton from '@/components/Button/SecondaryButton';
 import SortDropdown from '@/components/Filter/SortDropdown';
 import CombinationTag from '@/components/Combination/CombinationTag';
 import RoundedLifestyleTag from '@/components/Lifestyle/RoundedLifestyleTag';
+import RecentlyViewedFloating from '@/components/RecentlyViewed/RecentlyViewedFloating';
 import SettingIcon from '@/assets/icons/setting.svg?react';
 import SupportIcon from '@/assets/icons/support.svg?react';
 import SettingMoreIcon from '@/assets/icons/settingmore.svg?react';
@@ -16,6 +18,8 @@ import CheckboxIcon from '@/assets/icons/checkbox.svg?react';
 import CheckboxOnIcon from '@/assets/icons/checkbox_on.svg?react';
 import TrashIcon from '@/assets/icons/trash.svg?react';
 import RemoveIcon from '@/assets/icons/remove.svg?react';
+import SaveIcon from '@/assets/icons/save.svg?react';
+import TopIcon from '@/assets/icons/top.svg?react';
 import Logo from '@/assets/logos/logo.svg?react';
 import { MOCK_COMBINATIONS, MOCK_COMBINATION_DEVICES } from '@/constants/mockData';
 
@@ -57,15 +61,28 @@ const MyPage = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showCombinationDeleteModal, setShowCombinationDeleteModal] = useState(false);
   const [deleteTargetIndex, setDeleteTargetIndex] = useState<number | null>(null);
+  const [editingCombinationIndex, setEditingCombinationIndex] = useState<number | null>(null);
+  const [editingCombinationName, setEditingCombinationName] = useState('');
+  const [showSaveModal, setShowSaveModal] = useState(false);
+  const [showTopButton, setShowTopButton] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const sidebarContentRef = useRef<HTMLDivElement>(null);
+  const combinationListRef = useRef<HTMLDivElement>(null);
 
-  // 스크롤 감지 (하단 그라데이션용)
+  // 스크롤 감지 (하단 그라데이션용 + Top 버튼용)
   useEffect(() => {
     const handleScroll = () => {
       const scrollTop = window.scrollY;
       const windowHeight = window.innerHeight;
       const documentHeight = document.documentElement.scrollHeight;
       setIsAtBottom(scrollTop + windowHeight >= documentHeight - 50);
+
+      // 조합 3개 정도 스크롤 시 Top 버튼 표시 (약 800px)
+      if (combinationListRef.current) {
+        const listTop = combinationListRef.current.offsetTop;
+        const thirdCombinationVisible = scrollTop + windowHeight >= listTop + 800;
+        setShowTopButton(thirdCombinationVisible);
+      }
     };
     window.addEventListener('scroll', handleScroll);
     handleScroll();
@@ -155,6 +172,19 @@ const MyPage = () => {
     }
   };
 
+  // 조합명 저장 핸들러
+  const handleSaveCombinationName = () => {
+    // API 연동 시 실제 저장 로직 추가
+    console.log('저장된 조합명:', editingCombinationName);
+    setShowSaveModal(false);
+    setEditingCombinationIndex(null);
+  };
+
+  // 맨 위로 스크롤
+  const handleScrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   return (
     <div className={`min-h-screen bg-white relative ${isAtBottom ? 'bg-effect-fade-bottom' : ''}`}>
       <GNB />
@@ -165,52 +195,58 @@ const MyPage = () => {
           className="flex-shrink-0 pt-64 w-280"
           style={{ marginLeft: 'clamp(80px, calc(80px + (100vw - 1440px) * 0.166667), 160px)' }}
         >
-          {/* MY Page 헤더 */}
-          <div className="flex items-center justify-between h-72">
-            <h1 className="font-heading-2 text-black">MY Page</h1>
-            <div className="flex items-center gap-8">
-              <a
-                href="https://lovely-potassium-7f2.notion.site/2f0c82f125c980fa8fa0d2ef430bbe79?pvs=74"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-42 h-42 flex items-center justify-center cursor-pointer hover:opacity-80">
-                <SupportIcon className="w-42 h-42 text-black" />
-              </a>
-              <button
-                onClick={() => navigate('/my/settings/profile')}
-                className="w-44 h-44 flex items-center justify-center cursor-pointer hover:opacity-80"
-              >
-                <SettingIcon className="w-44 h-44 text-black" />
-              </button>
+          {/* 사이드바 콘텐츠 wrapper */}
+          <div ref={sidebarContentRef}>
+            {/* MY Page 헤더 */}
+            <div className="flex items-center justify-between h-72">
+              <h1 className="font-heading-2 text-black">MY Page</h1>
+              <div className="flex items-center gap-8">
+                <a
+                  href="https://lovely-potassium-7f2.notion.site/2f0c82f125c980fa8fa0d2ef430bbe79?pvs=74"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-42 h-42 flex items-center justify-center cursor-pointer hover:opacity-80">
+                  <SupportIcon className="w-42 h-42 text-black" />
+                </a>
+                <button
+                  onClick={() => navigate('/my/settings/profile')}
+                  className="w-44 h-44 flex items-center justify-center cursor-pointer hover:opacity-80"
+                >
+                  <SettingIcon className="w-44 h-44 text-black" />
+                </button>
+              </div>
             </div>
-          </div>
 
-          {/* 프로필 카드 */}
-          <div className="mt-60 h-100 rounded-card border border-blue-300 flex items-center justify-center gap-30">
-            <Logo className="w-48 h-48 flex-shrink-0" />
-            <p className="font-heading-2 text-black">000 님</p>
-          </div>
+            {/* 프로필 카드 */}
+            <div className="mt-60 h-100 rounded-card border border-blue-300 flex items-center justify-center gap-30">
+              <Logo className="w-48 h-48 flex-shrink-0" />
+              <p className="font-heading-2 text-black">000 님</p>
+            </div>
 
-          {/* 사용자 정보 */}
-          <div className="mt-44 flex flex-col gap-16">
-            <div className="flex items-center gap-24">
-              <p className="font-body-2-sm text-black whitespace-nowrap">가입일</p>
-              <p className="font-body-2-r text-black">2023.12.22</p>
-            </div>
-            <div className="flex items-center gap-24">
-              <p className="font-body-2-sm text-black whitespace-nowrap">이메일</p>
-              <p className="font-body-2-r text-black truncate">example@devicelife.com</p>
-            </div>
-            <div className="flex items-center gap-24">
-              <p className="font-body-2-sm text-black whitespace-nowrap">라이프스타일</p>
-              <div className="flex flex-wrap gap-12 content-start">
-                <RoundedLifestyleTag label="Office" />
+            {/* 사용자 정보 */}
+            <div className="mt-44 flex flex-col gap-16">
+              <div className="flex items-center gap-24">
+                <p className="font-body-2-sm text-black whitespace-nowrap">가입일</p>
+                <p className="font-body-2-r text-black">2023.12.22</p>
+              </div>
+              <div className="flex items-center gap-24">
+                <p className="font-body-2-sm text-black whitespace-nowrap">이메일</p>
+                <p className="font-body-2-r text-black truncate">example@devicelife.com</p>
+              </div>
+              <div className="flex items-center gap-24">
+                <p className="font-body-2-sm text-black whitespace-nowrap">라이프스타일</p>
+                <div className="flex flex-wrap gap-12 content-start">
+                  <RoundedLifestyleTag label="Office" />
+                </div>
               </div>
             </div>
           </div>
 
-          {/* 휴지통 버튼 */}
-          {/* <SecondaryButton text="휴지통" className="mt-76 w-full hover:!bg-blue-50 transition-colors" /> */}
+          {/* 최근에 본 기기 플로팅 섹션 */}
+          <RecentlyViewedFloating
+            userName="000"
+            sidebarContentRef={sidebarContentRef}
+          />
         </aside>
 
         {/* 우측 메인 콘텐츠 */}
@@ -230,9 +266,9 @@ const MyPage = () => {
                   setDeleteTargetIndex(detailViewIndex);
                   setShowCombinationDeleteModal(true);
                 }}
-                className="w-280 h-72 border-2 border-red-500 rounded-button flex items-center justify-center cursor-pointer hover:bg-red-50 transition-colors"
+                className="w-280 h-52 border-2 border-warning rounded-button flex items-center justify-center cursor-pointer hover:bg-warning/10 transition-colors"
               >
-                <span className="font-body-2-sm text-red-500">조합 삭제하기</span>
+                <span className="font-body-2-sm text-warning">조합 삭제하기</span>
               </button>
             ) : (
               <PrimaryButton
@@ -243,7 +279,7 @@ const MyPage = () => {
           </div>
 
           {/* 조합 카드 목록 */}
-          <div className="mt-76 flex flex-col gap-40">
+          <div ref={combinationListRef} className="mt-76 flex flex-col gap-40">
             {MOCK_COMBINATIONS.map((combination, index) => {
               const devices = MOCK_COMBINATION_DEVICES[combination.id] || [];
               const hasDevices = devices.length > 0;
@@ -281,29 +317,48 @@ const MyPage = () => {
 
                   {/* 조합 카드 */}
                   <div
+                    onClick={() => !isDetailView && editingCombinationIndex !== index && hasDevices && handleDetailView(index)}
                     className={`rounded-card relative ${
-                      isDetailView ? 'bg-blue-100' : 'bg-white shadow-[0_0_10px_rgba(0,0,0,0.1)]'
+                      isDetailView
+                        ? 'bg-blue-100'
+                        : `bg-white shadow-[0_0_10px_rgba(0,0,0,0.1)] transition-colors ${hasDevices ? 'cursor-pointer hover:bg-gray-50' : ''}`
                     }`}
                   >
-                    {/* 일반 모드: Setting More 버튼 + 드롭다운 */}
+                    {/* 일반 모드: Setting More 버튼 + 드롭다운 또는 저장하기 버튼 */}
                     {!isDetailView && (
                       <div
                         ref={openMenuIndex === index ? menuRef : null}
-                        className="absolute right-56 top-36"
+                        className={`absolute right-56 ${editingCombinationIndex === index ? 'top-28' : 'top-36'}`}
                       >
-                        <button
-                          onClick={() => setOpenMenuIndex(openMenuIndex === index ? null : index)}
-                          className="cursor-pointer hover:opacity-80"
-                        >
-                          <SettingMoreIcon className="w-36 h-36 text-gray-400" />
-                        </button>
+                        {editingCombinationIndex === index ? (
+                          /* 수정 모드: 저장하기 버튼 */
+                          <SecondaryButton
+                            text="저장하기"
+                            onClick={() => {
+                              setShowSaveModal(true);
+                            }}
+                            className="w-150"
+                          />
+                        ) : (
+                          /* 일반 모드: ... 버튼 */
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setOpenMenuIndex(openMenuIndex === index ? null : index);
+                            }}
+                            className="cursor-pointer hover:opacity-80"
+                          >
+                            <SettingMoreIcon className="w-36 h-36 text-gray-400" />
+                          </button>
+                        )}
 
                         {/* 드롭다운 메뉴 */}
                         {openMenuIndex === index && (
                           <div className="absolute right-0 top-full mt-8 bg-white rounded-button shadow-[0_2px_10px_rgba(0,0,0,0.25)] px-8 z-12 flex flex-col">
                             {/* 삭제하기 */}
                             <button
-                              onClick={() => {
+                              onClick={(e) => {
+                                e.stopPropagation();
                                 setDeleteTargetIndex(index);
                                 setShowCombinationDeleteModal(true);
                                 setOpenMenuIndex(null);
@@ -318,18 +373,41 @@ const MyPage = () => {
                               삭제하기
                             </button>
 
-                            {/* 자세히보기 */}
+                            {/* 조합명 수정하기 */}
                             <button
-                              onClick={() => handleDetailView(index)}
-                              onMouseEnter={() => setHoveredMenuItem('detail')}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setEditingCombinationIndex(index);
+                                setEditingCombinationName(combination.name);
+                                setOpenMenuIndex(null);
+                              }}
+                              onMouseEnter={() => setHoveredMenuItem('rename')}
                               onMouseLeave={() => setHoveredMenuItem(null)}
-                              className="relative font-body-1-sm text-black text-left py-12 whitespace-nowrap cursor-pointer"
+                              className={`relative font-body-1-sm text-black text-left py-12 whitespace-nowrap cursor-pointer ${hasDevices ? 'border-b border-black/50' : ''}`}
                             >
-                              {hoveredMenuItem === 'detail' && (
+                              {hoveredMenuItem === 'rename' && (
                                 <div className="absolute -inset-x-4 inset-y-4 bg-gray-100 rounded-button -z-10" />
                               )}
-                              자세히보기
+                              조합명 수정하기
                             </button>
+
+                            {/* 자세히보기 - 기기가 있을 때만 표시 */}
+                            {hasDevices && (
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleDetailView(index);
+                                }}
+                                onMouseEnter={() => setHoveredMenuItem('detail')}
+                                onMouseLeave={() => setHoveredMenuItem(null)}
+                                className="relative font-body-1-sm text-black text-left py-12 whitespace-nowrap cursor-pointer"
+                              >
+                                {hoveredMenuItem === 'detail' && (
+                                  <div className="absolute -inset-x-4 inset-y-4 bg-gray-100 rounded-button -z-10" />
+                                )}
+                                자세히보기
+                              </button>
+                            )}
                           </div>
                         )}
                       </div>
@@ -337,7 +415,7 @@ const MyPage = () => {
 
                     {/* 상세보기 모드 */}
                     {isDetailView ? (
-                      <div className="pt-16">
+                      <div className="pt-16 cursor-auto" onClick={(e) => e.stopPropagation()}>
                         {/* 뒤로가기 버튼 */}
                         <div className="px-36 pt-20">
                           <button
@@ -391,17 +469,30 @@ const MyPage = () => {
                           </div>
                         </div>
 
+                        {/* 안내 텍스트 */}
+                        <p className="px-56 pt-36 font-caption-r text-blue-800">
+                          *마우스를 기기 위에 올려서 기기 상세정보를 확인하실 수도 있습니다.
+                        </p>
+
                         {/* 기기 그리드 (체크박스 포함) */}
-                        <div className="px-56 pt-56 pb-36">
+                        <div className="px-56 pt-36 pb-36">
                           <div
                             className={`grid ${columns === 4 ? 'grid-cols-4' : 'grid-cols-3'} gap-x-28 gap-y-12`}
                           >
                             {devices.map((device) => (
                               <div
                                 key={device.id}
-                                className={`bg-white rounded-card shadow-[0_0_4px_rgba(0,0,0,0.1)] p-12 w-244 flex items-center gap-12 border ${selectedDevices.includes(device.id) ? 'border-blue-600' : 'border-transparent'}`}
+                                onClick={() => window.open(`/devices?productId=${device.id}`, '_blank')}
+                                className={`bg-white rounded-card shadow-[0_0_4px_rgba(0,0,0,0.1)] p-12 w-244 flex items-center gap-12 border cursor-pointer hover:shadow-[0_0_7px_#57a0ff] transition-shadow ${selectedDevices.includes(device.id) ? 'border-blue-600' : 'border-transparent'}`}
                               >
-                                <div className="w-64 h-64 bg-gray-200 flex-shrink-0" />
+                                <div className="w-64 h-64 bg-gray-200 flex-shrink-0 relative group/image">
+                                  {/* 호버 오버레이 */}
+                                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover/image:opacity-100 transition-opacity flex items-center justify-center">
+                                    <span className="bg-white px-8 py-4 rounded-tag font-caption-r text-black">
+                                      보기
+                                    </span>
+                                  </div>
+                                </div>
                                 <div className="flex flex-col gap-4 flex-1">
                                   <div className="flex items-center justify-between">
                                     <p className="font-body-3-sm text-black truncate w-120">
@@ -409,7 +500,10 @@ const MyPage = () => {
                                     </p>
                                     {/* 체크박스 - 기기명과 같은 높이 */}
                                     <button
-                                      onClick={() => handleSelectDevice(device.id)}
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleSelectDevice(device.id);
+                                      }}
                                       className="cursor-pointer flex-shrink-0"
                                     >
                                       {selectedDevices.includes(device.id) ? (
@@ -426,7 +520,10 @@ const MyPage = () => {
                             ))}
                             {/* 기기 추가 버튼 */}
                             <button
-                              onClick={() => navigate('/devices')}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                navigate('/devices');
+                              }}
                               className="cursor-pointer hover:opacity-80"
                             >
                               <PlusIcon />
@@ -458,15 +555,15 @@ const MyPage = () => {
                             {/* 연동성 */}
                             <div className="bg-white rounded-card px-42 py-30 flex flex-col gap-30">
                               <div className="flex items-center gap-16">
-                                <p className="font-body-1-sm text-black">연동성:</p>
-                                <p className="font-body-1-sm text-blue-600">
+                                <p className="font-heading-4 text-black">연동성:</p>
+                                <p className="font-heading-4 text-blue-600">
                                   {MOCK_EVALUATION.connectivity.rating}
                                 </p>
                               </div>
                               <p className="font-body-3-r text-black leading-28">
                                 {MOCK_EVALUATION.connectivity.description}
                               </p>
-                              <div className="flex gap-8">
+                              <div className="flex gap-8 -ml-4">
                                 {MOCK_EVALUATION.connectivity.tags.map((tag) => (
                                   <span
                                     key={tag}
@@ -481,15 +578,15 @@ const MyPage = () => {
                             {/* 편의성 */}
                             <div className="bg-white rounded-card px-42 py-30 flex flex-col gap-30">
                               <div className="flex items-center gap-16">
-                                <p className="font-body-1-sm text-black">편의성:</p>
-                                <p className="font-body-1-sm text-blue-600">
+                                <p className="font-heading-4 text-black">편의성:</p>
+                                <p className="font-heading-4 text-blue-600">
                                   {MOCK_EVALUATION.convenience.rating}
                                 </p>
                               </div>
                               <p className="font-body-3-r text-black leading-28">
                                 {MOCK_EVALUATION.convenience.description}
                               </p>
-                              <div className="flex gap-8">
+                              <div className="flex gap-8 -ml-4">
                                 {MOCK_EVALUATION.convenience.tags.map((tag) => (
                                   <span
                                     key={tag}
@@ -504,15 +601,15 @@ const MyPage = () => {
                             {/* 라이프스타일 */}
                             <div className="bg-white rounded-card px-42 py-30 flex flex-col gap-30">
                               <div className="flex items-center gap-16">
-                                <p className="font-body-1-sm text-black">라이프스타일:</p>
-                                <p className="font-body-1-sm text-blue-600">
+                                <p className="font-heading-4 text-black">라이프스타일:</p>
+                                <p className="font-heading-4 text-blue-600">
                                   {MOCK_EVALUATION.lifestyle.rating}
                                 </p>
                               </div>
                               <p className="font-body-3-r text-black leading-28">
                                 {MOCK_EVALUATION.lifestyle.description}
                               </p>
-                              <div className="flex gap-8">
+                              <div className="flex gap-8 -ml-4">
                                 {MOCK_EVALUATION.lifestyle.tags.map((tag) => (
                                   <span
                                     key={tag}
@@ -532,24 +629,38 @@ const MyPage = () => {
                         {hasDevices ? (
                           <div className="px-36 pt-24 pb-36">
                             {/* 조합 정보 (생성일 포함) */}
-                            <div className="flex flex-col gap-24 pl-20 py-24">
-                              {/* 조합 번호 + 생성일 + 조합명 */}
-                              <div className="flex flex-col gap-8">
-                                <div className="flex items-center gap-16">
-                                  <p className="font-body-3-r text-gray-400">{combination.label}</p>
-                                  {combination.createdAt && (
-                                    <p className="font-body-3-r text-gray-400">
-                                      생성일: {combination.createdAt}
-                                    </p>
-                                  )}
+                            <div className="flex flex-col gap-13 pl-20 py-24">
+                              {editingCombinationIndex === index ? (
+                                /* 수정 모드: 인풋박스 + 별 아이콘 */
+                                <div className="flex items-center gap-8 min-h-48">
+                                  <input
+                                    type="text"
+                                    value={editingCombinationName}
+                                    onChange={(e) => setEditingCombinationName(e.target.value)}
+                                    onClick={(e) => e.stopPropagation()}
+                                    className="h-52 px-12 border border-blue-600 rounded-button font-body-1-sm text-gray-300 focus:outline-none"
+                                  />
+                                  {combination.isMain && <StarIcon className="w-22 h-22" />}
                                 </div>
-                                <div className="flex items-center gap-8">
-                                  <p className="font-body-1-sm text-black">{combination.name}</p>
-                                  {combination.isMain && <StarIcon className="w-27 h-27" />}
+                              ) : (
+                                /* 일반 모드: 조합 번호 + 생성일 + 조합명 */
+                                <div className="flex flex-col gap-8">
+                                  <div className="flex items-center gap-16">
+                                    <p className="font-body-3-r text-gray-400">{combination.label}</p>
+                                    {combination.createdAt && (
+                                      <p className="font-body-3-r text-gray-400">
+                                        생성일: {combination.createdAt}
+                                      </p>
+                                    )}
+                                  </div>
+                                  <div className="flex items-center gap-8">
+                                    <p className="font-body-1-sm text-black">{combination.name}</p>
+                                    {combination.isMain && <StarIcon className="w-27 h-27" />}
+                                  </div>
                                 </div>
-                              </div>
+                              )}
                               {/* Tags */}
-                              <div className="flex gap-12">
+                              <div className="flex gap-12 -ml-4">
                                 {combination.tags.map((tag) => (
                                   <CombinationTag key={tag.name} name={tag.name} status={tag.status} />
                                 ))}
@@ -557,7 +668,7 @@ const MyPage = () => {
                             </div>
 
                             {/* 기기 그리드 */}
-                            <div className="pl-8 mt-24">
+                            <div className="pl-8 mt-24 relative">
                               <div
                                 className={`grid ${columns === 4 ? 'grid-cols-4' : 'grid-cols-3'} gap-x-28 gap-y-12`}
                               >
@@ -577,6 +688,17 @@ const MyPage = () => {
                                   </div>
                                 ))}
                               </div>
+
+                              {/* 그라데이션 - 4열: 9개 이상, 3열: 7개 이상 */}
+                              {devices.length >= (columns === 4 ? 9 : 7) && (
+                                <div
+                                  className="absolute right-0 bottom-0 w-244 h-80 rounded-card pointer-events-none"
+                                  style={{
+                                    background:
+                                      'linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 70%)',
+                                  }}
+                                />
+                              )}
                             </div>
                           </div>
                         ) : (
@@ -586,9 +708,9 @@ const MyPage = () => {
                               {/* 조합 번호 + 생성일 + 조합명 */}
                               <div className="flex flex-col gap-8">
                                 <div className="flex items-center gap-16">
-                                  <p className="font-body-3-r text-gray-400">{combination.label}</p>
+                                  <p className="font-body-4-r text-gray-400">{combination.label}</p>
                                   {combination.createdAt && (
-                                    <p className="font-body-3-r text-gray-400">
+                                    <p className="font-body-4-r text-gray-400">
                                       생성일: {combination.createdAt}
                                     </p>
                                   )}
@@ -599,7 +721,7 @@ const MyPage = () => {
                                 </div>
                               </div>
                               {/* Tags */}
-                              <div className="flex gap-12">
+                              <div className="flex gap-12 -ml-4">
                                 {combination.tags.map((tag) => (
                                   <CombinationTag key={tag.name} name={tag.name} status={tag.status} />
                                 ))}
@@ -609,7 +731,10 @@ const MyPage = () => {
                             {/* 빈 조합: 기기 추가 버튼 */}
                             <div className="pl-8 mt-24">
                               <button
-                                onClick={() => navigate('/devices')}
+                                onClick={(e) => {
+                                  e.stopPropagation(); // 카드 클릭 전파 방지 (상세보기 진입 막기)
+                                  navigate('/devices');
+                                }}
                                 className="cursor-pointer hover:opacity-80"
                               >
                                 <PlusIcon />
@@ -624,6 +749,17 @@ const MyPage = () => {
               );
             })}
           </div>
+
+          {/* Top Button - 조합 3개 정도 스크롤 시 표시 */}
+          {showTopButton && (
+            <button
+              onClick={handleScrollToTop}
+              className="fixed right-48 bottom-48 w-48 h-48 flex items-center justify-center cursor-pointer hover:opacity-80 transition-all duration-300"
+              aria-label="맨 위로 이동"
+            >
+              <TopIcon className="w-48 h-48 text-gray-300" />
+            </button>
+          )}
 
           {/* 하단 여백 */}
           <div className="h-268" />
@@ -710,6 +846,48 @@ const MyPage = () => {
                     setShowCombinationDeleteModal(false);
                     setDeleteTargetIndex(null);
                   }}
+                  className="w-168 h-52 bg-gray-100 hover:bg-gray-200 rounded-button flex items-center justify-center cursor-pointer transition-colors"
+                >
+                  <span className="font-body-2-sm text-black">취소</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* 조합명 저장 확인 모달 */}
+      {showSaveModal && (
+        <>
+          {/* 배경 오버레이 */}
+          <div
+            className="fixed inset-0 bg-black/50 z-60"
+            onClick={() => setShowSaveModal(false)}
+          />
+          {/* 모달 */}
+          <div className="fixed inset-0 flex items-center justify-center z-70 pointer-events-none">
+            <div
+              className="bg-white rounded-card w-460 px-36 py-44 flex flex-col items-center pointer-events-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* 아이콘 */}
+              <SaveIcon className="w-58 h-58 text-blue-600" />
+
+              {/* 텍스트 */}
+              <p className="font-body-2-r text-black mt-36">
+                조합명을 저장하시겠습니까?
+              </p>
+
+              {/* 버튼 그룹 */}
+              <div className="flex gap-20 mt-60">
+                <button
+                  onClick={handleSaveCombinationName}
+                  className="w-168 h-52 bg-blue-600 hover:bg-blue-500 rounded-button flex items-center justify-center cursor-pointer transition-colors"
+                >
+                  <span className="font-body-2-sm text-white">확인</span>
+                </button>
+                <button
+                  onClick={() => setShowSaveModal(false)}
                   className="w-168 h-52 bg-gray-100 hover:bg-gray-200 rounded-button flex items-center justify-center cursor-pointer transition-colors"
                 >
                   <span className="font-body-2-sm text-black">취소</span>

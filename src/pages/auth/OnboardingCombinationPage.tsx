@@ -9,11 +9,13 @@ import {
   type OnboardingCombinationFormData,
 } from '@/schemas/authSchema';
 import { ROUTES } from '@/constants/routes';
+import { usePostCreateCombination } from '@/apis/combo/postCreateCombination';
 
 const OnboardingCombinationPage = () => {
   const [step, setStep] = useState(1);
   const [combinationName, setCombinationName] = useState('');
   const navigate = useNavigate();
+  const { mutateAsync: createCombo, isPending } = usePostCreateCombination();
 
   const {
     register,
@@ -29,10 +31,13 @@ const OnboardingCombinationPage = () => {
     setStep(2);
   };
 
-  const handleSelectCombination = () => {
-    // TODO: 조합명 저장 (Context/API)
-    console.log('선택한 조합명:', combinationName);
-    navigate(ROUTES.auth.onboarding.complete, { replace: true });
+  const handleSelectCombination = async () => {
+    try {
+      await createCombo({ comboName: combinationName });
+      navigate(ROUTES.auth.onboarding.complete, { replace: true });
+    } catch (error) {
+      alert('조합 생성에 실패했습니다. 잠시 후 다시 시도해주세요.');
+    }
   };
 
   return (
@@ -109,9 +114,9 @@ const OnboardingCombinationPage = () => {
           {/* 완료 버튼 */}
           <PrimaryButton
             text="완료"
-            className="w-280 bg-blue-600  hover:bg-blue-500"
+            disabled={isPending}
+            className="w-280 bg-blue-600 hover:bg-blue-500"
             onClick={handleSelectCombination}
-
           />
         </div>
       )}
