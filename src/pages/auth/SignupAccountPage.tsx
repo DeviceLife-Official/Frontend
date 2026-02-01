@@ -138,7 +138,7 @@ const SignupAccountPage = () => {
                 <SecondaryButton
                   text="중복확인"
                   onClick={handleCheckDuplicate}
-                  disabled={isCheckingEmail}
+                  disabled={isCheckingEmail || isEmailVerified}
                   className="w-148 absolute top-1/2 -translate-y-1/2 left-[calc(100%+12px)]"
                 />
               </div>
