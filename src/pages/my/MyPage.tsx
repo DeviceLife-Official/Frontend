@@ -439,7 +439,7 @@ const MyPage = () => {
                             </div>
                             <div className="flex items-center gap-8">
                               <p className="font-heading-3 text-black">{combination.name}</p>
-                              {combination.isMain && <StarIcon className="w-27 h-27" />}
+                              {combination.isMain && <StarIcon className="w-27 h-27 -mt-2" />}
                             </div>
                           </div>
                         </div>
@@ -640,7 +640,7 @@ const MyPage = () => {
                                     onClick={(e) => e.stopPropagation()}
                                     className="h-52 px-12 border border-blue-600 rounded-button font-body-1-sm text-gray-300 focus:outline-none"
                                   />
-                                  {combination.isMain && <StarIcon className="w-22 h-22" />}
+                                  {combination.isMain && <StarIcon className="w-22 h-22 -mt-2" />}
                                 </div>
                               ) : (
                                 /* 일반 모드: 조합 번호 + 생성일 + 조합명 */
@@ -655,7 +655,7 @@ const MyPage = () => {
                                   </div>
                                   <div className="flex items-center gap-8">
                                     <p className="font-body-1-sm text-black">{combination.name}</p>
-                                    {combination.isMain && <StarIcon className="w-27 h-27" />}
+                                    {combination.isMain && <StarIcon className="w-27 h-27 -mt-2" />}
                                   </div>
                                 </div>
                               )}
@@ -717,7 +717,7 @@ const MyPage = () => {
                                 </div>
                                 <div className="flex items-center gap-8">
                                   <p className="font-body-1-sm text-black">{combination.name}</p>
-                                  {combination.isMain && <StarIcon className="w-27 h-27" />}
+                                  {combination.isMain && <StarIcon className="w-27 h-27 -mt-2" />}
                                 </div>
                               </div>
                               {/* Tags */}
