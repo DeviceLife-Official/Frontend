@@ -26,7 +26,7 @@ const PasswordInputSection = ({
       className="
         flex flex-col items-start
         gap-10
-        pt-20 px-30 pb-30
+        pt-16 px-30 pb-20
         self-stretch
         rounded-card
         bg-white
