@@ -11,6 +11,7 @@ type Step2VerificationProps = {
   timeLeft: number;
   verifyError: string;
   isVerifyPending: boolean;
+  isResendLimitReached?: boolean;
 };
 
 const Step2Verification = ({
@@ -21,6 +22,7 @@ const Step2Verification = ({
   timeLeft,
   verifyError,
   isVerifyPending,
+  isResendLimitReached = false,
 }: Step2VerificationProps) => {
   return (
     <div className="flex flex-col items-center gap-56">
@@ -54,10 +56,13 @@ const Step2Verification = ({
             <SecondaryButton
               text="인증번호 재전송"
               onClick={onResend}
+              disabled={isResendLimitReached}
               className="w-148 absolute top-1/2 -translate-y-1/2 left-[calc(100%+12px)]"
             />
           </div>
-          {verifyError && <p className="font-body-3-r text-warning">{verifyError}</p>}
+          {verifyError && (
+            <p className="font-body-3-r text-warning">{verifyError}</p>
+          )}
         </div>
 
         {/* 확인 버튼 */}

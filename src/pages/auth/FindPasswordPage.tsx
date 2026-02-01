@@ -17,6 +17,7 @@ import useTimer from '@/hooks/useTimer';
 import { parseApiError } from '@/utils/error';
 
 const TIMER_SECONDS = 180; // 3분
+const RESEND_LIMIT_MESSAGE = '마지막 인증번호가 발송되었습니다. (재전송 횟수 초과)';
 
 const FindPasswordPage = () => {
   const navigate = useNavigate();
@@ -27,6 +28,7 @@ const FindPasswordPage = () => {
   const [verifyToken, setVerifyToken] = useState<string>('');
   const [verifyError, setVerifyError] = useState<string>('');
   const [resetError, setResetError] = useState<string>('');
+  const [resendCount, setResendCount] = useState(0);
 
   const { mutateAsync: sendMail, isPending } = usePostSendMail();
   const { mutateAsync: verifyCode, isPending: isVerifyPending } = usePostVerifyCode();
@@ -61,11 +63,18 @@ const FindPasswordPage = () => {
     setHasSubmitted(true);
   };
 
-  // Step2: 인증번호 재전송
+  // Step2: 인증번호 재전송 (최대 3회)
   const handleResend = async () => {
     setVerifyError('');
-    try { 
+    try {
       await sendMail({ email });
+      setResendCount((prev) => {
+        const next = prev + 1;
+        if (next >= 3) {
+          setVerifyError(RESEND_LIMIT_MESSAGE);
+        }
+        return next;
+      });
       startTimer();
       setVerificationCode('');
     } catch (error: unknown) {
@@ -80,10 +89,10 @@ const FindPasswordPage = () => {
     }
   };
 
-  // Step2: 인증번호 변경 핸들러
+  // Step2: 인증번호 변경 핸들러 (재전송 3회 초과 시 메시지는 입력해도 유지)
   const handleVerificationCodeChange = (value: string) => {
     setVerificationCode(value);
-    setVerifyError('');
+    if (resendCount < 3) setVerifyError('');
   };
 
   // Step2: 인증번호 확인 API 연동
@@ -148,6 +157,7 @@ const FindPasswordPage = () => {
           timeLeft={timeLeft}
           verifyError={verifyError}
           isVerifyPending={isVerifyPending}
+          isResendLimitReached={resendCount >= 3}
         />
       )}
 
