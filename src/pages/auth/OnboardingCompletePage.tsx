@@ -9,7 +9,7 @@ const OnboardingCompletePage = () => {
   const { data: userProfile } = useGetUserProfile();
   const userName = userProfile?.username ?? '';
 
-  // 애니메이션(2초) 종료 후 3초 뒤 홈으로 이동
+  // 애니메이션(2초) 종료 후 3초 뒤 추천 기기 페이지로 이동
   useEffect(() => {
     const timer = setTimeout(() => {
       navigate(ROUTES.auth.onboarding.recommendation, { replace: true });
