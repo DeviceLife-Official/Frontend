@@ -24,6 +24,7 @@ import { useGetCombos } from '@/apis/combo/getCombos';
 import { useGetCombo } from '@/apis/combo/getComboId';
 import { usePutCombo } from '@/apis/combo/putCombos';
 import { useDeleteCombo } from '@/apis/combo/deleteCombo';
+import { usePostComboPin } from '@/apis/combo/postComboPin';
 import type { ComboListItem } from '@/types/combo/combo';
 
 // 조합 평가 Mock 데이터
@@ -87,6 +88,7 @@ const MyPage = () => {
   const { data: comboDetail } = useGetCombo(detailViewComboId);
   const { mutate: updateCombo, isPending: isUpdating } = usePutCombo();
   const { mutate: deleteCombo, isPending: isDeleting } = useDeleteCombo();
+  const { mutate: togglePin } = usePostComboPin();
 
   // 정렬된 조합 목록
   const sortedCombos = useMemo(() => {
@@ -283,6 +285,20 @@ const MyPage = () => {
       },
       onError: (error) => {
         console.error('조합 삭제 실패:', error);
+      },
+    });
+  };
+
+  // Pin 토글 핸들러
+  const handleTogglePin = (e: React.MouseEvent, comboId: number) => {
+    e.stopPropagation(); // 카드 클릭 이벤트 전파 방지
+
+    togglePin(comboId, {
+      onSuccess: () => {
+        console.log('Pin 상태 변경 성공');
+      },
+      onError: (error) => {
+        console.error('Pin 상태 변경 실패:', error);
       },
     });
   };
@@ -599,7 +615,14 @@ const MyPage = () => {
                             </div>
                             <div className="flex items-center gap-8">
                               <p className="font-heading-3 text-black">{combination.comboName}</p>
-                              {combination.isPinned && <StarIcon className="w-22 h-22 -mt-2" />}
+                              <StarIcon
+                                onClick={(e) => handleTogglePin(e, combination.comboId)}
+                                className={`w-22 h-22 -mt-2 cursor-pointer transition-opacity ${
+                                  combination.isPinned
+                                    ? 'hover:opacity-80'
+                                    : 'opacity-30 hover:opacity-50'
+                                }`}
+                              />
                             </div>
                           </div>
                         </div>
@@ -812,7 +835,14 @@ const MyPage = () => {
                                       }`}
                                       autoFocus
                                     />
-                                    {combination.isPinned && <StarIcon className="w-22 h-22 -mt-2" />}
+                                    <StarIcon
+                                      onClick={(e) => handleTogglePin(e, combination.comboId)}
+                                      className={`w-22 h-22 -mt-2 cursor-pointer transition-opacity ${
+                                        combination.isPinned
+                                          ? 'hover:opacity-80'
+                                          : 'opacity-30 hover:opacity-50'
+                                      }`}
+                                    />
                                   </div>
                                   {comboNameError && (
                                     <p className="pl-12 font-body-4-r text-warning">{comboNameError}</p>
@@ -829,7 +859,14 @@ const MyPage = () => {
                                   </div>
                                   <div className="flex items-center gap-8">
                                     <p className="font-body-1-sm text-black">{combination.comboName}</p>
-                                    {combination.isPinned && <StarIcon className="w-22 h-22 -mt-2" />}
+                                    <StarIcon
+                                      onClick={(e) => handleTogglePin(e, combination.comboId)}
+                                      className={`w-22 h-22 -mt-2 cursor-pointer transition-opacity ${
+                                        combination.isPinned
+                                          ? 'hover:opacity-80'
+                                          : 'opacity-30 hover:opacity-50'
+                                      }`}
+                                    />
                                   </div>
                                 </div>
                               )}
@@ -895,7 +932,14 @@ const MyPage = () => {
                                 </div>
                                 <div className="flex items-center gap-8">
                                   <p className="font-body-1-sm text-black">{combination.comboName}</p>
-                                  {combination.isPinned && <StarIcon className="w-22 h-22 -mt-2" />}
+                                  <StarIcon
+                                    onClick={(e) => handleTogglePin(e, combination.comboId)}
+                                    className={`w-22 h-22 -mt-2 cursor-pointer transition-opacity ${
+                                      combination.isPinned
+                                        ? 'hover:opacity-80'
+                                        : 'opacity-30 hover:opacity-50'
+                                    }`}
+                                  />
                                 </div>
                               </div>
                               {/* Tags - API에서 태그 정보 제공 시 구현 */}
