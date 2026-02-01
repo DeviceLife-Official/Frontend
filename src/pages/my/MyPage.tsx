@@ -439,7 +439,7 @@ const MyPage = () => {
                             </div>
                             <div className="flex items-center gap-8">
                               <p className="font-heading-3 text-black">{combination.name}</p>
-                              {combination.isMain && <StarIcon className="w-27 h-27 -mt-2" />}
+                              {combination.isMain && <StarIcon className="w-22 h-22 -mt-2" />}
                             </div>
                           </div>
                         </div>
@@ -655,7 +655,7 @@ const MyPage = () => {
                                   </div>
                                   <div className="flex items-center gap-8">
                                     <p className="font-body-1-sm text-black">{combination.name}</p>
-                                    {combination.isMain && <StarIcon className="w-27 h-27 -mt-2" />}
+                                    {combination.isMain && <StarIcon className="w-22 h-22 -mt-2" />}
                                   </div>
                                 </div>
                               )}
@@ -717,7 +717,7 @@ const MyPage = () => {
                                 </div>
                                 <div className="flex items-center gap-8">
                                   <p className="font-body-1-sm text-black">{combination.name}</p>
-                                  {combination.isMain && <StarIcon className="w-27 h-27 -mt-2" />}
+                                  {combination.isMain && <StarIcon className="w-22 h-22 -mt-2" />}
                                 </div>
                               </div>
                               {/* Tags */}
