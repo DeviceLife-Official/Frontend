@@ -71,3 +71,7 @@ export type DeleteComboResponse = CommonResponse<DeleteComboResult>;
 // 조합 Pin 응답 타입
 export type PostComboPinResult = null;
 export type PostComboPinResponse = CommonResponse<PostComboPinResult>;
+
+// 조합에서 기기 삭제 응답 타입
+export type DeleteComboDeviceResult = null;
+export type DeleteComboDeviceResponse = CommonResponse<DeleteComboDeviceResult>;
