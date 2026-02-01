@@ -328,7 +328,7 @@ const MyPage = () => {
                     {!isDetailView && (
                       <div
                         ref={openMenuIndex === index ? menuRef : null}
-                        className={`absolute right-56 ${editingCombinationIndex === index ? 'top-28' : 'top-36'}`}
+                        className={`absolute right-56 ${editingCombinationIndex === index ? 'top-48' : 'top-36'}`}
                       >
                         {editingCombinationIndex === index ? (
                           /* 수정 모드: 저장하기 버튼 */
