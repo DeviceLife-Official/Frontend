@@ -17,6 +17,7 @@ import useTimer from '@/hooks/useTimer';
 import { parseApiError } from '@/utils/error';
 
 const TIMER_SECONDS = 180; // 3분
+const RESEND_COOLDOWN_SECONDS = 60; // 재전송 쿨다운 60초
 const RESEND_LIMIT_MESSAGE = '마지막 인증번호가 발송되었습니다. (재전송 횟수 초과)';
 
 const FindPasswordPage = () => {
@@ -44,6 +45,12 @@ const FindPasswordPage = () => {
     initialSeconds: TIMER_SECONDS,
     enabled: step === 2,
     onExpire: handleTimerExpire,
+  });
+
+  // 재전송 쿨다운 타이머 (60초)
+  const { start: startResendCooldown, isRunning: isResendCooldownRunning } = useTimer({
+    initialSeconds: RESEND_COOLDOWN_SECONDS,
+    enabled: step === 2,
   });
 
   // Step1: 인증번호 받기 제출 핸들러
@@ -76,6 +83,7 @@ const FindPasswordPage = () => {
         return next;
       });
       startTimer();
+      startResendCooldown(); // 재전송 쿨다운 타이머 시작
       setVerificationCode('');
     } catch (error: unknown) {
       const { hasResponse, message } = parseApiError(error);
@@ -157,7 +165,7 @@ const FindPasswordPage = () => {
           timeLeft={timeLeft}
           verifyError={verifyError}
           isVerifyPending={isVerifyPending}
-          isResendLimitReached={resendCount >= 3}
+          isResendLimitReached={resendCount >= 3 || isResendCooldownRunning}
         />
       )}
 
