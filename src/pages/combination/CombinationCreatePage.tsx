@@ -9,6 +9,9 @@ import CombinationStyleProbe from '@/components/Combination/CombinationStyleProb
 import { useCombinationMotion } from '@/hooks/useCombinationMotion';
 import { useCombinationNameInput } from '@/hooks/useCombinationNameInput';
 import { usePostCreateCombination } from '@/apis/combo/postCreateCombination';
+import axios from 'axios';
+import type { AxiosError } from 'axios';
+import type { CommonResponse } from '@/types/common';
 
 type ResultPhase = 'idle' | 'shrink' | 'stack' | 'done';
 
@@ -63,15 +66,19 @@ const CombinationCreatePage = () => {
         setBgOn(true);
         start(res.result.comboName);
       }
-    } catch (err: any) {
-      const code = err?.response?.data?.code;
-      if (code === 'AUTH_401') {
-        navigate('/auth/login');
-        return;
-      }
-      if (code === 'COMBO_4005') {
-        setServerErrorMessage('이미 동일한 이름의 조합이 존재합니다.');
-        return;
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        const axiosErr = err as AxiosError<CommonResponse<null>>;
+        const code = axiosErr.response?.data?.code;
+        // 인터셉터 로그인 리다이렉트 구현 후 아래 코드는 삭제
+        if (code === 'AUTH_401') {
+          navigate('/auth/login');
+          return;
+        }
+        if (code === 'COMBO_4005') {
+          setServerErrorMessage('이미 동일한 이름의 조합이 존재합니다.');
+          return;
+        }
       }
       setServerErrorMessage('조합 생성 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
     }

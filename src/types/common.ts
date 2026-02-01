@@ -5,3 +5,5 @@ export type CommonResponse<T = null> = {
   result?: T;
   error?: Record<string, any> | null;
 };
+
+type ErrorResponse = CommonResponse<null>;
