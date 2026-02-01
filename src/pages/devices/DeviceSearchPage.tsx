@@ -3,7 +3,6 @@ import { useSearchParams } from 'react-router-dom';
 import GNB from '@/components/Home/GNB';
 import ProductCard from '@/components/ProductCard/ProductCard';
 import PrimaryButton from '@/components/Button/PrimaryButton';
-import CombinationTag from '@/components/Combination/CombinationTag';
 import CombinationDeviceCard from '@/components/Combination/CombinationDeviceCard';
 import ProductLife from '@/components/ProductCard/ProductLife';
 import FilterDropdown from '@/components/Filter/FilterDropdown';
@@ -24,8 +23,11 @@ import {
   BRAND_OPTIONS,
   SCROLL_CONSTANTS,
 } from '@/constants/devices';
-import { MOCK_PRODUCTS, MOCK_COMBINATIONS, MOCK_COMBINATION_DEVICES } from '@/constants/mockData';
+import { MOCK_PRODUCTS } from '@/constants/mockData';
 import { type AuthStatus, type ModalView } from '@/types/devices';
+import { useGetCombos } from '@/apis/combo/getCombos';
+import { useGetCombo } from '@/apis/combo/getComboId';
+import { usePostComboDevice } from '@/apis/combo/postComboDevices';
 
 const DeviceSearchPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -34,6 +36,10 @@ const DeviceSearchPage = () => {
   // 추후 Zustand/Context에서 인증 상태 가져오기
   const [authStatus] = useState<AuthStatus>('login'); // 테스트로 login으로 변경. 추후 logout으로 변경.
   const [modalView, setModalView] = useState<ModalView>('device');
+
+  // API hooks
+  const { data: combos = [] } = useGetCombos();
+  const { mutate: addDeviceToCombo, isPending: isAddingDevice } = usePostComboDevice();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
@@ -46,6 +52,9 @@ const DeviceSearchPage = () => {
   const [showAllDevices, setShowAllDevices] = useState(false);
   const [showSaveCompleteModal, setShowSaveCompleteModal] = useState(false);
   const [isFadingOut, setIsFadingOut] = useState(false);
+
+  // 선택된 조합의 상세 정보 조회
+  const { data: comboDetail } = useGetCombo(selectedCombinationId);
 
   const productGridRef = useRef<HTMLDivElement>(null);
 
@@ -76,10 +85,24 @@ const DeviceSearchPage = () => {
     }
 
     // 조합이 1개면 바로 저장
-    if (MOCK_COMBINATIONS.length === 1) {
-      // API 호출 - 바로 저장
-      console.log('바로 저장:', MOCK_COMBINATIONS[0].id);
-      setShowSaveCompleteModal(true);
+    if (combos.length === 1 && selectedProductId) {
+      addDeviceToCombo(
+        { comboId: combos[0].comboId, deviceId: Number(selectedProductId) },
+        {
+          onSuccess: () => {
+            setModalView('device');
+            setShowSaveCompleteModal(true);
+          },
+          onError: (error: unknown) => {
+            const axiosError = error as { response?: { status?: number } };
+            if (axiosError?.response?.status === 400) {
+              alert('이미 조합에 추가된 기기입니다.');
+            } else {
+              console.error('기기 추가 실패:', error);
+            }
+          },
+        }
+      );
       return;
     }
 
@@ -96,11 +119,24 @@ const DeviceSearchPage = () => {
 
   /* 조합에 기기 담기 */
   const handleAddDeviceToCombination = () => {
-    if (selectedCombinationId) {
-      // API 호출 - 선택한 조합에 기기 추가
-      console.log('조합에 기기 추가:', selectedCombinationId);
-      setModalView('device'); // combinationDetail 모달 숨김
-      setShowSaveCompleteModal(true);
+    if (selectedCombinationId && selectedProductId) {
+      addDeviceToCombo(
+        { comboId: selectedCombinationId, deviceId: Number(selectedProductId) },
+        {
+          onSuccess: () => {
+            setModalView('device');
+            setShowSaveCompleteModal(true);
+          },
+          onError: (error: unknown) => {
+            const axiosError = error as { response?: { status?: number } };
+            if (axiosError?.response?.status === 400) {
+              alert('이미 조합에 추가된 기기입니다.');
+            } else {
+              console.error('기기 추가 실패:', error);
+            }
+          },
+        }
+      );
     }
   };
 
@@ -127,17 +163,15 @@ const DeviceSearchPage = () => {
 
   /* 선택된 조합 정보 */
   const selectedCombination = selectedCombinationId
-    ? MOCK_COMBINATIONS.find(c => c.id === selectedCombinationId)
+    ? combos.find(c => c.comboId === selectedCombinationId)
     : null;
 
-  /* 선택된 조합의 기기 리스트 */
-  const combinationDevices = selectedCombinationId
-    ? MOCK_COMBINATION_DEVICES[selectedCombinationId] || []
-    : [];
+  /* 선택된 조합의 기기 리스트 (API에서 조회) */
+  const combinationDevices = comboDetail?.devices || [];
 
   /* 선택된 조합에 이미 담긴 기기인지 확인 */
   const isAlreadyInSelectedCombination = selectedCombinationId && selectedProductId
-    ? combinationDevices.some(device => device.id === Number(selectedProductId))
+    ? combinationDevices.some(device => device.deviceId === Number(selectedProductId))
     : false;
 
   useEffect(() => {
@@ -450,28 +484,31 @@ const DeviceSearchPage = () => {
                 >
                   {/* Combination List */}
                   <div className="flex flex-col mx-20 overflow-y-auto max-h-630 scrollbar-minimal">
-                    {MOCK_COMBINATIONS.map((combo) => (
+                    {combos.map((combo, index) => (
                       <button
-                        key={combo.id}
-                        onClick={() => handleSelectCombination(combo.id)}
+                        key={combo.comboId}
+                        onClick={() => handleSelectCombination(combo.comboId)}
                         className="flex items-center justify-between pl-20 pr-36 py-24 hover:bg-gray-50 transition-colors border-b border-gray-200 cursor-pointer last:border-none"
                       >
                         {/* 좌측: 조합 정보 */}
                         <div className="flex flex-col gap-24 items-start">
                           {/* 조합 번호 + 조합명 */}
                           <div className="flex flex-col gap-8 items-start">
-                            <p className="font-body-3-r text-gray-400">{combo.label}</p>
+                            <p className="font-body-3-r text-gray-400">조합 {index + 1}</p>
                             {/* 조합명 + 대표조합 star */}
                             <div className="flex items-center gap-8">
-                              <p className="font-body-1-sm text-black">{combo.name}</p>
-                              {combo.isMain && <StarIcon className="w-22 h-22" />}
+                              <p className="font-body-1-sm text-black">{combo.comboName}</p>
+                              {combo.isPinned && <StarIcon className="w-22 h-22" />}
                             </div>
                           </div>
-                          {/* Tags */}
-                          <div className="flex gap-12 -ml-4">
-                            {combo.tags.map((tag) => (
-                              <CombinationTag key={tag.name} name={tag.name} status={tag.status} />
-                            ))}
+                          {/* 기기 수 + 총 가격 */}
+                          <div className="flex gap-12">
+                            <span className="bg-blue-200 text-blue-700 font-body-2-sm px-12 py-8 rounded-full">
+                              기기 {combo.deviceCount}개
+                            </span>
+                            <span className="bg-gray-200 text-gray-700 font-body-2-sm px-12 py-8 rounded-full">
+                              ₩{combo.totalPrice.toLocaleString()}
+                            </span>
                           </div>
                         </div>
 
@@ -552,9 +589,9 @@ const DeviceSearchPage = () => {
                   <div className="px-40 pb-40 pt-72">
                     <div className="flex justify-end">
                       <PrimaryButton
-                        text={isAlreadyInSelectedCombination ? '이미 담은 상품입니다.' : `${selectedCombination.label} 에 담기`}
+                        text={isAlreadyInSelectedCombination ? '이미 담은 상품입니다.' : `${selectedCombination.comboName}에 담기`}
                         onClick={handleAddDeviceToCombination}
-                        disabled={isAlreadyInSelectedCombination}
+                        disabled={isAlreadyInSelectedCombination || isAddingDevice}
                         className={`w-280 ${isAlreadyInSelectedCombination ? '' : 'bg-blue-600 hover:bg-blue-500'}`}
                       />
                     </div>
