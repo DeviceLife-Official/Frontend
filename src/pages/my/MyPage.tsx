@@ -1,10 +1,9 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import GNB from '@/components/Home/GNB';
 import PrimaryButton from '@/components/Button/PrimaryButton';
 import SecondaryButton from '@/components/Button/SecondaryButton';
 import SortDropdown from '@/components/Filter/SortDropdown';
-import CombinationTag from '@/components/Combination/CombinationTag';
 import RoundedLifestyleTag from '@/components/Lifestyle/RoundedLifestyleTag';
 import RecentlyViewedFloating from '@/components/RecentlyViewed/RecentlyViewedFloating';
 import SettingIcon from '@/assets/icons/setting.svg?react';
@@ -21,7 +20,13 @@ import RemoveIcon from '@/assets/icons/remove.svg?react';
 import SaveIcon from '@/assets/icons/save.svg?react';
 import TopIcon from '@/assets/icons/top.svg?react';
 import Logo from '@/assets/logos/logo.svg?react';
-import { MOCK_COMBINATIONS, MOCK_COMBINATION_DEVICES } from '@/constants/mockData';
+import { useGetCombos } from '@/apis/combo/getCombos';
+import { useGetCombo } from '@/apis/combo/getComboId';
+import { usePutCombo } from '@/apis/combo/putCombos';
+import { useDeleteCombo } from '@/apis/combo/deleteCombo';
+import { usePostComboPin } from '@/apis/combo/postComboPin';
+import { useDeleteComboDevice } from '@/apis/combo/deleteComboDevice';
+import type { ComboListItem } from '@/types/combo/combo';
 
 // 조합 평가 Mock 데이터
 const MOCK_EVALUATION = {
@@ -48,6 +53,15 @@ const MYPAGE_SORT_OPTIONS = [
   { value: 'alphabetical', label: '가나다순' },
 ];
 
+// 날짜 포맷 함수 (ISO -> YYYY.MM.DD)
+const formatDate = (isoDate: string): string => {
+  const date = new Date(isoDate);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}.${month}.${day}`;
+};
+
 const MyPage = () => {
   const navigate = useNavigate();
   const [sortOption, setSortOption] = useState('latest');
@@ -55,19 +69,59 @@ const MyPage = () => {
   const [columns, setColumns] = useState<3 | 4>(4);
   const [openMenuIndex, setOpenMenuIndex] = useState<number | null>(null);
   const [hoveredMenuItem, setHoveredMenuItem] = useState<string | null>(null);
-  const [detailViewIndex, setDetailViewIndex] = useState<number | null>(null);
+  const [detailViewComboId, setDetailViewComboId] = useState<number | null>(null);
   const [selectedDevices, setSelectedDevices] = useState<number[]>([]);
   const [savedScrollPosition, setSavedScrollPosition] = useState<number>(0);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showCombinationDeleteModal, setShowCombinationDeleteModal] = useState(false);
-  const [deleteTargetIndex, setDeleteTargetIndex] = useState<number | null>(null);
-  const [editingCombinationIndex, setEditingCombinationIndex] = useState<number | null>(null);
+  const [deleteTargetComboId, setDeleteTargetComboId] = useState<number | null>(null);
+  const [editingComboId, setEditingComboId] = useState<number | null>(null);
   const [editingCombinationName, setEditingCombinationName] = useState('');
+  const [comboNameError, setComboNameError] = useState<string | null>(null);
   const [showSaveModal, setShowSaveModal] = useState(false);
   const [showTopButton, setShowTopButton] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const sidebarContentRef = useRef<HTMLDivElement>(null);
   const combinationListRef = useRef<HTMLDivElement>(null);
+
+  // API 호출
+  const { data: combos = [], isLoading, isError } = useGetCombos();
+  const { data: comboDetail } = useGetCombo(detailViewComboId);
+  const { mutate: updateCombo, isPending: isUpdating } = usePutCombo();
+  const { mutate: deleteCombo, isPending: isDeleting } = useDeleteCombo();
+  const { mutate: togglePin } = usePostComboPin();
+  const { mutate: deleteDevice, isPending: isDeletingDevice } = useDeleteComboDevice();
+
+  // 정렬된 조합 목록
+  const sortedCombos = useMemo(() => {
+    const sorted = [...combos];
+
+    // 먼저 isPinned 기준으로 정렬 (즐겨찾기가 상단)
+    sorted.sort((a, b) => {
+      if (a.isPinned && !b.isPinned) return -1;
+      if (!a.isPinned && b.isPinned) return 1;
+      return 0;
+    });
+
+    // 그 다음 선택된 정렬 옵션 적용
+    const pinnedCombos = sorted.filter(c => c.isPinned);
+    const unpinnedCombos = sorted.filter(c => !c.isPinned);
+
+    const sortUnpinned = (arr: ComboListItem[]) => {
+      switch (sortOption) {
+        case 'latest':
+          return arr.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        case 'oldest':
+          return arr.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+        case 'alphabetical':
+          return arr.sort((a, b) => a.comboName.localeCompare(b.comboName, 'ko'));
+        default:
+          return arr;
+      }
+    };
+
+    return [...pinnedCombos, ...sortUnpinned(unpinnedCombos)];
+  }, [combos, sortOption]);
 
   // 스크롤 감지 (하단 그라데이션용 + Top 버튼용)
   useEffect(() => {
@@ -112,10 +166,66 @@ const MyPage = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  // 조합명 유효성 검사 함수
+  const validateComboName = useCallback((name: string): string | null => {
+    // 1. 빈 값 체크
+    if (name.length === 0) {
+      return '조합명을 입력해주세요.';
+    }
+
+    // 2. 공백만 입력 체크
+    if (name.trim().length === 0) {
+      return '조합명을 한 글자 이상 입력해주세요.';
+    }
+
+    // 3. 최대 길이 체크 (20자)
+    if (name.length > 20) {
+      return '조합명은 최대 20자까지 입력 가능합니다.';
+    }
+
+    // 4. 중복 체크 (현재 수정 중인 조합 제외, trim 후 대소문자 구분 없이 비교)
+    if (editingComboId !== null) {
+      const isDuplicate = combos.some(
+        c => c.comboId !== editingComboId &&
+             c.comboName.trim().toLowerCase() === name.trim().toLowerCase()
+      );
+      if (isDuplicate) {
+        return '이미 존재하는 조합명입니다. 다른 이름을 시도해주세요.';
+      }
+    }
+
+    return null; // 유효함
+  }, [combos, editingComboId]);
+
+  // 조합명이 유효한지 여부
+  const isComboNameValid = useMemo(() => {
+    return validateComboName(editingCombinationName) === null;
+  }, [editingCombinationName, validateComboName]);
+
+  // 조합명 입력 핸들러 (길이 제한 + 실시간 검사)
+  const handleComboNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = e.target.value;
+
+    // 최대 길이 20자로 제한 (입력 자체를 막음)
+    if (newValue.length > 20) {
+      return;
+    }
+
+    setEditingCombinationName(newValue);
+
+    // 실시간 검사 (입력 중에는 빈 값/공백만 에러는 표시하지 않음)
+    if (newValue.length > 0 && newValue.trim().length > 0) {
+      const error = validateComboName(newValue);
+      setComboNameError(error);
+    } else {
+      setComboNameError(null);
+    }
+  };
+
   // 자세히보기 클릭 핸들러
-  const handleDetailView = (index: number) => {
+  const handleDetailView = (comboId: number) => {
     setSavedScrollPosition(window.scrollY);
-    setDetailViewIndex(index);
+    setDetailViewComboId(comboId);
     setOpenMenuIndex(null);
     setSelectedDevices([]);
     window.scrollTo(0, 0);
@@ -123,7 +233,7 @@ const MyPage = () => {
 
   // 뒤로가기 핸들러
   const handleBackToNormal = () => {
-    setDetailViewIndex(null);
+    setDetailViewComboId(null);
     setSelectedDevices([]);
     window.scrollTo(0, savedScrollPosition);
   };
@@ -145,11 +255,37 @@ const MyPage = () => {
   };
 
   // 선택된 기기 삭제 핸들러
-  const handleDeleteDevices = () => {
-    // API 연동 시 실제 삭제 로직 추가
-    console.log('Nove ==== 삭제할 기기 ID:', selectedDevices);
-    setSelectedDevices([]);
-    setShowDeleteModal(false);
+  const handleDeleteDevices = async () => {
+    if (!detailViewComboId || selectedDevices.length === 0) return;
+
+    try {
+      // 선택된 모든 기기를 순차적으로 삭제
+      for (const deviceId of selectedDevices) {
+        await new Promise<void>((resolve, reject) => {
+          deleteDevice(
+            { comboId: detailViewComboId, deviceId },
+            {
+              onSuccess: () => {
+                console.log(`기기 ${deviceId} 삭제 성공`);
+                resolve();
+              },
+              onError: (error) => {
+                console.error(`기기 ${deviceId} 삭제 실패:`, error);
+                reject(error);
+              },
+            }
+          );
+        });
+      }
+
+      // 모든 삭제 완료 후
+      setSelectedDevices([]);
+      setShowDeleteModal(false);
+      console.log('모든 기기 삭제 완료');
+    } catch (error) {
+      console.error('기기 삭제 중 오류 발생:', error);
+      // 에러가 발생해도 모달은 닫지 않고 사용자에게 재시도 기회 제공
+    }
   };
 
   // 휴지통 클릭 핸들러
@@ -161,23 +297,68 @@ const MyPage = () => {
 
   // 조합 삭제 핸들러
   const handleDeleteCombination = () => {
-    // API 연동 시 실제 삭제 로직 추가
-    console.log('삭제할 조합 index:', deleteTargetIndex);
-    setShowCombinationDeleteModal(false);
-    setDeleteTargetIndex(null);
-    // 자세히보기 모드였다면 일반 모드로 복귀
-    if (detailViewIndex !== null) {
-      setDetailViewIndex(null);
-      setSelectedDevices([]);
-    }
+    if (deleteTargetComboId === null) return;
+
+    deleteCombo(deleteTargetComboId, {
+      onSuccess: () => {
+        console.log('조합 삭제 성공');
+        setShowCombinationDeleteModal(false);
+        setDeleteTargetComboId(null);
+
+        // 자세히보기 모드였다면 일반 모드로 복귀
+        if (detailViewComboId !== null) {
+          setDetailViewComboId(null);
+          setSelectedDevices([]);
+        }
+      },
+      onError: (error) => {
+        console.error('조합 삭제 실패:', error);
+      },
+    });
+  };
+
+  // Pin 토글 핸들러
+  const handleTogglePin = (e: React.MouseEvent, comboId: number) => {
+    e.stopPropagation(); // 카드 클릭 이벤트 전파 방지
+
+    togglePin(comboId, {
+      onSuccess: () => {
+        console.log('Pin 상태 변경 성공');
+      },
+      onError: (error) => {
+        console.error('Pin 상태 변경 실패:', error);
+      },
+    });
   };
 
   // 조합명 저장 핸들러
   const handleSaveCombinationName = () => {
-    // API 연동 시 실제 저장 로직 추가
-    console.log('저장된 조합명:', editingCombinationName);
-    setShowSaveModal(false);
-    setEditingCombinationIndex(null);
+    if (editingComboId === null) return;
+
+    // 최종 검증
+    const finalError = validateComboName(editingCombinationName);
+    if (finalError) {
+      setComboNameError(finalError);
+      return;
+    }
+
+    // trim된 값으로 저장
+    const trimmedName = editingCombinationName.trim();
+
+    updateCombo(
+      { comboId: editingComboId, comboName: trimmedName },
+      {
+        onSuccess: () => {
+          setShowSaveModal(false);
+          setEditingComboId(null);
+          setEditingCombinationName(''); // state 초기화
+          setComboNameError(null); // 에러 초기화
+        },
+        onError: (error) => {
+          console.error('조합명 수정 실패:', error);
+        },
+      }
+    );
   };
 
   // 맨 위로 스크롤
@@ -260,10 +441,10 @@ const MyPage = () => {
           {/* 헤더: 내 조합 + 새 조합 추가하기 / 조합 삭제하기 */}
           <div className="flex items-center justify-between h-72">
             <h2 className="font-heading-2 text-black">내 조합</h2>
-            {detailViewIndex !== null ? (
+            {detailViewComboId !== null ? (
               <button
                 onClick={() => {
-                  setDeleteTargetIndex(detailViewIndex);
+                  setDeleteTargetComboId(detailViewComboId);
                   setShowCombinationDeleteModal(true);
                 }}
                 className="w-280 h-52 border-2 border-warning rounded-button flex items-center justify-center cursor-pointer hover:bg-warning/10 transition-colors"
@@ -273,6 +454,7 @@ const MyPage = () => {
             ) : (
               <PrimaryButton
                 text="새 조합 추가하기"
+                onClick={() => navigate('/combination/create')}
                 className="w-280 bg-blue-600 hover:bg-blue-500"
               />
             )}
@@ -280,20 +462,36 @@ const MyPage = () => {
 
           {/* 조합 카드 목록 */}
           <div ref={combinationListRef} className="mt-76 flex flex-col gap-40">
-            {MOCK_COMBINATIONS.map((combination, index) => {
-              const devices = MOCK_COMBINATION_DEVICES[combination.id] || [];
-              const hasDevices = devices.length > 0;
+            {isLoading && (
+              <div className="flex items-center justify-center py-100">
+                <p className="font-body-2-r text-gray-400">조합 목록을 불러오는 중...</p>
+              </div>
+            )}
+            {isError && (
+              <div className="flex items-center justify-center py-100">
+                <p className="font-body-2-r text-warning">조합 목록을 불러오는데 실패했습니다.</p>
+              </div>
+            )}
+            {!isLoading && !isError && sortedCombos.length === 0 && (
+              <div className="flex items-center justify-center py-100">
+                <p className="font-body-2-r text-gray-400">등록된 조합이 없습니다.</p>
+              </div>
+            )}
+            {sortedCombos.map((combination, index) => {
+              const isDetailView = detailViewComboId === combination.comboId;
+              const hasDevices = combination.deviceCount > 0;
 
-              const isDetailView = detailViewIndex === index;
-              const deviceIds = devices.map((d) => d.id);
+              // 상세보기 모드: 선택된 조합만 표시하고, 상세 정보의 devices 사용
+              const devices = isDetailView && comboDetail ? comboDetail.devices : [];
+              const deviceIds = devices.map((d) => d.deviceId);
 
               // 상세보기 모드일 때 선택된 조합만 표시
-              if (detailViewIndex !== null && !isDetailView) {
+              if (detailViewComboId !== null && !isDetailView) {
                 return null;
               }
 
               return (
-                <div key={combination.id}>
+                <div key={combination.comboId}>
                   {/* 추천 메시지 + 정렬 필터 - 상세보기 모드가 아닐 때만 표시 */}
                   {!isDetailView && (
                     <div className="flex items-center justify-between mb-24">
@@ -305,7 +503,7 @@ const MyPage = () => {
                             : '-'}
                         </p>
                       </div>
-                      {index === 0 && (
+                      {index === 0 && sortedCombos.length > 1 && (
                         <SortDropdown
                           options={MYPAGE_SORT_OPTIONS}
                           selectedValue={sortOption}
@@ -317,7 +515,7 @@ const MyPage = () => {
 
                   {/* 조합 카드 */}
                   <div
-                    onClick={() => !isDetailView && editingCombinationIndex !== index && hasDevices && handleDetailView(index)}
+                    onClick={() => !isDetailView && editingComboId !== combination.comboId && hasDevices && handleDetailView(combination.comboId)}
                     className={`rounded-card relative ${
                       isDetailView
                         ? 'bg-blue-100'
@@ -327,16 +525,23 @@ const MyPage = () => {
                     {/* 일반 모드: Setting More 버튼 + 드롭다운 또는 저장하기 버튼 */}
                     {!isDetailView && (
                       <div
-                        ref={openMenuIndex === index ? menuRef : null}
-                        className={`absolute right-56 ${editingCombinationIndex === index ? 'top-48' : 'top-72'}`}
+                        ref={openMenuIndex === combination.comboId ? menuRef : null}
+                        className={`absolute right-56 ${editingComboId === combination.comboId ? 'top-48' : 'top-72'}`}
                       >
-                        {editingCombinationIndex === index ? (
+                        {editingComboId === combination.comboId ? (
                           /* 수정 모드: 저장하기 버튼 */
                           <SecondaryButton
                             text="저장하기"
                             onClick={() => {
-                              setShowSaveModal(true);
+                              // 최종 검증 후 모달 표시
+                              const error = validateComboName(editingCombinationName);
+                              setComboNameError(error);
+
+                              if (!error) {
+                                setShowSaveModal(true);
+                              }
                             }}
+                            disabled={!isComboNameValid || editingCombinationName.trim().length === 0}
                             className="w-150"
                           />
                         ) : (
@@ -344,7 +549,7 @@ const MyPage = () => {
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
-                              setOpenMenuIndex(openMenuIndex === index ? null : index);
+                              setOpenMenuIndex(openMenuIndex === combination.comboId ? null : combination.comboId);
                             }}
                             className="cursor-pointer hover:opacity-80"
                           >
@@ -353,13 +558,13 @@ const MyPage = () => {
                         )}
 
                         {/* 드롭다운 메뉴 */}
-                        {openMenuIndex === index && (
+                        {openMenuIndex === combination.comboId && (
                           <div className="absolute right-0 top-full mt-8 bg-white rounded-button shadow-[0_2px_10px_rgba(0,0,0,0.25)] px-8 z-12 flex flex-col">
                             {/* 삭제하기 */}
                             <button
                               onClick={(e) => {
                                 e.stopPropagation();
-                                setDeleteTargetIndex(index);
+                                setDeleteTargetComboId(combination.comboId);
                                 setShowCombinationDeleteModal(true);
                                 setOpenMenuIndex(null);
                               }}
@@ -377,9 +582,10 @@ const MyPage = () => {
                             <button
                               onClick={(e) => {
                                 e.stopPropagation();
-                                setEditingCombinationIndex(index);
-                                setEditingCombinationName(combination.name);
+                                setEditingComboId(combination.comboId);
+                                setEditingCombinationName(combination.comboName);
                                 setOpenMenuIndex(null);
+                                setComboNameError(null); // 에러 초기화
                               }}
                               onMouseEnter={() => setHoveredMenuItem('rename')}
                               onMouseLeave={() => setHoveredMenuItem(null)}
@@ -396,7 +602,7 @@ const MyPage = () => {
                               <button
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  handleDetailView(index);
+                                  handleDetailView(combination.comboId);
                                 }}
                                 onMouseEnter={() => setHoveredMenuItem('detail')}
                                 onMouseLeave={() => setHoveredMenuItem(null)}
@@ -430,16 +636,21 @@ const MyPage = () => {
                         <div className="flex flex-col gap-24 pl-56 py-24">
                           <div className="flex flex-col gap-8">
                             <div className="flex items-center gap-16">
-                              <p className="font-body-2-r text-gray-400">{combination.label}</p>
-                              {combination.createdAt && (
-                                <p className="font-body-2-r text-gray-400">
-                                  생성일: {combination.createdAt}
-                                </p>
-                              )}
+                              <p className="font-body-2-r text-gray-400">조합{index + 1}</p>
+                              <p className="font-body-2-r text-gray-400">
+                                생성일: {formatDate(combination.createdAt)}
+                              </p>
                             </div>
                             <div className="flex items-center gap-8">
-                              <p className="font-heading-3 text-black">{combination.name}</p>
-                              {combination.isMain && <StarIcon className="w-22 h-22 -mt-2" />}
+                              <p className="font-heading-3 text-black">{combination.comboName}</p>
+                              <StarIcon
+                                onClick={(e) => handleTogglePin(e, combination.comboId)}
+                                className={`w-22 h-22 -mt-2 cursor-pointer transition-opacity ${
+                                  combination.isPinned
+                                    ? 'hover:opacity-80'
+                                    : 'opacity-30 hover:opacity-50'
+                                }`}
+                              />
                             </div>
                           </div>
                         </div>
@@ -481,9 +692,9 @@ const MyPage = () => {
                           >
                             {devices.map((device) => (
                               <div
-                                key={device.id}
-                                onClick={() => window.open(`/devices?productId=${device.id}`, '_blank')}
-                                className={`bg-white rounded-card shadow-[0_0_4px_rgba(0,0,0,0.1)] p-12 w-244 flex items-center gap-12 border cursor-pointer hover:shadow-[0_0_7px_#57a0ff] transition-shadow ${selectedDevices.includes(device.id) ? 'border-blue-600' : 'border-transparent'}`}
+                                key={device.deviceId}
+                                onClick={() => window.open(`/devices?productId=${device.deviceId}`, '_blank')}
+                                className={`bg-white rounded-card shadow-[0_0_4px_rgba(0,0,0,0.1)] p-12 w-244 flex items-center gap-12 border cursor-pointer hover:shadow-[0_0_7px_#57a0ff] transition-shadow ${selectedDevices.includes(device.deviceId) ? 'border-blue-600' : 'border-transparent'}`}
                               >
                                 <div className="w-64 h-64 bg-gray-200 flex-shrink-0 relative group/image">
                                   {/* 호버 오버레이 */}
@@ -502,19 +713,19 @@ const MyPage = () => {
                                     <button
                                       onClick={(e) => {
                                         e.stopPropagation();
-                                        handleSelectDevice(device.id);
+                                        handleSelectDevice(device.deviceId);
                                       }}
                                       className="cursor-pointer flex-shrink-0"
                                     >
-                                      {selectedDevices.includes(device.id) ? (
+                                      {selectedDevices.includes(device.deviceId) ? (
                                         <CheckboxOnIcon className="w-24 h-24" />
                                       ) : (
                                         <CheckboxIcon className="w-24 h-24" />
                                       )}
                                     </button>
                                   </div>
-                                  <p className="font-body-4-r text-gray-300">{device.chargingType}</p>
-                                  <p className="font-body-3-r text-gray-300">{device.color}</p>
+                                  <p className="font-body-4-r text-gray-300">{device.brandName || '-'}</p>
+                                  <p className="font-body-3-r text-gray-300">{device.deviceType || '-'}</p>
                                 </div>
                               </div>
                             ))}
@@ -537,7 +748,9 @@ const MyPage = () => {
                             <p className="font-body-1-sm text-black">총 가격</p>
                             <div className="flex items-center gap-4">
                               <p className="font-body-1-sm text-blue-600">₩</p>
-                              <p className="font-body-1-sm text-blue-600">1,550,000</p>
+                              <p className="font-body-1-sm text-blue-600">
+                                {(comboDetail?.totalPrice ?? combination.totalPrice).toLocaleString()}
+                              </p>
                             </div>
                           </div>
                         </div>
@@ -630,75 +843,107 @@ const MyPage = () => {
                           <div className="px-36 pt-24 pb-36">
                             {/* 조합 정보 (생성일 포함) */}
                             <div className="flex flex-col gap-13 pl-20 py-24">
-                              {editingCombinationIndex === index ? (
-                                /* 수정 모드: 인풋박스 + 별 아이콘 */
-                                <div className="flex items-center gap-8 min-h-48">
-                                  <input
-                                    type="text"
-                                    value={editingCombinationName}
-                                    onChange={(e) => setEditingCombinationName(e.target.value)}
-                                    onClick={(e) => e.stopPropagation()}
-                                    className="h-52 px-12 border border-blue-600 rounded-button font-body-1-sm text-gray-300 focus:outline-none"
-                                  />
-                                  {combination.isMain && <StarIcon className="w-22 h-22 -mt-2" />}
+                              {editingComboId === combination.comboId ? (
+                                /* 수정 모드: 인풋박스 + 별 아이콘 + 에러 메시지 */
+                                <div className="flex flex-col gap-8">
+                                  <div className="flex items-center gap-8 min-h-48">
+                                    <input
+                                      type="text"
+                                      value={editingCombinationName}
+                                      onChange={handleComboNameChange}
+                                      onClick={(e) => e.stopPropagation()}
+                                      onBlur={() => {
+                                        // 포커스 아웃 시 최종 검증
+                                        const error = validateComboName(editingCombinationName);
+                                        setComboNameError(error);
+                                      }}
+                                      maxLength={20}
+                                      className={`h-52 px-12 rounded-button font-body-1-sm text-gray-300 focus:outline-none ${
+                                        comboNameError ? 'border-2 border-warning' : 'border border-blue-600'
+                                      }`}
+                                      autoFocus
+                                    />
+                                    <StarIcon
+                                      onClick={(e) => handleTogglePin(e, combination.comboId)}
+                                      className={`w-22 h-22 -mt-2 cursor-pointer transition-opacity ${
+                                        combination.isPinned
+                                          ? 'hover:opacity-80'
+                                          : 'opacity-30 hover:opacity-50'
+                                      }`}
+                                    />
+                                  </div>
+                                  {comboNameError && (
+                                    <p className="pl-12 font-body-4-r text-warning">{comboNameError}</p>
+                                  )}
                                 </div>
                               ) : (
                                 /* 일반 모드: 조합 번호 + 생성일 + 조합명 */
                                 <div className="flex flex-col gap-8">
                                   <div className="flex items-center gap-16">
-                                    <p className="font-body-3-r text-gray-400">{combination.label}</p>
-                                    {combination.createdAt && (
-                                      <p className="font-body-3-r text-gray-400">
-                                        생성일: {combination.createdAt}
-                                      </p>
-                                    )}
+                                    <p className="font-body-3-r text-gray-400">조합{index + 1}</p>
+                                    <p className="font-body-3-r text-gray-400">
+                                      생성일: {formatDate(combination.createdAt)}
+                                    </p>
                                   </div>
                                   <div className="flex items-center gap-8">
-                                    <p className="font-body-1-sm text-black">{combination.name}</p>
-                                    {combination.isMain && <StarIcon className="w-22 h-22 -mt-2" />}
+                                    <p className="font-body-1-sm text-black">{combination.comboName}</p>
+                                    <StarIcon
+                                      onClick={(e) => handleTogglePin(e, combination.comboId)}
+                                      className={`w-22 h-22 -mt-2 cursor-pointer transition-opacity ${
+                                        combination.isPinned
+                                          ? 'hover:opacity-80'
+                                          : 'opacity-30 hover:opacity-50'
+                                      }`}
+                                    />
                                   </div>
                                 </div>
                               )}
-                              {/* Tags */}
-                              <div className="flex gap-12 -ml-4">
-                                {combination.tags.map((tag) => (
-                                  <CombinationTag key={tag.name} name={tag.name} status={tag.status} />
-                                ))}
-                              </div>
+                              {/* Tags - API에서 태그 정보 제공 시 구현 */}
                             </div>
 
-                            {/* 기기 그리드 */}
+                            {/* 기기 그리드 - 일반 모드에서도 기기 카드 표시 (그라데이션 포함) */}
                             <div className="pl-8 mt-24 relative">
-                              <div
-                                className={`grid ${columns === 4 ? 'grid-cols-4' : 'grid-cols-3'} gap-x-28 gap-y-12`}
-                              >
-                                {devices.slice(0, columns * 2).map((device) => (
-                                  <div
-                                    key={device.id}
-                                    className="bg-white rounded-card shadow-[0_0_4px_rgba(0,0,0,0.1)] p-12 w-244 flex items-center gap-12"
-                                  >
-                                    <div className="w-64 h-64 bg-gray-200 flex-shrink-0" />
-                                    <div className="flex flex-col gap-4">
-                                      <p className="font-body-3-sm text-black">{device.name}</p>
-                                      <p className="font-body-4-r text-gray-300">
-                                        {device.chargingType}
-                                      </p>
-                                      <p className="font-body-3-r text-gray-300">{device.color}</p>
-                                    </div>
-                                  </div>
-                                ))}
-                              </div>
+                              {(() => {
+                                // 그라데이션 임계값 설정
+                                const gradientThreshold = columns === 4 ? 9 : 7;
+                                const shouldShowGradient = combination.devices.length >= gradientThreshold;
+                                const maxDisplay = columns === 4 ? 8 : 6;
+                                const displayedDevices = shouldShowGradient
+                                  ? combination.devices.slice(0, maxDisplay)
+                                  : combination.devices;
 
-                              {/* 그라데이션 - 4열: 9개 이상, 3열: 7개 이상 */}
-                              {devices.length >= (columns === 4 ? 9 : 7) && (
-                                <div
-                                  className="absolute right-0 bottom-0 w-244 h-80 rounded-card pointer-events-none"
-                                  style={{
-                                    background:
-                                      'linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 70%)',
-                                  }}
-                                />
-                              )}
+                                return (
+                                  <>
+                                    <div className={`grid ${columns === 4 ? 'grid-cols-4' : 'grid-cols-3'} gap-x-28 gap-y-12`}>
+                                      {displayedDevices.map((device) => (
+                                        <div
+                                          key={device.deviceId}
+                                          className="bg-white rounded-card shadow-[0_0_4px_rgba(0,0,0,0.1)] p-12 w-244 flex items-center gap-12"
+                                        >
+                                          <div className="w-64 h-64 bg-gray-200 flex-shrink-0" />
+                                          <div className="flex flex-col gap-4 flex-1">
+                                            <p className="font-body-3-sm text-black truncate w-120">
+                                              {device.name}
+                                            </p>
+                                            <p className="font-body-4-r text-gray-300">{device.brandName}</p>
+                                            <p className="font-body-3-r text-gray-300">{device.deviceType}</p>
+                                          </div>
+                                        </div>
+                                      ))}
+                                    </div>
+
+                                    {/* 그라데이션 오버레이 */}
+                                    {shouldShowGradient && (
+                                      <div
+                                        className="absolute right-0 bottom-0 w-244 h-80 rounded-card pointer-events-none"
+                                        style={{
+                                          background: 'linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 70%)',
+                                        }}
+                                      />
+                                    )}
+                                  </>
+                                );
+                              })()}
                             </div>
                           </div>
                         ) : (
@@ -708,24 +953,24 @@ const MyPage = () => {
                               {/* 조합 번호 + 생성일 + 조합명 */}
                               <div className="flex flex-col gap-8">
                                 <div className="flex items-center gap-16">
-                                  <p className="font-body-4-r text-gray-400">{combination.label}</p>
-                                  {combination.createdAt && (
-                                    <p className="font-body-4-r text-gray-400">
-                                      생성일: {combination.createdAt}
-                                    </p>
-                                  )}
+                                  <p className="font-body-4-r text-gray-400">조합{index + 1}</p>
+                                  <p className="font-body-4-r text-gray-400">
+                                    생성일: {formatDate(combination.createdAt)}
+                                  </p>
                                 </div>
                                 <div className="flex items-center gap-8">
-                                  <p className="font-body-1-sm text-black">{combination.name}</p>
-                                  {combination.isMain && <StarIcon className="w-22 h-22 -mt-2" />}
+                                  <p className="font-body-1-sm text-black">{combination.comboName}</p>
+                                  <StarIcon
+                                    onClick={(e) => handleTogglePin(e, combination.comboId)}
+                                    className={`w-22 h-22 -mt-2 cursor-pointer transition-opacity ${
+                                      combination.isPinned
+                                        ? 'hover:opacity-80'
+                                        : 'opacity-30 hover:opacity-50'
+                                    }`}
+                                  />
                                 </div>
                               </div>
-                              {/* Tags */}
-                              <div className="flex gap-12 -ml-4">
-                                {combination.tags.map((tag) => (
-                                  <CombinationTag key={tag.name} name={tag.name} status={tag.status} />
-                                ))}
-                              </div>
+                              {/* Tags - API에서 태그 정보 제공 시 구현 */}
                             </div>
 
                             {/* 빈 조합: 기기 추가 버튼 */}
@@ -792,9 +1037,14 @@ const MyPage = () => {
               <div className="flex gap-20 mt-60">
                 <button
                   onClick={handleDeleteDevices}
-                  className="w-168 h-52 bg-red-500 hover:bg-red-400 rounded-button flex items-center justify-center cursor-pointer transition-colors"
+                  disabled={isDeletingDevice}
+                  className={`w-168 h-52 bg-red-500 hover:bg-red-400 rounded-button flex items-center justify-center transition-colors ${
+                    isDeletingDevice ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
+                  }`}
                 >
-                  <span className="font-body-2-sm text-white">삭제</span>
+                  <span className="font-body-2-sm text-white">
+                    {isDeletingDevice ? '삭제 중...' : '삭제'}
+                  </span>
                 </button>
                 <button
                   onClick={() => setShowDeleteModal(false)}
@@ -809,52 +1059,61 @@ const MyPage = () => {
       )}
 
       {/* 조합 삭제 확인 모달 */}
-      {showCombinationDeleteModal && deleteTargetIndex !== null && (
-        <>
-          {/* 배경 오버레이 */}
-          <div
-            className="fixed inset-0 bg-black/50 z-60"
-            onClick={() => {
-              setShowCombinationDeleteModal(false);
-              setDeleteTargetIndex(null);
-            }}
-          />
-          {/* 모달 */}
-          <div className="fixed inset-0 flex items-center justify-center z-70 pointer-events-none">
+      {showCombinationDeleteModal && deleteTargetComboId !== null && (() => {
+        const targetCombo = sortedCombos.find(c => c.comboId === deleteTargetComboId);
+        if (!targetCombo) return null;
+        return (
+          <>
+            {/* 배경 오버레이 */}
             <div
-              className="bg-white rounded-card w-460 px-36 py-44 flex flex-col items-center pointer-events-auto"
-              onClick={(e) => e.stopPropagation()}
-            >
-              {/* 아이콘 */}
-              <RemoveIcon className="w-58 h-58" />
+              className="fixed inset-0 bg-black/50 z-60"
+              onClick={() => {
+                setShowCombinationDeleteModal(false);
+                setDeleteTargetComboId(null);
+              }}
+            />
+            {/* 모달 */}
+            <div className="fixed inset-0 flex items-center justify-center z-70 pointer-events-none">
+              <div
+                className="bg-white rounded-card w-460 px-36 py-44 flex flex-col items-center pointer-events-auto"
+                onClick={(e) => e.stopPropagation()}
+              >
+                {/* 아이콘 */}
+                <RemoveIcon className="w-58 h-58" />
 
-              {/* 텍스트 */}
-              <p className="font-body-2-r text-black mt-36">
-                '<span className="font-body-2-sm">{MOCK_COMBINATIONS[deleteTargetIndex].name}</span>'을 삭제하시겠습니까?
-              </p>
+                {/* 텍스트 */}
+                <p className="font-body-2-r text-black mt-36">
+                  '<span className="font-body-2-sm">{targetCombo.comboName}</span>'을 삭제하시겠습니까?
+                </p>
 
-              {/* 버튼 그룹 */}
-              <div className="flex gap-20 mt-60">
-                <button
-                  onClick={handleDeleteCombination}
-                  className="w-168 h-52 bg-red-500 hover:bg-red-400 rounded-button flex items-center justify-center cursor-pointer transition-colors"
-                >
-                  <span className="font-body-2-sm text-white">삭제</span>
-                </button>
-                <button
-                  onClick={() => {
-                    setShowCombinationDeleteModal(false);
-                    setDeleteTargetIndex(null);
-                  }}
-                  className="w-168 h-52 bg-gray-100 hover:bg-gray-200 rounded-button flex items-center justify-center cursor-pointer transition-colors"
-                >
-                  <span className="font-body-2-sm text-black">취소</span>
-                </button>
+                {/* 버튼 그룹 */}
+                <div className="flex gap-20 mt-60">
+                  <button
+                    onClick={handleDeleteCombination}
+                    disabled={isDeleting}
+                    className={`w-168 h-52 bg-red-500 hover:bg-red-400 rounded-button flex items-center justify-center transition-colors ${
+                      isDeleting ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
+                    }`}
+                  >
+                    <span className="font-body-2-sm text-white">
+                      {isDeleting ? '삭제 중...' : '삭제'}
+                    </span>
+                  </button>
+                  <button
+                    onClick={() => {
+                      setShowCombinationDeleteModal(false);
+                      setDeleteTargetComboId(null);
+                    }}
+                    className="w-168 h-52 bg-gray-100 hover:bg-gray-200 rounded-button flex items-center justify-center cursor-pointer transition-colors"
+                  >
+                    <span className="font-body-2-sm text-black">취소</span>
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-        </>
-      )}
+          </>
+        );
+      })()}
 
       {/* 조합명 저장 확인 모달 */}
       {showSaveModal && (
@@ -882,13 +1141,17 @@ const MyPage = () => {
               <div className="flex gap-20 mt-60">
                 <button
                   onClick={handleSaveCombinationName}
-                  className="w-168 h-52 bg-blue-600 hover:bg-blue-500 rounded-button flex items-center justify-center cursor-pointer transition-colors"
+                  disabled={isUpdating}
+                  className="w-168 h-52 bg-blue-600 hover:bg-blue-500 disabled:bg-blue-400 disabled:cursor-not-allowed rounded-button flex items-center justify-center cursor-pointer transition-colors"
                 >
-                  <span className="font-body-2-sm text-white">확인</span>
+                  <span className="font-body-2-sm text-white">
+                    {isUpdating ? '저장 중...' : '확인'}
+                  </span>
                 </button>
                 <button
                   onClick={() => setShowSaveModal(false)}
-                  className="w-168 h-52 bg-gray-100 hover:bg-gray-200 rounded-button flex items-center justify-center cursor-pointer transition-colors"
+                  disabled={isUpdating}
+                  className="w-168 h-52 bg-gray-100 hover:bg-gray-200 disabled:cursor-not-allowed rounded-button flex items-center justify-center cursor-pointer transition-colors"
                 >
                   <span className="font-body-2-sm text-black">취소</span>
                 </button>

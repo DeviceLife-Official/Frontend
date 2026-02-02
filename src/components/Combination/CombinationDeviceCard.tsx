@@ -1,12 +1,10 @@
 import { useState } from 'react';
-import CombinationTag from '@/components/Combination/CombinationTag';
 import StarIcon from '@/assets/icons/star.svg?react';
-import { type UserCombination } from '@/types/devices';
-import { type DeviceSummary } from '@/constants/mockData';
+import type { ComboListItem, ComboDevice } from '@/types/combo/combo';
 
 type CombinationDeviceCardProps = {
-  combination: UserCombination;
-  devices: DeviceSummary[];
+  combination: ComboListItem;
+  devices: ComboDevice[];
   columns?: 3 | 4;
   defaultRows?: number;
   showExpandButton?: boolean;
@@ -61,19 +59,21 @@ const CombinationDeviceCard = ({
     <div className={className}>
       {/* 조합 정보 */}
       <div className="flex flex-col gap-24 pl-20 py-24">
-        {/* 조합 번호 + 조합명 */}
+        {/* 조합명 */}
         <div className="flex flex-col gap-8">
-          <p className="font-body-3-r text-gray-400">{combination.label}</p>
           <div className="flex items-center gap-8">
-            <p className="font-body-1-sm text-black">{combination.name}</p>
-            {combination.isMain && <StarIcon className="w-22 h-22" />}
+            <p className="font-body-1-sm text-black">{combination.comboName}</p>
+            {combination.isPinned && <StarIcon className="w-22 h-22" />}
           </div>
         </div>
         {/* Tags */}
         <div className="flex gap-12 -ml-4">
-          {combination.tags.map((tag) => (
-            <CombinationTag key={tag.name} name={tag.name} status={tag.status} />
-          ))}
+          <span className="bg-blue-200 text-blue-700 font-body-2-sm px-12 py-8 rounded-full">
+            기기 {combination.deviceCount}개
+          </span>
+          <span className="bg-gray-200 text-gray-700 font-body-2-sm px-12 py-8 rounded-full">
+            ₩{combination.totalPrice.toLocaleString()}
+          </span>
         </div>
       </div>
 
@@ -82,14 +82,14 @@ const CombinationDeviceCard = ({
         <div className={`grid ${gridColsClass} gap-x-28 gap-y-12`}>
           {displayedDevices.map((device) => (
             <div
-              key={device.id}
+              key={device.deviceId}
               className={`bg-white rounded-card shadow-[0_0_4px_rgba(0,0,0,0.1)] p-12 ${deviceCardWidth} flex items-center gap-12`}
             >
               <div className={`${deviceImageSize} bg-gray-200 flex-shrink-0`} />
               <div className="flex flex-col gap-4">
                 <p className="font-body-3-sm text-black">{device.name}</p>
-                <p className="font-body-4-r text-gray-300">{device.chargingType}</p>
-                <p className="font-body-3-r text-gray-300">{device.color}</p>
+                <p className="font-body-4-r text-gray-300">{device.brandName}</p>
+                <p className="font-body-3-r text-gray-300">{device.deviceType}</p>
               </div>
             </div>
           ))}

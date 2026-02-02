@@ -9,6 +9,9 @@ import CombinationStyleProbe from '@/components/Combination/CombinationStyleProb
 import { useCombinationMotion } from '@/hooks/useCombinationMotion';
 import { useCombinationNameInput } from '@/hooks/useCombinationNameInput';
 import { usePostCreateCombination } from '@/apis/combo/postCreateCombination';
+import axios from 'axios';
+import type { AxiosError } from 'axios';
+import type { CommonResponse } from '@/types/common';
 
 type ResultPhase = 'idle' | 'shrink' | 'stack' | 'done';
 
@@ -25,6 +28,7 @@ const CombinationCreatePage = () => {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const styleProbeRef = useRef<HTMLDivElement | null>(null);
   const targetRef = useRef<HTMLDivElement | null>(null);
+  const submitLockedRef = useRef(false);
 
   const {
     value: name,
@@ -54,8 +58,10 @@ const CombinationCreatePage = () => {
   const { mutateAsync } = usePostCreateCombination();
 
   const handleCreate = async () => {
+    if (submitLockedRef.current) return;
     if (!isValid) return;
     if (validate(name) !== null) return;
+    submitLockedRef.current = true;
     try {
       setServerErrorMessage(null);
       const res = await mutateAsync({ comboName: name });
@@ -63,15 +69,19 @@ const CombinationCreatePage = () => {
         setBgOn(true);
         start(res.result.comboName);
       }
-    } catch (err: any) {
-      const code = err?.response?.data?.code;
-      if (code === 'AUTH_401') {
-        navigate('/auth/login');
-        return;
-      }
-      if (code === 'COMBO_4005') {
-        setServerErrorMessage('이미 동일한 이름의 조합이 존재합니다.');
-        return;
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        const axiosErr = err as AxiosError<CommonResponse<null>>;
+        const code = axiosErr.response?.data?.code;
+        // 인터셉터 로그인 리다이렉트 구현 후 아래 코드는 삭제
+        if (code === 'AUTH_401') {
+          navigate('/auth/login');
+          return;
+        }
+        if (code === 'COMBO_4005') {
+          setServerErrorMessage('이미 동일한 이름의 조합이 존재합니다.');
+          return;
+        }
       }
       setServerErrorMessage('조합 생성 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
     }
@@ -81,7 +91,6 @@ const CombinationCreatePage = () => {
     serverErrorMessage ??
     errorMessage ??
     '회원의 경우 로그인 한 뒤 조합을 생성해야 마이페이지>내 조합 목록에 저장됩니다.';
-
   const buttonClass = useMemo(
     () => `w-280 ${isValid ? 'bg-blue-600 hover:bg-blue-500' : 'bg-gray-300 cursor-not-allowed'}`,
     [isValid]
@@ -122,16 +131,19 @@ const CombinationCreatePage = () => {
                   onCompositionStart={onCompositionStart}
                   onCompositionEnd={onCompositionEnd}
                   onKeyDown={(e) => {
-                    if (e.key === 'Enter' && isValid) handleCreate();
+                    if (e.key !== 'Enter') return;
+                    if (submitLockedRef.current) return;
+                    e.preventDefault();
+                    if (isValid) handleCreate();
                   }}
                   className="w-500 h-52 px-20 py-20 rounded-button bg-blue-100 placeholder-gray-300 font-body-2-r outline-none"
                 />
                 <p className="pl-20 mt-16 font-body-4-r text-warning">{helperText}</p>
               </div>
               <PrimaryButton
-                text="조합 생성하기"
+                text={submitLockedRef.current ? '생성 중...' : '조합 생성하기'}
                 onClick={handleCreate}
-                disabled={!isValid}
+                disabled={!isValid || submitLockedRef.current}
                 className={buttonClass}
               />
             </div>

@@ -1,26 +1,21 @@
-type PrimaryButtonProps = {
+import clsx from 'clsx';
+
+type PrimaryButtonProps = React.ComponentProps<'button'> & {
   text: string;
-  onClick?: () => void;
-  disabled?: boolean;
-  className?: string;
-  form?: string;
 };
 
-const PrimaryButton = ({ text, onClick, disabled = false, className = '', form }: PrimaryButtonProps) => {
+const PrimaryButton = ({ text, disabled = false, className, ...props }: PrimaryButtonProps) => {
   return (
     <button
-      onClick={onClick}
       disabled={disabled}
-      form={form}
-      className={`
-        flex items-center justify-center
-        h-52
-        rounded-button
-        font-body-2-sm
-        text-white
-        ${className} 
-        ${disabled ? 'bg-gray-300 cursor-not-allowed' : 'cursor-pointer'}
-      `}
+      className={clsx(
+        'flex items-center justify-center',
+        'h-52 rounded-button',
+        'font-body-2-sm text-white',
+        disabled ? 'bg-gray-300 cursor-not-allowed' : 'cursor-pointer',
+        className
+      )}
+      {...props}
     >
       {text}
     </button>

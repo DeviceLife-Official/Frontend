@@ -16,8 +16,8 @@ const SignupPage = () => {
           {/* 로고 */}
           <p className="font-service-name text-black">Device Life</p>
           {/* 회원가입 버튼들 */}
-          <div className="flex flex-col items-center gap-12 w-full">
-            <SignupButton text="Device Life 계정 만들기" icon={<DeviceLifeLogo />} onClick={() => navigate(ROUTES.auth.signup.account)} textStart={124} />
+          <div className="flex flex-col items-center gap-20 w-full">
+            <SignupButton text="Device Life 계정 만들기" icon={<DeviceLifeLogo />} onClick={() => navigate(ROUTES.auth.signup.account)} textStart={132} />
             <SignupButton text="구글로 시작하기" icon={<GoogleLogo />} textStart={146} />
           </div>
         </div>
