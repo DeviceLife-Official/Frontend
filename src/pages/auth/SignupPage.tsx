@@ -27,7 +27,7 @@ const SignupPage = () => {
           <span>이미 Device Life 계정이 있으신가요?</span>
           <button
             type="button"
-            className="underline underline-offset-4 cursor-pointer"
+            className="underline underline-offset-4 cursor-pointer hover:opacity-80"
             onClick={() => navigate(ROUTES.auth.login)}
           >
             로그인하기
