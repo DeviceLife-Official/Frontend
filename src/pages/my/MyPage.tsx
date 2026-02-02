@@ -668,7 +668,7 @@ const MyPage = () => {
                             onClick={handleBackToNormal}
                             className="p-10 cursor-pointer hover:opacity-80"
                           >
-                            <BackIcon className="w-34 h-34 text-gray-400 [&>rect]:hidden" />
+                            <BackIcon className="w-48 h-48 text-gray-400 [&>rect]:hidden" />
                           </button>
                         </div>
 
