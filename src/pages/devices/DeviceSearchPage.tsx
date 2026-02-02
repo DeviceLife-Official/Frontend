@@ -231,7 +231,7 @@ const DeviceSearchPage = () => {
               placeholder="기기명으로 검색"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="flex-1 bg-transparent font-body-1-r text-gray-300 outline-none placeholder:text-gray-300"
+              className="flex-1 bg-transparent font-body-1-r text-gray-500 outline-none placeholder:text-gray-500"
             />
           </div>
         </div>
