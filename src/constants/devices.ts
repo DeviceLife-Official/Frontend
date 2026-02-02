@@ -5,6 +5,7 @@ import WatchIcon from '@/assets/icons/watch.svg?react';
 import HeadsetIcon from '@/assets/icons/headset.svg?react';
 import KeyboardIcon from '@/assets/icons/keyboard.svg?react';
 import MouseIcon from '@/assets/icons/mouse.svg?react';
+import ChargeIcon from '@/assets/icons/charge.svg?react';
 import type { ComponentType, SVGProps } from 'react';
 
 export interface DeviceCategory {
@@ -26,6 +27,7 @@ export const DEVICE_CATEGORIES: DeviceCategory[] = [
   { id: 5, name: '이어폰/헤드폰', Icon: HeadsetIcon },
   { id: 6, name: '키보드', Icon: KeyboardIcon },
   { id: 7, name: '마우스', Icon: MouseIcon },
+  { id: 8, name: '충전기', Icon: ChargeIcon },
 ];
 
 export const SORT_OPTIONS: FilterOption[] = [
