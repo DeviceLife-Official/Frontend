@@ -13,7 +13,7 @@ import { useCrossfadeImage } from '@/hooks/useCrossfadeImage';
 import { nextInArray } from '@/utils/nextInArray';
 
 const TAGS = [
-  'Office/portability',
+  'Office',
   'Developer',
   'Game',
   'Study',
@@ -24,7 +24,7 @@ const TAGS = [
 type Tag = (typeof TAGS)[number];
 
 const TAG_IMAGE_MAP: Record<Tag, string> = {
-  'Office/portability': Office,
+  Office,
   Developer,
   Game,
   Study,
