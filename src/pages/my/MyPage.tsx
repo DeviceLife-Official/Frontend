@@ -11,6 +11,8 @@ import SupportIcon from '@/assets/icons/support.svg?react';
 import SettingMoreIcon from '@/assets/icons/settingmore.svg?react';
 import AlarmIcon from '@/assets/icons/alarm.svg?react';
 import StarIcon from '@/assets/icons/star.svg?react';
+import StarXIcon from '@/assets/icons/starx.svg?react';
+import StarHoverIcon from '@/assets/icons/starhover.svg?react';
 import PlusIcon from '@/assets/icons/plus.svg?react';
 import BackIcon from '@/assets/icons/back.svg?react';
 import CheckboxIcon from '@/assets/icons/checkbox.svg?react';
@@ -80,6 +82,7 @@ const MyPage = () => {
   const [comboNameError, setComboNameError] = useState<string | null>(null);
   const [showSaveModal, setShowSaveModal] = useState(false);
   const [showTopButton, setShowTopButton] = useState(false);
+  const [hoveredStarComboId, setHoveredStarComboId] = useState<number | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const sidebarContentRef = useRef<HTMLDivElement>(null);
   const combinationListRef = useRef<HTMLDivElement>(null);
@@ -94,19 +97,17 @@ const MyPage = () => {
 
   // 정렬된 조합 목록
   const sortedCombos = useMemo(() => {
-    const sorted = [...combos];
+    const pinnedCombos = combos.filter(c => c.isPinned);
+    const unpinnedCombos = combos.filter(c => !c.isPinned);
 
-    // 먼저 isPinned 기준으로 정렬 (즐겨찾기가 상단)
-    sorted.sort((a, b) => {
-      if (a.isPinned && !b.isPinned) return -1;
-      if (!a.isPinned && b.isPinned) return 1;
-      return 0;
+    // 즐겨찾기는 pinnedAt 내림차순 (최근 즐겨찾기한 것이 위로)
+    pinnedCombos.sort((a, b) => {
+      const aTime = new Date(a.pinnedAt || 0).getTime();
+      const bTime = new Date(b.pinnedAt || 0).getTime();
+      return bTime - aTime;
     });
 
-    // 그 다음 선택된 정렬 옵션 적용
-    const pinnedCombos = sorted.filter(c => c.isPinned);
-    const unpinnedCombos = sorted.filter(c => !c.isPinned);
-
+    // 일반 조합은 sortOption에 따라 정렬
     const sortUnpinned = (arr: ComboListItem[]) => {
       switch (sortOption) {
         case 'latest':
@@ -360,6 +361,9 @@ const MyPage = () => {
   // Pin 토글 핸들러
   const handleTogglePin = (e: React.MouseEvent, comboId: number) => {
     e.stopPropagation(); // 카드 클릭 이벤트 전파 방지
+
+    // hover 상태 초기화 (즐겨찾기 토글 시 hover 아이콘 유지 방지)
+    setHoveredStarComboId(null);
 
     togglePin(comboId, {
       onSuccess: () => {
@@ -683,14 +687,34 @@ const MyPage = () => {
                             </div>
                             <div className="flex items-center gap-8">
                               <p className="font-heading-3 text-black">{combination.comboName}</p>
-                              <StarIcon
-                                onClick={(e) => handleTogglePin(e, combination.comboId)}
-                                className={`w-22 h-22 -mt-2 cursor-pointer transition-opacity ${
-                                  combination.isPinned
-                                    ? 'hover:opacity-80'
-                                    : 'opacity-30 hover:opacity-50'
-                                }`}
-                              />
+                              {combination.isPinned ? (
+                                <StarIcon
+                                  onClick={(e) => handleTogglePin(e, combination.comboId)}
+                                  className={`!w-22 !h-22 -mt-2 cursor-pointer transition-opacity ${
+                                    hoveredStarComboId === combination.comboId ? 'opacity-80' : ''
+                                  }`}
+                                  onMouseEnter={() => setHoveredStarComboId(combination.comboId)}
+                                  onMouseLeave={() => setHoveredStarComboId(null)}
+                                />
+                              ) : (
+                                <>
+                                  {hoveredStarComboId === combination.comboId ? (
+                                    <StarHoverIcon
+                                      onClick={(e) => handleTogglePin(e, combination.comboId)}
+                                      className="!w-22 !h-22 -mt-2 cursor-pointer"
+                                      onMouseEnter={() => setHoveredStarComboId(combination.comboId)}
+                                      onMouseLeave={() => setHoveredStarComboId(null)}
+                                    />
+                                  ) : (
+                                    <StarXIcon
+                                      onClick={(e) => handleTogglePin(e, combination.comboId)}
+                                      className="!w-22 !h-22 -mt-2 cursor-pointer"
+                                      onMouseEnter={() => setHoveredStarComboId(combination.comboId)}
+                                      onMouseLeave={() => setHoveredStarComboId(null)}
+                                    />
+                                  )}
+                                </>
+                              )}
                             </div>
                           </div>
                         </div>
@@ -903,14 +927,34 @@ const MyPage = () => {
                                       }`}
                                       autoFocus
                                     />
-                                    <StarIcon
-                                      onClick={(e) => handleTogglePin(e, combination.comboId)}
-                                      className={`w-22 h-22 -mt-2 cursor-pointer transition-opacity ${
-                                        combination.isPinned
-                                          ? 'hover:opacity-80'
-                                          : 'opacity-30 hover:opacity-50'
-                                      }`}
-                                    />
+                                    {combination.isPinned ? (
+                                      <StarIcon
+                                        onClick={(e) => handleTogglePin(e, combination.comboId)}
+                                        className={`!w-22 !h-22 -mt-2 cursor-pointer transition-opacity ${
+                                          hoveredStarComboId === combination.comboId ? 'opacity-80' : ''
+                                        }`}
+                                        onMouseEnter={() => setHoveredStarComboId(combination.comboId)}
+                                        onMouseLeave={() => setHoveredStarComboId(null)}
+                                      />
+                                    ) : (
+                                      <>
+                                        {hoveredStarComboId === combination.comboId ? (
+                                          <StarHoverIcon
+                                            onClick={(e) => handleTogglePin(e, combination.comboId)}
+                                            className="!w-22 !h-22 -mt-2 cursor-pointer"
+                                            onMouseEnter={() => setHoveredStarComboId(combination.comboId)}
+                                            onMouseLeave={() => setHoveredStarComboId(null)}
+                                          />
+                                        ) : (
+                                          <StarXIcon
+                                            onClick={(e) => handleTogglePin(e, combination.comboId)}
+                                            className="!w-22 !h-22 -mt-2 cursor-pointer"
+                                            onMouseEnter={() => setHoveredStarComboId(combination.comboId)}
+                                            onMouseLeave={() => setHoveredStarComboId(null)}
+                                          />
+                                        )}
+                                      </>
+                                    )}
                                   </div>
                                   {comboNameError && (
                                     <p className="pl-12 font-body-4-r text-warning">{comboNameError}</p>
@@ -927,14 +971,34 @@ const MyPage = () => {
                                   </div>
                                   <div className="flex items-center gap-8">
                                     <p className="font-body-1-sm text-black">{combination.comboName}</p>
-                                    <StarIcon
-                                      onClick={(e) => handleTogglePin(e, combination.comboId)}
-                                      className={`w-22 h-22 -mt-2 cursor-pointer transition-opacity ${
-                                        combination.isPinned
-                                          ? 'hover:opacity-80'
-                                          : 'opacity-30 hover:opacity-50'
-                                      }`}
-                                    />
+                                    {combination.isPinned ? (
+                                      <StarIcon
+                                        onClick={(e) => handleTogglePin(e, combination.comboId)}
+                                        className={`!w-22 !h-22 -mt-2 cursor-pointer transition-opacity ${
+                                          hoveredStarComboId === combination.comboId ? 'opacity-80' : ''
+                                        }`}
+                                        onMouseEnter={() => setHoveredStarComboId(combination.comboId)}
+                                        onMouseLeave={() => setHoveredStarComboId(null)}
+                                      />
+                                    ) : (
+                                      <>
+                                        {hoveredStarComboId === combination.comboId ? (
+                                          <StarHoverIcon
+                                            onClick={(e) => handleTogglePin(e, combination.comboId)}
+                                            className="!w-22 !h-22 -mt-2 cursor-pointer"
+                                            onMouseEnter={() => setHoveredStarComboId(combination.comboId)}
+                                            onMouseLeave={() => setHoveredStarComboId(null)}
+                                          />
+                                        ) : (
+                                          <StarXIcon
+                                            onClick={(e) => handleTogglePin(e, combination.comboId)}
+                                            className="!w-22 !h-22 -mt-2 cursor-pointer"
+                                            onMouseEnter={() => setHoveredStarComboId(combination.comboId)}
+                                            onMouseLeave={() => setHoveredStarComboId(null)}
+                                          />
+                                        )}
+                                      </>
+                                    )}
                                   </div>
                                 </div>
                               )}
@@ -1000,14 +1064,34 @@ const MyPage = () => {
                                 </div>
                                 <div className="flex items-center gap-8">
                                   <p className="font-body-1-sm text-black">{combination.comboName}</p>
-                                  <StarIcon
-                                    onClick={(e) => handleTogglePin(e, combination.comboId)}
-                                    className={`w-22 h-22 -mt-2 cursor-pointer transition-opacity ${
-                                      combination.isPinned
-                                        ? 'hover:opacity-80'
-                                        : 'opacity-30 hover:opacity-50'
-                                    }`}
-                                  />
+                                  {combination.isPinned ? (
+                                    <StarIcon
+                                      onClick={(e) => handleTogglePin(e, combination.comboId)}
+                                      className={`!w-22 !h-22 -mt-2 cursor-pointer transition-opacity ${
+                                        hoveredStarComboId === combination.comboId ? 'opacity-80' : ''
+                                      }`}
+                                      onMouseEnter={() => setHoveredStarComboId(combination.comboId)}
+                                      onMouseLeave={() => setHoveredStarComboId(null)}
+                                    />
+                                  ) : (
+                                    <>
+                                      {hoveredStarComboId === combination.comboId ? (
+                                        <StarHoverIcon
+                                          onClick={(e) => handleTogglePin(e, combination.comboId)}
+                                          className="!w-22 !h-22 -mt-2 cursor-pointer"
+                                          onMouseEnter={() => setHoveredStarComboId(combination.comboId)}
+                                          onMouseLeave={() => setHoveredStarComboId(null)}
+                                        />
+                                      ) : (
+                                        <StarXIcon
+                                          onClick={(e) => handleTogglePin(e, combination.comboId)}
+                                          className="!w-22 !h-22 -mt-2 cursor-pointer"
+                                          onMouseEnter={() => setHoveredStarComboId(combination.comboId)}
+                                          onMouseLeave={() => setHoveredStarComboId(null)}
+                                        />
+                                      )}
+                                    </>
+                                  )}
                                 </div>
                               </div>
                               {/* Tags - API에서 태그 정보 제공 시 구현 */}
