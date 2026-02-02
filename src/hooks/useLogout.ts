@@ -7,8 +7,10 @@ import { useNavigate } from 'react-router-dom';
 
 /**
  * 로그아웃 훅
- * - API 호출과 로그아웃 후처리를 모두 포함
- * - 비회원(토큰 없음) 케이스도 처리: API 호출 없이 후처리만 수행
+
+  - API 호출과 로그아웃 후처리를 모두 포함
+  - 비회원(토큰 없음) 케이스도 처리: API 호출 없이 후처리만 수행
+  - 로그인 페이지로 이동
  */
 export const useLogout = () => {
   const queryClient = useQueryClient();
