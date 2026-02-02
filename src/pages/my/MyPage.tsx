@@ -81,6 +81,10 @@ const MyPage = () => {
   const [editingCombinationName, setEditingCombinationName] = useState('');
   const [comboNameError, setComboNameError] = useState<string | null>(null);
   const [showSaveModal, setShowSaveModal] = useState(false);
+  const [showDeleteSuccessModal, setShowDeleteSuccessModal] = useState(false);
+  const [showSaveSuccessModal, setShowSaveSuccessModal] = useState(false);
+  const [isDeleteFadingOut, setIsDeleteFadingOut] = useState(false);
+  const [isSaveFadingOut, setIsSaveFadingOut] = useState(false);
   const [showTopButton, setShowTopButton] = useState(false);
   const [hoveredStarComboId, setHoveredStarComboId] = useState<number | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -169,7 +173,7 @@ const MyPage = () => {
 
   // 모달 열릴 때 배경 스크롤 방지 (position: fixed 방식)
   useEffect(() => {
-    const isAnyModalOpen = showDeleteModal || showCombinationDeleteModal || showSaveModal;
+    const isAnyModalOpen = showDeleteModal || showCombinationDeleteModal || showSaveModal || showDeleteSuccessModal || showSaveSuccessModal;
 
     if (isAnyModalOpen) {
       // 현재 스크롤 위치 저장
@@ -205,7 +209,47 @@ const MyPage = () => {
         window.scrollTo(0, parseInt(scrollY || '0') * -1);
       }
     };
-  }, [showDeleteModal, showCombinationDeleteModal, showSaveModal]);
+  }, [showDeleteModal, showCombinationDeleteModal, showSaveModal, showDeleteSuccessModal, showSaveSuccessModal]);
+
+  // 삭제 완료 팝업 자동 닫기 (DeviceSearchPage와 동일한 애니메이션)
+  useEffect(() => {
+    if (showDeleteSuccessModal) {
+      // 1. 0.8초 유지
+      const holdTimer = setTimeout(() => {
+        setIsDeleteFadingOut(true);
+
+        // 2. 0.2초 동안 fade-out 후 종료
+        const closeTimer = setTimeout(() => {
+          setShowDeleteSuccessModal(false);
+          setIsDeleteFadingOut(false);
+        }, 200);
+
+        return () => clearTimeout(closeTimer);
+      }, 800);
+
+      return () => clearTimeout(holdTimer);
+    }
+  }, [showDeleteSuccessModal]);
+
+  // 저장 완료 팝업 자동 닫기 (DeviceSearchPage와 동일한 애니메이션)
+  useEffect(() => {
+    if (showSaveSuccessModal) {
+      // 1. 0.8초 유지
+      const holdTimer = setTimeout(() => {
+        setIsSaveFadingOut(true);
+
+        // 2. 0.2초 동안 fade-out 후 종료
+        const closeTimer = setTimeout(() => {
+          setShowSaveSuccessModal(false);
+          setIsSaveFadingOut(false);
+        }, 200);
+
+        return () => clearTimeout(closeTimer);
+      }, 800);
+
+      return () => clearTimeout(holdTimer);
+    }
+  }, [showSaveSuccessModal]);
 
   // 조합명 유효성 검사 함수
   const validateComboName = useCallback((name: string): string | null => {
@@ -322,6 +366,12 @@ const MyPage = () => {
       // 모든 삭제 완료 후
       setSelectedDevices([]);
       setShowDeleteModal(false);
+
+      // 성공 팝업 표시 (0.3초 delay)
+      setTimeout(() => {
+        setShowDeleteSuccessModal(true);
+      }, 300);
+
       console.log('모든 기기 삭제 완료');
     } catch (error) {
       console.error('기기 삭제 중 오류 발생:', error);
@@ -351,6 +401,11 @@ const MyPage = () => {
           setDetailViewComboId(null);
           setSelectedDevices([]);
         }
+
+        // 성공 팝업 표시 (0.3초 delay)
+        setTimeout(() => {
+          setShowDeleteSuccessModal(true);
+        }, 300);
       },
       onError: (error) => {
         console.error('조합 삭제 실패:', error);
@@ -397,6 +452,11 @@ const MyPage = () => {
           setEditingComboId(null);
           setEditingCombinationName(''); // state 초기화
           setComboNameError(null); // 에러 초기화
+
+          // 성공 팝업 표시 (0.3초 delay)
+          setTimeout(() => {
+            setShowSaveSuccessModal(true);
+          }, 300);
         },
         onError: (error) => {
           console.error('조합명 수정 실패:', error);
@@ -1280,6 +1340,46 @@ const MyPage = () => {
                   <span className="font-body-2-sm text-black">취소</span>
                 </button>
               </div>
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* 삭제 완료 팝업 */}
+      {showDeleteSuccessModal && (
+        <>
+          {/* 배경 오버레이 */}
+          <div className={`fixed inset-0 bg-black/10 z-60 transition-opacity duration-200 ${isDeleteFadingOut ? 'opacity-0' : 'opacity-100'}`} />
+          {/* 팝업 */}
+          <div className={`fixed inset-0 flex items-center justify-center z-70 pointer-events-none transition-opacity duration-200 ${isDeleteFadingOut ? 'opacity-0' : 'opacity-100'}`}>
+            <div className="bg-white rounded-card shadow-[0_0_10px_rgba(0,0,0,0.25)] w-300 h-300 flex flex-col items-center justify-center pointer-events-auto animate-fade-in">
+              {/* 빨간 원 + 흰색 휴지통 아이콘 */}
+              <div className="w-100 h-100 bg-warning rounded-full flex items-center justify-center">
+                <TrashIcon className="w-48 h-48 text-white" />
+              </div>
+              {/* 텍스트 */}
+              <p className="font-heading-3 text-black mt-42">
+                삭제 완료
+              </p>
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* 저장 완료 팝업 */}
+      {showSaveSuccessModal && (
+        <>
+          {/* 배경 오버레이 */}
+          <div className={`fixed inset-0 bg-black/10 z-60 transition-opacity duration-200 ${isSaveFadingOut ? 'opacity-0' : 'opacity-100'}`} />
+          {/* 팝업 */}
+          <div className={`fixed inset-0 flex items-center justify-center z-70 pointer-events-none transition-opacity duration-200 ${isSaveFadingOut ? 'opacity-0' : 'opacity-100'}`}>
+            <div className="bg-white rounded-card shadow-[0_0_10px_rgba(0,0,0,0.25)] w-300 h-300 flex flex-col items-center justify-center pointer-events-auto animate-fade-in">
+              {/* 파란 체크 아이콘 */}
+              <SaveIcon className="w-100 h-100 text-blue-600" />
+              {/* 텍스트 */}
+              <p className="font-heading-3 text-blue-600 mt-42">
+                저장 완료!
+              </p>
             </div>
           </div>
         </>
