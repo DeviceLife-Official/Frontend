@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { signupAccountSchema, type SignupAccountFormData } from '@/schemas/authSchema';
@@ -28,22 +28,12 @@ const SignupAccountPage = () => {
     clearErrors,
     trigger,
     getValues,
-    watch,
   } = useForm<SignupAccountFormData>({
     resolver: zodResolver(signupAccountSchema),
     // 최초에는 에러를 숨기고, submit 이후에는 onChange로 실시간 갱신되도록
     mode: 'onChange',
     reValidateMode: 'onChange',
   });
-
-  const emailValue = watch('email');
-
-  // 이메일이 비어있으면 중복확인 상태 초기화
-  useEffect(() => {
-    if (!emailValue && isEmailVerified) {
-      setIsEmailVerified(false);
-    }
-  }, [emailValue, isEmailVerified, setIsEmailVerified]);
 
   // 이메일 중복확인 핸들러
   const handleCheckDuplicate = async () => {
