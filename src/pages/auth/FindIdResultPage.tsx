@@ -45,7 +45,7 @@ const FindIdResultPage = () => {
             />
 
             {/* 하단 버튼 영역 - 성공 (로그인 / 비밀번호 찾기) */}
-            <div className="flex flex-col items-center w-full gap-20">
+            <div className="flex flex-col items-center w-full gap-12">
               <PrimaryButton
                 text="로그인"
                 className="w-400 bg-blue-600 hover:bg-blue-500"
@@ -82,7 +82,7 @@ const FindIdResultPage = () => {
             </div>
 
             {/* 하단 버튼 영역 - 실패 */}
-            <div className="flex flex-col items-center w-full gap-20">
+              <div className="flex flex-col items-center w-full gap-12">
               <PrimaryButton
                 text="확인"
                 className="w-400 bg-blue-600 hover:bg-blue-500"

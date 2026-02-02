@@ -6,11 +6,13 @@ type UseCombinationNameInputParams = {
   maxLen?: number;
 };
 
-type ErrorType = 'invalidChar' | 'tooLong' | 'onlySpace' | 'duplicate' | null;
+
+type ErrorType = 'invalidChar' | 'tooLong' | 'onlySpace' | 'duplicate' | 'vowelJamo' | null;
 
 const DEFAULT_MAX_LEN = 20;
-const ALLOWED_REGEX = /^[가-힣a-zA-Z0-9 ]*$/;
-const DISALLOWED_GLOBAL = /[^가-힣a-zA-Z0-9 ]/g;
+const ALLOWED_REGEX = /^[가-힣ㄱ-ㅎa-zA-Z0-9 ]*$/;
+const VOWEL_JAMO_REGEX = /[\u314F-\u3163\u1161-\u1175]/;
+const DISALLOWED_GLOBAL = /[^가-힣ㄱ-ㅎa-zA-Z0-9 ]/g;
 
 export const useCombinationNameInput = ({
   inputRef,
@@ -28,6 +30,7 @@ export const useCombinationNameInput = ({
   const normalizedExisting = useMemo(() => existingNames.map((v) => v.trim()), [existingNames]);
 
   const validate = (next: string): ErrorType => {
+    if (VOWEL_JAMO_REGEX.test(next)) return 'vowelJamo';
     if (!ALLOWED_REGEX.test(next)) return 'invalidChar';
     if (next.length > maxLen) return 'tooLong';
     if (next.trim().length === 0) return 'onlySpace';
@@ -36,19 +39,25 @@ export const useCombinationNameInput = ({
   };
 
   const sanitize = (raw: string) => {
+    const hadVowelJamo = VOWEL_JAMO_REGEX.test(raw);
     const removedInvalid = raw.replace(DISALLOWED_GLOBAL, '');
     const sliced = removedInvalid.slice(0, maxLen);
     return {
       sanitized: sliced,
       hadInvalid: removedInvalid !== raw,
       wasTooLong: removedInvalid.length > maxLen,
+      hadVowelJamo,
     };
   };
 
   const apply = (raw: string) => {
-    const { sanitized, hadInvalid, wasTooLong } = sanitize(raw);
+    const { sanitized, hadInvalid, wasTooLong, hadVowelJamo } = sanitize(raw);
     setValue(sanitized);
 
+    if (hadVowelJamo) {
+      setError('vowelJamo');
+      return;
+    }
     if (hadInvalid) {
       setError('invalidChar');
       return;
@@ -57,13 +66,11 @@ export const useCombinationNameInput = ({
       setError('tooLong');
       return;
     }
-
     setError(validate(sanitized));
   };
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const raw = e.target.value;
-
     if (isComposing) {
       setValue(raw);
       return;
@@ -82,6 +89,8 @@ export const useCombinationNameInput = ({
 
   const errorMessage = useMemo(() => {
     switch (error) {
+      case 'vowelJamo':
+        return '단일 모음(ㅏ, ㅓ, ㅗ …)은 입력할 수 없습니다.';
       case 'invalidChar':
         return '특수문자나 이모지는 사용할 수 없습니다.';
       case 'tooLong':
