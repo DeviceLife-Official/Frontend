@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState ,useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ROTATION_MS, TRANSITION_MS, USER_INTERACTION_PAUSE_MS } from '@/constants/time';
 import LifestyleTag from '@/components/Lifestyle/LifestyleTag';
 import Office from '@/assets/images/lifestyle/office.jpg';
@@ -12,14 +12,7 @@ import { useAutoRotate } from '@/hooks/useAutoRotate';
 import { useCrossfadeImage } from '@/hooks/useCrossfadeImage';
 import { nextInArray } from '@/utils/nextInArray';
 
-const TAGS = [
-  'Office',
-  'Developer',
-  'Game',
-  'Study',
-  'Video-editing',
-  'Tour/portability',
-] as const;
+const TAGS = ['Office', 'Developer', 'Game', 'Study', 'Video-editing', 'Tour/portability'] as const;
 
 type Tag = (typeof TAGS)[number];
 
@@ -52,22 +45,30 @@ const LifestylePage = () => {
     getNext: getNextTag,
   });
 
-const handleClickTag = (label: Tag) => {
-  const now = Date.now();
-  setSelectedLabel(label);
-  setIsAutoRotate(false);
-  resumeAtRef.current = now + USER_INTERACTION_PAUSE_MS;
-  if (resumeTimerRef.current) {
-    clearTimeout(resumeTimerRef.current);
-  }
-  const delay = USER_INTERACTION_PAUSE_MS;
-  resumeTimerRef.current = window.setTimeout(() => {
-    if (Date.now() >= (resumeAtRef.current ?? 0)) {
-      setIsAutoRotate(true);
+  const handleClickTag = (label: Tag) => {
+    const now = Date.now();
+    setSelectedLabel(label);
+    setIsAutoRotate(false);
+    resumeAtRef.current = now + USER_INTERACTION_PAUSE_MS;
+    if (resumeTimerRef.current) {
+      clearTimeout(resumeTimerRef.current);
     }
-  }, delay);
-};
+    const delay = USER_INTERACTION_PAUSE_MS;
+    resumeTimerRef.current = window.setTimeout(() => {
+      if (Date.now() >= (resumeAtRef.current ?? 0)) {
+        setIsAutoRotate(true);
+      }
+    }, delay);
+  };
 
+useEffect(() => {
+  return () => {
+    if (resumeTimerRef.current) {
+      clearTimeout(resumeTimerRef.current);
+      resumeTimerRef.current = null;
+    }
+  };
+}, []);
 
   return (
     <div className="min-h-[calc(100vh-80px)] flex items-center justify-center">
