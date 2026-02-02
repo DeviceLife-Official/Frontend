@@ -1,5 +1,5 @@
-import { useCallback, useMemo, useState } from 'react';
-import { ROTATION_MS, TRANSITION_MS } from '@/constants/time';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { ROTATION_MS, TRANSITION_MS, USER_INTERACTION_PAUSE_MS } from '@/constants/time';
 import LifestyleTag from '@/components/Lifestyle/LifestyleTag';
 import Office from '@/assets/images/lifestyle/office.jpg';
 import Developer from '@/assets/images/lifestyle/developer.jpg';
@@ -12,19 +12,12 @@ import { useAutoRotate } from '@/hooks/useAutoRotate';
 import { useCrossfadeImage } from '@/hooks/useCrossfadeImage';
 import { nextInArray } from '@/utils/nextInArray';
 
-const TAGS = [
-  'Office/portability',
-  'Developer',
-  'Game',
-  'Study',
-  'Video-editing',
-  'Tour/portability',
-] as const;
+const TAGS = ['Office', 'Developer', 'Game', 'Study', 'Video-editing', 'Tour/portability'] as const;
 
 type Tag = (typeof TAGS)[number];
 
 const TAG_IMAGE_MAP: Record<Tag, string> = {
-  'Office/portability': Office,
+  Office,
   Developer,
   Game,
   Study,
@@ -42,6 +35,8 @@ const LifestylePage = () => {
     transitionMs: TRANSITION_MS,
   });
   const getNextTag = useCallback((prev: Tag) => nextInArray(TAGS, prev), []);
+  const resumeTimerRef = useRef<number | null>(null);
+  const resumeAtRef = useRef<number | null>(null);
 
   useAutoRotate<Tag>({
     enabled: isAutoRotate && !isPaused,
@@ -51,9 +46,29 @@ const LifestylePage = () => {
   });
 
   const handleClickTag = (label: Tag) => {
+    const now = Date.now();
     setSelectedLabel(label);
-    setIsAutoRotate(true);
+    setIsAutoRotate(false);
+    resumeAtRef.current = now + USER_INTERACTION_PAUSE_MS;
+    if (resumeTimerRef.current) {
+      clearTimeout(resumeTimerRef.current);
+    }
+    const delay = USER_INTERACTION_PAUSE_MS;
+    resumeTimerRef.current = window.setTimeout(() => {
+      if (Date.now() >= (resumeAtRef.current ?? 0)) {
+        setIsAutoRotate(true);
+      }
+    }, delay);
   };
+
+useEffect(() => {
+  return () => {
+    if (resumeTimerRef.current) {
+      clearTimeout(resumeTimerRef.current);
+      resumeTimerRef.current = null;
+    }
+  };
+}, []);
 
   return (
     <div className="min-h-[calc(100vh-80px)] flex items-center justify-center">

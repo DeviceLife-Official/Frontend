@@ -5,10 +5,14 @@ import PasswordSettingSection from '@/components/Setting/PasswordSettingSection'
 import LifestyleSelectSection from '@/components/Setting/LifestyleSelectSection';
 import PrimaryButton from '@/components/Button/PrimaryButton';
 import { validateNickname } from '@/utils/validateNickname';
+import BackIcon from '@/assets/icons/back_gray.svg?react';
+import { useNavigate } from 'react-router-dom';
 
 type AuthProvider = 'GENERAL' | 'HYBRID' | 'GOOGLE';
 
 const ProfileEditPage = () => {
+  const navigate = useNavigate();
+
   // TODO: API 연동
   const initialNickname = '000';
   const initialEmail = 'example@devicelife.com';
@@ -40,7 +44,13 @@ const ProfileEditPage = () => {
 
   return (
     <div className="flex flex-col gap-72 mx-auto w-560 mt-92 mb-92">
-      <p className="font-heading-2 text-black">프로필 수정</p>
+      <div className="flex flex-row gap-20 h-40 items-center">
+        <BackIcon
+          className="w-34 h-34 cursor-pointer"
+          onClick={() => navigate('/my')}
+        />
+        <p className="font-heading-2 text-black">프로필 수정</p>
+      </div>
       <div className="flex flex-col gap-20 w-560">
         <NicknameEditSection value={nickname} onChange={setNickname} errorMessage={nicknameError} />
         <EmailSection value={initialEmail} />

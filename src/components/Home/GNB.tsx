@@ -4,19 +4,33 @@ import UserBlue500 from '@/assets/icons/userblue500.svg?react';
 import UserBlue600 from '@/assets/icons/userblue600.svg?react';
 import { NavLink } from 'react-router-dom';
 import { useState } from 'react';
+import clsx from 'clsx';
 
-const navTextClass = 'font-body-1-sm text-black hover:text-blue-500 active:text-blue-600';
+const NAV_TEXT_CLASS = 'font-body-1-sm text-black hover:text-blue-500 active:text-blue-600';
+const USER_BLUE_500_CLASS = 'absolute inset-0 opacity-0 group-hover:opacity-100';
+
 type AuthStatus = 'logout' | 'login';
 
 interface GNBProps {
   paddingRight?: number;
 }
+const getNavClass = ({ isActive }: { isActive: boolean }) =>
+  clsx(NAV_TEXT_CLASS, isActive && 'text-blue-600 hover:text-blue-500');
+
+const getMyNavLinkClass = ({ isActive }: { isActive: boolean }) =>
+  clsx(
+    'group flex items-center gap-4',
+    isActive ? 'font-body-1-sm text-blue-600 hover:text-blue-500' : NAV_TEXT_CLASS
+  );
+
+const getUserBlackClass = (isActive: boolean) =>
+  clsx('absolute inset-0', isActive ? 'opacity-0' : 'opacity-100 group-hover:opacity-0');
+
+const getUserBlue600Class = (isActive: boolean) =>
+  clsx('absolute inset-0', isActive ? 'opacity-100' : 'opacity-0 group-active:opacity-100');
 
 const GNB = ({ paddingRight: _paddingRight = 0 }: GNBProps) => {
   const [authStatus] = useState<AuthStatus>('login');
-  const navClass = ({ isActive }: { isActive: boolean }) =>
-    `${navTextClass} ${isActive ? 'text-blue-600 hover:text-blue-500' : ''}`;
-
   return (
     <header className="fixed top-0 left-0 w-full z-50 bg-white h-80">
       <div className="mx-auto w-full max-w-1920 h-full">
@@ -27,54 +41,44 @@ const GNB = ({ paddingRight: _paddingRight = 0 }: GNBProps) => {
                 <Logo className="w-48 h-48" />
                 <span className="font-service-name-sm text-black">Device Life</span>
               </NavLink>
-              <NavLink to="/devices" className={navClass}>
+              <NavLink to="/devices" className={getNavClass}>
                 기기검색
               </NavLink>
-              <NavLink to="/lifestyle" className={navClass}>
+              <NavLink to="/lifestyle" className={getNavClass}>
                 라이프스타일
               </NavLink>
-              <NavLink to="/combination/create" className={navClass}>
+              <NavLink to="/combination/create" className={getNavClass}>
                 조합 생성하기
               </NavLink>
             </div>
             <div className="flex items-center gap-56 shrink-0">
               {authStatus === 'logout' ? (
                 <>
-                  <NavLink to="/auth/login" className={navClass}>
+                  <NavLink to="/auth/login" className={getNavClass}>
                     로그인
                   </NavLink>
-                  <NavLink to="/auth/signup" className={navClass}>
+                  <NavLink to="/auth/signup" className={getNavClass}>
                     회원가입
                   </NavLink>
                 </>
               ) : (
                 <>
-                  <NavLink
-                    to="/my"
-                    className={({ isActive }) =>
-                      `group flex items-center gap-4 ${
-                        isActive ? 'font-body-1-sm text-blue-600 hover:text-blue-500' : navTextClass
-                      }`
-                    }
-                  >
+                  <NavLink to="/my" className={getMyNavLinkClass}>
                     {({ isActive }) => (
                       <>
                         <span className="relative w-32 h-32">
-                          <UserBlack
-                            className={`absolute inset-0 ${isActive ? 'opacity-0' : 'opacity-100 group-hover:opacity-0'}`}
-                          />
-                          <UserBlue500 className="absolute inset-0 opacity-0 group-hover:opacity-100" />
-                          <UserBlue600
-                            className={`absolute inset-0 ${isActive ? 'opacity-100' : 'opacity-0 group-active:opacity-100'}`}
-                          />
+                          <UserBlack className={getUserBlackClass(isActive)} />
+                          <UserBlue500 className={USER_BLUE_500_CLASS} />
+                          <UserBlue600 className={getUserBlue600Class(isActive)} />
                         </span>
                         MY
                       </>
                     )}
                   </NavLink>
+
                   <NavLink
                     to="/"
-                    className={navTextClass}
+                    className={NAV_TEXT_CLASS}
                     onClick={() => {
                       // TODO: 로그아웃 로직
                     }}

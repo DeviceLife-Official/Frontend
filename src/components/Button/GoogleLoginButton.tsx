@@ -1,22 +1,22 @@
 import GoogleLogo from '@/assets/logos/google_noborder.svg?react';
+import clsx from 'clsx';
 
 type GoogleLoginButtonProps = {
   onClick?: () => void;
   className?: string;
 };
 
-const GoogleLoginButton = ({
-  onClick,
-  className = '',
-}: GoogleLoginButtonProps) => {
+const GoogleLoginButton = ({ onClick, className }: GoogleLoginButtonProps) => {
   return (
     <button
       type="button"
       onClick={onClick}
-      className={`
-        flex items-center gap-24 py-8 pl-0 pr-8 bg-white cursor-pointer
-        ${className}
-      `}
+      className={clsx(
+        'flex items-center gap-24',
+        'py-8 pl-0 pr-8',
+        'bg-white cursor-pointer',
+        className
+      )}
       style={{ boxShadow: '0 0 4px 0 rgba(0, 0, 0, 0.20)' }}
     >
       <GoogleLogo className="size-30" />
