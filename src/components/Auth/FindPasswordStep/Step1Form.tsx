@@ -12,7 +12,7 @@ type Step1FormProps = {
   hasSubmitted: boolean;
 };
 
-const Step1Form = ({ onSubmit, onInvalid, isPending, hasSubmitted }: Step1FormProps) => {
+const Step1Form = ({ onSubmit, onInvalid, isPending }: Step1FormProps) => {
   const {
     register,
     handleSubmit,
@@ -57,7 +57,7 @@ const Step1Form = ({ onSubmit, onInvalid, isPending, hasSubmitted }: Step1FormPr
           {/* 입력 영역 */}
           <div className="flex flex-col gap-8 w-full">
             <PrimaryInput {...register('email')} type="email" placeholder="이메일(ID)" />
-            {(hasSubmitted || errors.email) && errors.email && (
+            {errors.email && (
               <p className="font-body-3-r text-warning">{errors.email.message}</p>
             )}
           </div>
