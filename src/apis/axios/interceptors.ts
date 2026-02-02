@@ -1,6 +1,11 @@
 // 요청 및 응답 인터셉터
 import type { InternalAxiosRequestConfig, AxiosInstance } from 'axios';
-import { getAccessToken, getRefreshToken, setAuthTokens, clearAuthTokens } from '@/utils/auth/authStorage';
+import {
+  getAccessToken,
+  getRefreshToken,
+  setAuthTokens,
+  clearAuthTokens,
+} from '@/utils/auth/authStorage';
 import { refreshAxiosInstance } from '@/apis/axios/refreshAxios';
 import type { RefreshTokenResponse } from '@/types/auth/refresh';
 import { setAuthorizationHeader } from '@/utils/auth/setAuthorizationHeader';
@@ -8,18 +13,23 @@ import { ROUTES } from '@/constants/routes';
 
 // 응답 인터셉터에서 사용할 상태
 let refreshPromise: Promise<string> | null = null; // refresh 진행 중인 Promise
+let isRedirectingToLogin = false; // 중복 리다이렉트 방지
+
+const redirectToLoginOnce = () => {
+  if (isRedirectingToLogin) return;
+  isRedirectingToLogin = true;
+
+  clearAuthTokens();
+  window.location.href = ROUTES.auth.login;
+};
 
 // 요청 인터셉터: 매 요청 전에 토큰을 헤더에 추가
 export const setupRequestInterceptor = (instance: AxiosInstance) => {
   instance.interceptors.request.use((config) => {
-    // 토큰 읽기
     const accessToken = getAccessToken();
-
-    // 토큰이 있으면 Authorization 헤더에 추가
     if (accessToken) {
       setAuthorizationHeader(config, accessToken);
     }
-
     return config;
   });
 };
@@ -29,94 +39,95 @@ export const setupResponseInterceptor = (instance: AxiosInstance) => {
   instance.interceptors.response.use(
     (response) => response,
     async (error) => {
-      const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
+      // config가 없으면 (네트워크 오류 등) 에러 그대로 반환
+      if (!error.config) {
+        return Promise.reject(error);
+      }
 
-      // 401 에러이고, 재시도한 요청이 아닌 경우
-      if (error.response?.status === 401 && !originalRequest._retry) {
-        // refreshToken 가져오기
-        const refreshToken = getRefreshToken();
-        // refreshToken이 없으면 (비로그인 상황) 바로 에러 반환
-        if (!refreshToken) {
-          return Promise.reject(error);
-        }
+      const originalRequest = error.config as InternalAxiosRequestConfig & {
+        _retry?: boolean;
+      };
 
-        // 이미 refresh 중이면 refreshPromise를 기다림
-        if (refreshPromise) {
-          try {
-            const newToken = await refreshPromise;
-            setAuthorizationHeader(originalRequest, newToken);
-            return instance(originalRequest);
-          } catch (refreshError) {
-            return Promise.reject(refreshError);
-          }
-        }
+      // 401이 아니면 그대로 에러 전달
+      if (error.response?.status !== 401) {
+        return Promise.reject(error);
+      }
 
-        // 재시도 플래그 설정
-        originalRequest._retry = true;
+      // 이미 재시도한 요청이면 무한루프 방지
+      if (originalRequest._retry) {
+        return Promise.reject(error);
+      }
 
-        // refresh Promise(토큰 재발급 작업을 나타내는 Promise) 생성
-        refreshPromise = (async () => {
-          try {
-            // 1. refreshAxiosInstance로 토큰 재발급 요청
-            const { data } = await refreshAxiosInstance.post<RefreshTokenResponse>(
-              '/api/auth/refresh',
-              {},
-              {
-                headers: {
-                  refreshToken,
-                },
-              }
-            );
+      // ✅ 401 처리에 들어오자마자 재시도 플래그부터 박기 (중요)
+      originalRequest._retry = true;
 
-            // 2. refresh 응답이 이상하면 바로 실패 처리
-            if (!data?.result?.accessToken) {
-              throw new Error('토큰 재발급 응답이 올바르지 않습니다.');
-            }
+      // refreshToken 가져오기
+      const refreshToken = getRefreshToken();
 
-            // 3. 기존 refreshToken 가져오기
-            const currentRefreshToken = getRefreshToken();
+      // refreshToken이 없으면 (비로그인 상황) 토큰 정리 + 로그인 페이지로 이동 (딱 1번만)
+      if (!refreshToken) {
+        redirectToLoginOnce();
+        return Promise.reject(error);
+      }
 
-            // 4. 기존 refreshToken이 없으면 토큰 정리 후 에러 반환
-            if (!currentRefreshToken) {
-              clearAuthTokens();
-              throw new Error('Refresh token이 저장소에서 사라졌습니다.');
-            }
-
-            // 5. 새 accessToken 저장 및 기존 refreshToken 유지
-            setAuthTokens({
-              accessToken: data.result.accessToken,
-              refreshToken: currentRefreshToken,
-            });
-
-            // 6. 새 accessToken 반환
-            return data.result.accessToken;
-          } catch (refreshError) {
-            // 7. refresh 실패 시 토큰 정리 후 로그인 페이지로 이동
-            clearAuthTokens();
-            window.location.href = ROUTES.auth.login;
-            throw refreshError;
-          } finally {
-            // 8. refresh 완료 후 Promise 초기화
-            refreshPromise = null;
-          }
-        })();
-
-        // refresh Promise 실행
+      // 이미 refresh 중이면 refreshPromise를 기다렸다가 재시도
+      if (refreshPromise) {
         try {
-          // 1. refresh Promise 실행
           const newToken = await refreshPromise;
-          // 2. 새 accessToken 헤더에 추가
           setAuthorizationHeader(originalRequest, newToken);
-          // 3. 요청 재시도
           return instance(originalRequest);
         } catch (refreshError) {
-          // 4. refresh 실패 시 에러 반환
+          redirectToLoginOnce();
           return Promise.reject(refreshError);
         }
       }
 
-      // 401 에러가 아닌 경우 에러 반환
-      return Promise.reject(error);
+      // refresh Promise 생성
+      refreshPromise = (async () => {
+        try {
+          const { data } = await refreshAxiosInstance.post<RefreshTokenResponse>(
+            '/api/auth/refresh',
+            {},
+            {
+              headers: {
+                refreshToken,
+              },
+            }
+          );
+
+          if (!data?.result?.accessToken) {
+            throw new Error('토큰 재발급 응답이 올바르지 않습니다.');
+          }
+
+          const currentRefreshToken = getRefreshToken();
+          if (!currentRefreshToken) {
+            throw new Error('Refresh token이 저장소에서 사라졌습니다.');
+          }
+
+          setAuthTokens({
+            accessToken: data.result.accessToken,
+            refreshToken: currentRefreshToken,
+          });
+
+          return data.result.accessToken;
+        } catch (refreshError) {
+          // ✅ refresh 실패 시에도 딱 1번만 로그인 이동
+          redirectToLoginOnce();
+          throw refreshError;
+        } finally {
+          refreshPromise = null;
+        }
+      })();
+
+      // refresh 후 원 요청 재시도
+      try {
+        const newToken = await refreshPromise;
+        setAuthorizationHeader(originalRequest, newToken);
+        return instance(originalRequest);
+      } catch (refreshError) {
+        // 이미 위에서 redirectToLoginOnce가 처리했을 수 있으니 여기서는 에러만 전달
+        return Promise.reject(refreshError);
+      }
     }
   );
 };
