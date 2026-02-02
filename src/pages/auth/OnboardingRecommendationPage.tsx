@@ -1,19 +1,16 @@
-import { useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import PrimaryButton from '@/components/Button/PrimaryButton';
 import RecentlyViewedCard from '@/components/RecentlyViewed/RecentlyViewedCard';
 import { MOCK_PRODUCTS } from '@/constants/mockData';
 import type { RecentlyViewedDevice } from '@/types/recentlyViewed';
-import { queryKey } from '@/constants/queryKey';
 import { useSignupStore } from '@/stores/signupStore';
-import type { UserProfileResult } from '@/types/mypage/user';
+import { useGetUserProfile } from '@/apis/mypage/getUserProfile';
 import { ROUTES } from '@/constants/routes';
 
 const OnboardingRecommendationPage = () => {
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
-  // 캐시에서 직접 가져오기 (OnboardingCompletePage에서 이미 호출했으므로 캐시에 있음)
-  const userProfile = queryClient.getQueryData<UserProfileResult | undefined>([queryKey.USER_PROFILE]);
+  // useGetUserProfile 훅 사용: 캐시에 있으면 사용, 없으면 자동으로 API 호출
+  const { data: userProfile } = useGetUserProfile();
   const { profile } = useSignupStore();
 
   // 라이프스타일 태그명 (주된 용도에서 선택한 태그)

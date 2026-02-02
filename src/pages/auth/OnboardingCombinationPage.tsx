@@ -32,6 +32,9 @@ const OnboardingCombinationPage = () => {
   };
 
   const handleSelectCombination = async () => {
+    // isPending일 때는 중복 요청 방지
+    if (isPending) return;
+
     try {
       await createCombo({ comboName: combinationName });
       navigate(ROUTES.auth.onboarding.complete, { replace: true });
