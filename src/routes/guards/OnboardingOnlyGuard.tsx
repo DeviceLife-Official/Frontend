@@ -13,6 +13,7 @@ export const OnboardingOnlyGuard = () => {
   const isOnboardingCompleted = false;
 
   if (isOnboardingCompleted) {
+    alert('온보딩이 완료되었습니다.');
     return <Navigate to={ROUTES.home} replace />;
   }
 

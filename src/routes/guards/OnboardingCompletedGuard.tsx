@@ -10,9 +10,10 @@ export const OnboardingCompletedGuard = () => {
 
   // 온보딩 완료 여부 판단 (임시)
   // TODO: api 연동 후 수정
-  const isOnboardingCompleted = false;
+  const isOnboardingCompleted = true;
 
   if (!isOnboardingCompleted) {
+    alert('온보딩을 완료한 후 이용해주세요.');
     return <Navigate to={ROUTES.auth.onboarding.lifestyle} replace />;
   }
 
