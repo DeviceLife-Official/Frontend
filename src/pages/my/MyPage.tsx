@@ -559,7 +559,7 @@ const MyPage = () => {
                     className={`rounded-card relative ${
                       isDetailView
                         ? 'bg-blue-100'
-                        : `bg-white shadow-[0_0_10px_rgba(0,0,0,0.1)] transition-colors ${hasDevices ? 'cursor-pointer hover:bg-gray-50' : ''}`
+                        : `bg-white shadow-[0_0_4px_rgba(0,0,0,0.25)] transition-shadow ${hasDevices ? 'cursor-pointer hover:shadow-[0_0_12px_rgba(0,105,240,0.5)]' : ''}`
                     }`}
                   >
                     {/* 일반 모드: Setting More 버튼 + 드롭다운 또는 저장하기 버튼 */}
