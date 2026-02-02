@@ -11,6 +11,7 @@ export const AuthGuard = () => {
   const hasTokens = hasAuthTokens();
 
   if (!hasTokens) {
+    alert('로그인 후 이용해주세요.');
     return <Navigate to={ROUTES.auth.login} replace />;
   }
 

@@ -10,7 +10,6 @@ export const OnboardingCompletedGuard = () => {
 
   // 온보딩 완료 여부 판단 (임시)
   // TODO: api 연동 후 수정
-  
   const isOnboardingCompleted = false;
 
   if (!isOnboardingCompleted) {
