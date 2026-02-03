@@ -7,6 +7,7 @@ import KeyboardIcon from '@/assets/icons/keyboard.svg?react';
 import MouseIcon from '@/assets/icons/mouse.svg?react';
 import ChargeIcon from '@/assets/icons/charge.svg?react';
 import type { ComponentType, SVGProps } from 'react';
+import type { DeviceType } from '@/types/brand/brand';
 
 export interface DeviceCategory {
   id: number;
@@ -29,6 +30,17 @@ export const DEVICE_CATEGORIES: DeviceCategory[] = [
   { id: 7, name: '마우스', Icon: MouseIcon },
   { id: 8, name: '충전기', Icon: ChargeIcon },
 ];
+
+export const CATEGORY_TO_DEVICE_TYPE: Record<number, DeviceType> = {
+  1: 'SMARTPHONE',
+  2: 'LAPTOP',
+  3: 'TABLET',
+  4: 'SMARTWATCH',
+  5: 'AUDIO',
+  6: 'KEYBOARD',
+  7: 'MOUSE',
+  8: 'CHARGER',
+};
 
 export const SORT_OPTIONS: FilterOption[] = [
   { value: 'latest', label: '최신순' },

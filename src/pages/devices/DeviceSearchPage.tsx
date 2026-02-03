@@ -20,14 +20,15 @@ import {
   DEVICE_CATEGORIES,
   SORT_OPTIONS,
   PRICE_OPTIONS,
-  BRAND_OPTIONS,
   SCROLL_CONSTANTS,
+  CATEGORY_TO_DEVICE_TYPE,
 } from '@/constants/devices';
 import { MOCK_PRODUCTS } from '@/constants/mockData';
 import { type AuthStatus, type ModalView } from '@/types/devices';
 import { useGetCombos } from '@/apis/combo/getCombos';
 import { useGetCombo } from '@/apis/combo/getComboId';
 import { usePostComboDevice } from '@/apis/combo/postComboDevices';
+import { useGetBrands } from '@/apis/brand/getBrands';
 
 const DeviceSearchPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -37,21 +38,24 @@ const DeviceSearchPage = () => {
   const [authStatus] = useState<AuthStatus>('login'); // 테스트로 login으로 변경. 추후 logout으로 변경.
   const [modalView, setModalView] = useState<ModalView>('device');
 
-  // API hooks
-  const { data: combos = [] } = useGetCombos();
-  const { mutate: addDeviceToCombo, isPending: isAddingDevice } = usePostComboDevice();
-
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
   const [sortOption, setSortOption] = useState('latest');
   const [selectedPrice, setSelectedPrice] = useState<string[]>([]);
-  const [selectedBrand, setSelectedBrand] = useState<string | null>(null);
+  const [selectedBrand, setSelectedBrand] = useState<number | null>(null);
   const [isAtBottom, setIsAtBottom] = useState(false);
   const [showTopButton, setShowTopButton] = useState(false);
   const [selectedCombinationId, setSelectedCombinationId] = useState<number | null>(null);
   const [showAllDevices, setShowAllDevices] = useState(false);
   const [showSaveCompleteModal, setShowSaveCompleteModal] = useState(false);
   const [isFadingOut, setIsFadingOut] = useState(false);
+
+  // API hooks
+  const { data: combos = [] } = useGetCombos();
+  const { mutate: addDeviceToCombo, isPending: isAddingDevice } = usePostComboDevice();
+
+  const deviceType = selectedCategory ? CATEGORY_TO_DEVICE_TYPE[selectedCategory] : null;
+  const { data: brands = [] } = useGetBrands(deviceType);
 
   // 선택된 조합의 상세 정보 조회
   const { data: comboDetail } = useGetCombo(selectedCombinationId);
@@ -195,10 +199,15 @@ const DeviceSearchPage = () => {
     };
 
     window.addEventListener('scroll', handleScroll);
-    handleScroll(); 
+    handleScroll();
 
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  /* 카테고리 변경 시 브랜드 필터 초기화 */
+  useEffect(() => {
+    setSelectedBrand(null);
+  }, [selectedCategory]);
 
   /* 모달 열렸을 때 y 스크롤 방지 */
   useEffect(() => {
@@ -215,6 +224,12 @@ const DeviceSearchPage = () => {
   const handleScrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
+
+  /* 브랜드 옵션 변환 */
+  const brandOptions = brands.map(brand => ({
+    value: brand.brandId.toString(),
+    label: brand.brandName,
+  }));
 
   return (
     <div className={`min-h-screen bg-white relative ${isAtBottom ? 'bg-effect-fade-bottom' : ''}`}>
@@ -292,9 +307,9 @@ const DeviceSearchPage = () => {
             <div className="ml-20">
               <FilterDropdown
                 label="브랜드"
-                options={BRAND_OPTIONS}
-                selectedValue={selectedBrand}
-                onSelect={(value) => setSelectedBrand(value as string | null)}
+                options={brandOptions}
+                selectedValue={selectedBrand !== null ? selectedBrand.toString() : null}
+                onSelect={(value) => setSelectedBrand(value ? Number(value) : null)}
               />
             </div>
           </div>
