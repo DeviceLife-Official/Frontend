@@ -277,7 +277,13 @@ const DeviceSearchPage = () => {
       {/* Main Content */}
       {/* <div className="pt-108"> */}
         {/* Search Bar */}
-        <div className="max-w-1920 mx-auto flex justify-center pt-80 px-120 2xl:px-160">
+        <div
+          className="max-w-1920 mx-auto flex justify-center pt-80"
+          style={{
+            paddingLeft: 'clamp(120px, calc(120px + (100vw - 1440px) * 0.083333), 160px)',
+            paddingRight: 'clamp(120px, calc(120px + (100vw - 1440px) * 0.083333), 160px)',
+          }}
+        >
           <div className="w-600 h-72 bg-blue-100 rounded-button px-12 py-20 flex items-center gap-12">
             <SearchIcon className="w-28 h-28 flex-shrink-0 text-black" />
             <input
@@ -291,8 +297,19 @@ const DeviceSearchPage = () => {
         </div>
 
         {/* Device Categories */}
-        <div className="max-w-1920 mx-auto flex justify-center pt-36 2xl:pt-56 px-120 2xl:px-160">
-          <div className="flex items-center justify-center gap-20 2xl:gap-56">
+        <div
+          className="max-w-1920 mx-auto flex justify-center pt-36 2xl:pt-56"
+          style={{
+            paddingLeft: 'clamp(120px, calc(120px + (100vw - 1440px) * 0.083333), 160px)',
+            paddingRight: 'clamp(120px, calc(120px + (100vw - 1440px) * 0.083333), 160px)',
+          }}
+        >
+          <div
+            className="flex items-center justify-center"
+            style={{
+              gap: 'clamp(20px, calc(20px + (100vw - 1440px) * 0.075), 56px)',
+            }}
+          >
             {DEVICE_CATEGORIES.map((category) => {
               const { Icon } = category;
               const isSelected = selectedCategory === category.id;
@@ -322,10 +339,16 @@ const DeviceSearchPage = () => {
         <div className="w-full h-8 opacity-50 bg-gradient-to-t from-[#EEEEF0] to-[#E4E4E7] mt-84" />
 
         {/* Filter Section */}
-        <div className="max-w-1920 mx-auto px-120 2xl:px-160 pt-32">
+        <div
+          className="max-w-1920 mx-auto pt-32"
+          style={{
+            paddingLeft: 'clamp(120px, calc(120px + (100vw - 1440px) * 0.083333), 160px)',
+            paddingRight: 'clamp(120px, calc(120px + (100vw - 1440px) * 0.083333), 160px)',
+          }}
+        >
 
           {/* Filters */}
-          <div className="flex items-center gap-0 pl-40">
+          <div className="flex items-center gap-0">
             {/* Filter Icon */}
             <button className="w-48 h-48 flex items-center justify-center">
               <FilterIcon className={`w-48 h-48 ${selectedPrice.length > 0 || selectedBrand !== null ? 'text-blue-600' : 'text-black'}`} />
@@ -370,7 +393,14 @@ const DeviceSearchPage = () => {
         </div>
 
         {/* Product Grid */}
-        <div ref={productGridRef} className="max-w-1920 mx-auto px-120 2xl:px-160">
+        <div
+          ref={productGridRef}
+          className="max-w-1920 mx-auto"
+          style={{
+            paddingLeft: 'clamp(120px, calc(120px + (100vw - 1440px) * 0.083333), 160px)',
+            paddingRight: 'clamp(120px, calc(120px + (100vw - 1440px) * 0.083333), 160px)',
+          }}
+        >
           {isLoading && (
             <div className="flex justify-center items-center py-80">
               <p className="font-body-1-r text-gray-400">기기를 불러오는 중...</p>
