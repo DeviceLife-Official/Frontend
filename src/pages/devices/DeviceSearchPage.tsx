@@ -222,44 +222,45 @@ const DeviceSearchPage = () => {
 
       {/* Main Content */}
       {/* <div className="pt-108"> */}
-        {/* Search + Categories Container */}
+        {/* Search Bar */}
         <div className="flex justify-center pt-80">
-          <div className="w-860 2xl:w-1142 flex flex-col items-center gap-36 2xl:gap-56">
-            {/* Search Bar */}
-            <div className="w-600 h-72 bg-blue-100 rounded-button px-12 py-20 flex items-center gap-12">
-              <SearchIcon className="w-28 h-28 flex-shrink-0 text-black" />
-              <input
-                type="text"
-                placeholder="기기명으로 검색"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="flex-1 bg-transparent font-body-1-r text-gray-300 outline-none placeholder:text-gray-300"
-              />
-            </div>
+          <div className="w-600 h-72 bg-blue-100 rounded-button px-12 py-20 flex items-center gap-12">
+            <SearchIcon className="w-28 h-28 flex-shrink-0 text-black" />
+            <input
+              type="text"
+              placeholder="기기명으로 검색"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="flex-1 bg-transparent font-body-1-r text-gray-500 outline-none placeholder:text-gray-500"
+            />
+          </div>
+        </div>
 
-            {/* Device Categories */}
-            <div className="w-full flex items-center justify-between">
-              {DEVICE_CATEGORIES.map((category) => {
-                const { Icon } = category;
-                const isSelected = selectedCategory === category.id;
-                return (
-                  <button
-                    key={category.id}
-                    onClick={() => setSelectedCategory(category.id)}
-                    className={`flex flex-col items-center gap-12 cursor-pointer transition-colors ${
-                      isSelected
-                        ? 'text-blue-600'
-                        : 'text-black hover:text-blue-500 active:text-blue-600'
-                    }`}
-                  >
-                    <div className="w-50 h-50 2xl:w-60 2xl:h-60 flex items-center justify-center">
-                      <Icon className="w-50 h-50 2xl:w-60 2xl:h-60" />
-                    </div>
-                    <p className="font-body-1-sm whitespace-nowrap">{category.name}</p>
-                  </button>
-                );
-              })}
-            </div>
+        {/* Device Categories */}
+        <div className="flex justify-center pt-36 2xl:pt-56">
+          <div className="flex items-center justify-center gap-20 2xl:gap-56">
+            {DEVICE_CATEGORIES.map((category) => {
+              const { Icon } = category;
+              const isSelected = selectedCategory === category.id;
+              return (
+                <button
+                  key={category.id}
+                  onClick={() => setSelectedCategory(category.id)}
+                  className={`flex flex-col items-center gap-12 cursor-pointer transition-colors ${
+                    category.id === 8 ? 'w-80' : 'w-110'
+                  } ${
+                    isSelected
+                      ? 'text-blue-600'
+                      : 'text-black hover:text-blue-500 active:text-blue-600'
+                  }`}
+                >
+                  <div className="w-50 h-50 2xl:w-60 2xl:h-60 flex items-center justify-center">
+                    <Icon className="w-50 h-50 2xl:w-60 2xl:h-60" />
+                  </div>
+                  <p className="font-body-1-sm whitespace-nowrap">{category.name}</p>
+                </button>
+              );
+            })}
           </div>
         </div>
 
