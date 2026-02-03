@@ -1,6 +1,6 @@
 import { axiosInstance } from '@/apis/axios/axios';
 import type { SearchDevicesParams, SearchDevicesResponse, SearchDevicesResult } from '@/types/device/device';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useInfiniteQuery } from '@tanstack/react-query';
 import { queryKey } from '@/constants/queryKey';
 
 // 기기 검색
@@ -18,6 +18,18 @@ export const useSearchDevices = (params: SearchDevicesParams) => {
   return useQuery<SearchDevicesResult>({
     queryKey: [queryKey.DEVICES, 'search', params],
     queryFn: () => searchDevices(params),
+    staleTime: 1 * 60 * 1000, // 1분
+    gcTime: 5 * 60 * 1000, // 5분
+  });
+};
+
+// 무한 스크롤을 위한 hook
+export const useInfiniteSearchDevices = (params: Omit<SearchDevicesParams, 'cursor'>) => {
+  return useInfiniteQuery<SearchDevicesResult>({
+    queryKey: [queryKey.DEVICES, 'search', params],
+    queryFn: ({ pageParam }) => searchDevices({ ...params, cursor: pageParam as string | undefined }),
+    initialPageParam: undefined as string | undefined,
+    getNextPageParam: (lastPage) => (lastPage.hasNext ? lastPage.nextCursor : undefined),
     staleTime: 1 * 60 * 1000, // 1분
     gcTime: 5 * 60 * 1000, // 5분
   });

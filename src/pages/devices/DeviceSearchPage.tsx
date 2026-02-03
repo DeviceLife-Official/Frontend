@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import GNB from '@/components/Home/GNB';
 import ProductCard from '@/components/ProductCard/ProductCard';
@@ -23,12 +23,14 @@ import {
   SCROLL_CONSTANTS,
   CATEGORY_TO_DEVICE_TYPE,
 } from '@/constants/devices';
-import { MOCK_PRODUCTS } from '@/constants/mockData';
 import { type AuthStatus, type ModalView } from '@/types/devices';
 import { useGetCombos } from '@/apis/combo/getCombos';
 import { useGetCombo } from '@/apis/combo/getComboId';
 import { usePostComboDevice } from '@/apis/combo/postComboDevices';
 import { useGetBrands } from '@/apis/brand/getBrands';
+import { useInfiniteSearchDevices } from '@/apis/device/searchDevices';
+import { convertSortOption, convertPriceOptions, convertDeviceToProduct } from '@/utils/deviceFilter';
+import type { SearchDevicesParams } from '@/types/device/device';
 
 const DeviceSearchPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -67,9 +69,41 @@ const DeviceSearchPage = () => {
     window.scrollTo(0, 0);
   }, []);
 
+  /* API 파라미터 생성 */
+  const apiParams = useMemo<Omit<SearchDevicesParams, 'cursor'>>(() => ({
+    keyword: searchQuery || undefined,
+    size: 24,
+    sortType: convertSortOption(sortOption),
+    deviceTypes: selectedCategory ? [CATEGORY_TO_DEVICE_TYPE[selectedCategory]] : undefined,
+    ...convertPriceOptions(selectedPrice),
+    brandIds: selectedBrand ? [selectedBrand] : undefined,
+  }), [searchQuery, sortOption, selectedCategory, selectedPrice, selectedBrand]);
+
+  /* API 호출 */
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isLoading,
+    isError,
+  } = useInfiniteSearchDevices(apiParams);
+
+  /* 모든 페이지의 devices를 평탄화 */
+  const allDevices = useMemo(
+    () => data?.pages.flatMap(page => page.devices) ?? [],
+    [data]
+  );
+
+  /* Product 타입으로 변환 */
+  const products = useMemo(
+    () => allDevices.map(convertDeviceToProduct),
+    [allDevices]
+  );
+
   /* 선택된 제품 찾기 */
   const selectedProduct = selectedProductId
-    ? MOCK_PRODUCTS.find(p => p.id === Number(selectedProductId))
+    ? products.find(p => p.id === Number(selectedProductId))
     : null;
 
   /* 모달 닫기 */
@@ -196,13 +230,18 @@ const DeviceSearchPage = () => {
           scrollTop + windowHeight >= gridTop + SCROLL_CONSTANTS.TOP_BUTTON_THRESHOLD;
         setShowTopButton(thirdRowVisible);
       }
+
+      /* 무한 스크롤: 하단 도달 시 다음 페이지 로드 */
+      if (reachedBottom && hasNextPage && !isFetchingNextPage) {
+        fetchNextPage();
+      }
     };
 
     window.addEventListener('scroll', handleScroll);
     handleScroll();
 
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   /* 카테고리 변경 시 브랜드 필터 초기화 */
   useEffect(() => {
@@ -238,7 +277,7 @@ const DeviceSearchPage = () => {
       {/* Main Content */}
       {/* <div className="pt-108"> */}
         {/* Search Bar */}
-        <div className="flex justify-center pt-80">
+        <div className="max-w-1920 mx-auto flex justify-center pt-80 px-120 2xl:px-160">
           <div className="w-600 h-72 bg-blue-100 rounded-button px-12 py-20 flex items-center gap-12">
             <SearchIcon className="w-28 h-28 flex-shrink-0 text-black" />
             <input
@@ -252,7 +291,7 @@ const DeviceSearchPage = () => {
         </div>
 
         {/* Device Categories */}
-        <div className="flex justify-center pt-36 2xl:pt-56">
+        <div className="max-w-1920 mx-auto flex justify-center pt-36 2xl:pt-56 px-120 2xl:px-160">
           <div className="flex items-center justify-center gap-20 2xl:gap-56">
             {DEVICE_CATEGORIES.map((category) => {
               const { Icon } = category;
@@ -262,15 +301,15 @@ const DeviceSearchPage = () => {
                   key={category.id}
                   onClick={() => setSelectedCategory(category.id)}
                   className={`flex flex-col items-center gap-12 cursor-pointer transition-colors ${
-                    category.id === 8 ? 'w-80' : 'w-110'
+                    category.id === 8 ? 'w-80' : 'w-108'
                   } ${
                     isSelected
                       ? 'text-blue-600'
                       : 'text-black hover:text-blue-500 active:text-blue-600'
                   }`}
                 >
-                  <div className="w-50 h-50 2xl:w-60 2xl:h-60 flex items-center justify-center">
-                    <Icon className="w-50 h-50 2xl:w-60 2xl:h-60" />
+                  <div className="w-48 h-48 2xl:w-60 2xl:h-60 flex items-center justify-center">
+                    <Icon className="w-48 h-48 2xl:w-60 2xl:h-60" />
                   </div>
                   <p className="font-body-1-sm whitespace-nowrap">{category.name}</p>
                 </button>
@@ -283,10 +322,10 @@ const DeviceSearchPage = () => {
         <div className="w-full h-8 opacity-50 bg-gradient-to-t from-[#EEEEF0] to-[#E4E4E7] mt-84" />
 
         {/* Filter Section */}
-        <div className="mx-auto px-160 2xl:px-200 pt-32">
+        <div className="max-w-1920 mx-auto px-120 2xl:px-160 pt-32">
 
           {/* Filters */}
-          <div className="flex items-center gap-0">
+          <div className="flex items-center gap-0 pl-40">
             {/* Filter Icon */}
             <button className="w-48 h-48 flex items-center justify-center">
               <FilterIcon className={`w-48 h-48 ${selectedPrice.length > 0 || selectedBrand !== null ? 'text-blue-600' : 'text-black'}`} />
@@ -314,10 +353,10 @@ const DeviceSearchPage = () => {
             </div>
           </div>
 
-            <div className="flex items-center justify-between pt-80">
+            <div className="flex items-center justify-between pt-80 px-40">
             {/* Left side - Result count */}
             <div className="flex items-center gap-2">
-              <p className="font-body-1-sm text-black">40</p>
+              <p className="font-body-1-sm text-black">{allDevices.length}</p>
               <p className="font-body-1-r text-black">개 결과</p>
             </div>
 
@@ -331,19 +370,46 @@ const DeviceSearchPage = () => {
         </div>
 
         {/* Product Grid */}
-        <div ref={productGridRef} className="mx-auto px-120 2xl:px-160">
-          <div className="grid grid-cols-3 2xl:grid-cols-4 gap-x-28 gap-y-164">
-            {MOCK_PRODUCTS.map((product) => (
-              <ProductCard
-                key={product.id}
-                product={product}
-                onClick={() => {
-                  searchParams.set('productId', product.id.toString());
-                  setSearchParams(searchParams);
-                }}
-              />
-            ))}
-          </div>
+        <div ref={productGridRef} className="max-w-1920 mx-auto px-120 2xl:px-160">
+          {isLoading && (
+            <div className="flex justify-center items-center py-80">
+              <p className="font-body-1-r text-gray-400">기기를 불러오는 중...</p>
+            </div>
+          )}
+
+          {isError && (
+            <div className="flex justify-center items-center py-80">
+              <p className="font-body-1-r text-red-500">기기를 불러오는데 실패했습니다.</p>
+            </div>
+          )}
+
+          {!isLoading && !isError && products.length === 0 && (
+            <div className="flex justify-center items-center py-80">
+              <p className="font-body-1-r text-gray-400">검색 결과가 없습니다.</p>
+            </div>
+          )}
+
+          {!isLoading && !isError && products.length > 0 && (
+            <div className="grid grid-cols-3 2xl:grid-cols-4 gap-x-28 gap-y-164">
+              {products.map((product) => (
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  onClick={() => {
+                    searchParams.set('productId', product.id.toString());
+                    setSearchParams(searchParams);
+                  }}
+                />
+              ))}
+            </div>
+          )}
+
+          {/* 추가 로딩 인디케이터 (무한 스크롤 중) */}
+          {isFetchingNextPage && (
+            <div className="flex justify-center items-center py-40">
+              <p className="font-body-1-r text-gray-400">더 불러오는 중...</p>
+            </div>
+          )}
         </div>
 
         {/* Top Button - 3행이 보일 때만 표시 */}

@@ -8,7 +8,7 @@ interface ProductCardProps {
 const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
   return (
     <div
-      className="px-40 py-32 cursor-pointer group"
+      className="w-full px-40 py-32 cursor-pointer group"
       onClick={onClick}
     >
       {/* Image - 정사각형 */}

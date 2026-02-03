@@ -77,11 +77,13 @@
   --spacing-164: 164px;
   --spacing-184: 184px;
   --spacing-196: 196px;
+  --spacing-200: 200px;
   --spacing-204: 204px;
   --spacing-228: 228px;
   --spacing-268: 268px;
   --spacing-280: 280px;
   --spacing-300: 300px;
+  --spacing-600: 600px;
 
   /* Typography */
   --font-service: 'KIMM_Bold', system-ui, sans-serif;
