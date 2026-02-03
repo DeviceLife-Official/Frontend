@@ -1353,10 +1353,8 @@ const MyPage = () => {
           {/* 팝업 */}
           <div className={`fixed inset-0 flex items-center justify-center z-70 pointer-events-none transition-opacity duration-200 ${isDeleteFadingOut ? 'opacity-0' : 'opacity-100'}`}>
             <div className="bg-white rounded-card shadow-[0_0_10px_rgba(0,0,0,0.25)] w-300 h-300 flex flex-col items-center justify-center pointer-events-auto animate-fade-in">
-              {/* 빨간 원 + 흰색 휴지통 아이콘 */}
-              <div className="w-100 h-100 bg-warning rounded-full flex items-center justify-center">
-                <TrashIcon className="w-48 h-48 text-white" />
-              </div>
+              {/* 아이콘 */}
+              <RemoveIcon className="w-100 h-100 text-warning" />
               {/* 텍스트 */}
               <p className="font-heading-3 text-black mt-42">
                 삭제 완료
