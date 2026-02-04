@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import GNB from '@/components/Home/GNB';
 import ProductCard from '@/components/ProductCard/ProductCard';
 import PrimaryButton from '@/components/Button/PrimaryButton';
@@ -24,17 +24,31 @@ import {
   SCROLL_CONSTANTS,
 } from '@/constants/devices';
 import { MOCK_PRODUCTS } from '@/constants/mockData';
+import { ROUTES } from '@/constants/routes';
 import { type AuthStatus, type ModalView } from '@/types/devices';
 import { useGetCombos } from '@/apis/combo/getCombos';
 import { useGetCombo } from '@/apis/combo/getComboId';
 import { usePostComboDevice } from '@/apis/combo/postComboDevices';
+import { useGetUserProfile } from '@/apis/mypage/getUserProfile';
+import { hasAuthTokens, hasCompletedOnboarding } from '@/utils/auth/authStorage';
 
 const DeviceSearchPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const selectedProductId = searchParams.get('productId');
+  const navigate = useNavigate();
 
-  // 추후 Zustand/Context에서 인증 상태 가져오기
-  const [authStatus] = useState<AuthStatus>('login'); // 테스트로 login으로 변경. 추후 logout으로 변경.
+  // 로그인 상태 확인
+  const isLoggedIn = hasAuthTokens();
+
+  // 사용자 프로필 조회 (로그인 시에만 자동 실행)
+  const { data: userProfile, isLoading: isProfileLoading } = useGetUserProfile();
+
+  // 온보딩 완료 여부 확인 (로딩 중에는 false로 기본 처리)
+  const hasOnboarding = isProfileLoading ? false : hasCompletedOnboarding(userProfile);
+
+  // 기존 코드와의 호환성을 위한 authStatus
+  const authStatus: AuthStatus = isLoggedIn ? 'login' : 'logout';
+
   const [modalView, setModalView] = useState<ModalView>('device');
 
   // API hooks
@@ -79,11 +93,6 @@ const DeviceSearchPage = () => {
 
   /* 내 조합에 담기 */
   const handleAddToCombination = () => {
-    if (authStatus === 'logout') {
-      // 로그인 페이지로 이동
-      return;
-    }
-
     // 조합이 1개면 바로 저장
     if (combos.length === 1 && selectedProductId) {
       addDeviceToCombo(
@@ -109,6 +118,37 @@ const DeviceSearchPage = () => {
     // 조합이 2개 이상이면 선택 모달 표시
     setModalView('combination');
   };
+
+  /* 버튼 텍스트 및 핸들러 결정 */
+  const getAddToCombinationConfig = () => {
+    // Case 1: 로그아웃 상태
+    if (!isLoggedIn) {
+      return {
+        text: '로그인하고 내 조합에 담기',
+        handler: () => {
+          navigate(ROUTES.auth.login);
+        },
+      };
+    }
+
+    // Case 2: 로그인했지만 온보딩 미완료
+    if (!hasOnboarding) {
+      return {
+        text: '맞춤 설정하고 담기',
+        handler: () => {
+          navigate(ROUTES.auth.onboarding.lifestyle);
+        },
+      };
+    }
+
+    // Case 3: 로그인 + 온보딩 완료
+    return {
+      text: '내 조합에 담기',
+      handler: handleAddToCombination,
+    };
+  };
+
+  const addToCombinationConfig = getAddToCombinationConfig();
 
   /* 조합 선택 - 기기 리스트 보기 */
   const handleSelectCombination = (combinationId: number) => {
@@ -400,8 +440,9 @@ const DeviceSearchPage = () => {
 
                       {/* Button */}
                       <PrimaryButton
-                        text={authStatus === 'logout' ? '로그인하고 내 조합에 담기' : '내 조합에 담기'}
-                        onClick={handleAddToCombination}
+                        text={addToCombinationConfig.text}
+                        onClick={addToCombinationConfig.handler}
+                        disabled={isProfileLoading}
                         className="w-full bg-blue-500 hover:bg-blue-400 transition-colors"
                       />
                     </div>

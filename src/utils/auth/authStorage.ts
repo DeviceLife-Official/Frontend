@@ -1,4 +1,5 @@
 import { ACCESS_TOKEN, REFRESH_TOKEN} from '@/constants/tokenKey';
+import type { UserProfileResult } from '@/types/mypage/user';
 
 // localStorage를 조작하는 유틸리티 함수
 // 나머지 파일에서는 localStorage를 직접 사용하지 않고 이 파일의 함수를 사용하도록 함
@@ -36,4 +37,12 @@ export const hasAuthTokens = (): boolean => {
   const accessToken = getAccessToken();
   const refreshToken = getRefreshToken();
   return !!(accessToken && refreshToken);
+};
+
+// 온보딩 완료 여부 확인
+// lifestyleList가 비어있지 않으면 온보딩 완료로 판단
+export const hasCompletedOnboarding = (
+  userProfile: UserProfileResult | undefined
+): boolean => {
+  return !!(userProfile?.lifestyleList && userProfile.lifestyleList.length > 0);
 };
