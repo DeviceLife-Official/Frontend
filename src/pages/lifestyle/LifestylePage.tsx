@@ -18,10 +18,12 @@ const LifestylePage = () => {
   const [selectedLabel, setSelectedLabel] = useState<LifestyleLabel>(LIFESTYLE_TAGS[0]);
   const [isAutoRotate, setIsAutoRotate] = useState(true);
   const [isPaused, setIsPaused] = useState(false);
+
   const selectedTagKey = useMemo<LifestyleTagKey>(
     () => LIFESTYLE_LABEL_TO_TAGKEY[selectedLabel],
     [selectedLabel]
   );
+
   const { data } = useGetLifestyleDevice(selectedTagKey);
   const isSuccess = data?.success === true;
   const lifestyleResult = isSuccess ? data?.result : null;
@@ -40,6 +42,7 @@ const LifestylePage = () => {
 
   const resumeTimerRef = useRef<number | null>(null);
   const resumeAtRef = useRef<number | null>(null);
+  const isMountedRef = useRef(true);
 
   useAutoRotate<LifestyleLabel>({
     enabled: isAutoRotate && !isPaused,
@@ -48,20 +51,29 @@ const LifestylePage = () => {
     getNext: getNextTag,
   });
 
-  const handleClickTag = (label: LifestyleLabel) => {
+  const handleClickTag = useCallback((label: LifestyleLabel) => {
     const now = Date.now();
+    if (resumeTimerRef.current !== null) {
+      clearTimeout(resumeTimerRef.current);
+      resumeTimerRef.current = null;
+    }
     setSelectedLabel(label);
     setIsAutoRotate(false);
+
     resumeAtRef.current = now + USER_INTERACTION_PAUSE_MS;
-    if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current);
+
     resumeTimerRef.current = window.setTimeout(() => {
-      if (Date.now() >= (resumeAtRef.current ?? 0)) setIsAutoRotate(true);
+      if (!isMountedRef.current) return;
+      if (Date.now() >= (resumeAtRef.current ?? 0)) {
+        setIsAutoRotate(true);
+      }
     }, USER_INTERACTION_PAUSE_MS);
-  };
+  }, []);
 
   useEffect(() => {
     return () => {
-      if (resumeTimerRef.current) {
+      isMountedRef.current = false;
+      if (resumeTimerRef.current !== null) {
         clearTimeout(resumeTimerRef.current);
         resumeTimerRef.current = null;
       }
