@@ -23,5 +23,6 @@ export const useGetLifestyleDevice = (tagKey: LifestyleTagKey) => {
     queryKey: [queryKey.LIFESTYLE_DEVICE, tagKey],
     queryFn: () => getLifestyleDevice(tagKey),
     enabled: !!tagKey,
+    staleTime: 1000 * 60 * 5,
   });
 };

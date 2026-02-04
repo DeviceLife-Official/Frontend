@@ -11,9 +11,10 @@ import DeviceSummaryCard from '@/components/Lifestyle/DeviceSummaryCard';
 import { useAutoRotate } from '@/hooks/useAutoRotate';
 import { useCrossfadeImage } from '@/hooks/useCrossfadeImage';
 import { nextInArray } from '@/utils/nextInArray';
+import { useGetLifestyleDevice } from '@/apis/lifestyle/getLifestyleDevice';
+import type { LifestyleTagKey } from '@/types/lifestyle/lifestyle';
 
 const TAGS = ['Office', 'Developer', 'Game', 'Study', 'Video-editing', 'Tour/portability'] as const;
-
 type Tag = (typeof TAGS)[number];
 
 const TAG_IMAGE_MAP: Record<Tag, string> = {
@@ -25,15 +26,31 @@ const TAG_IMAGE_MAP: Record<Tag, string> = {
   'Tour/portability': Tour,
 };
 
+const LABEL_TO_TAGKEY: Record<Tag, LifestyleTagKey> = {
+  Office: 'Office',
+  Developer: 'Developer',
+  Game: 'Game',
+  Study: 'Study',
+  'Video-editing': 'Video-editing',
+  'Tour/portability': 'Tour',
+};
+
 const LifestylePage = () => {
   const [selectedLabel, setSelectedLabel] = useState<Tag>(TAGS[0]);
   const [isAutoRotate, setIsAutoRotate] = useState(true);
   const [isPaused, setIsPaused] = useState(false);
+  const selectedTagKey = useMemo(() => LABEL_TO_TAGKEY[selectedLabel], [selectedLabel]);
+  const { data: lifestyleResult } = useGetLifestyleDevice(selectedTagKey);
+  const devices = useMemo(() => {
+    const list = lifestyleResult?.devices ?? [];
+    return [...list].sort((a, b) => a.slot - b.slot);
+  }, [lifestyleResult]);
 
   const targetSrc = useMemo(() => TAG_IMAGE_MAP[selectedLabel], [selectedLabel]);
   const { currentSrc, nextSrc, isNextVisible } = useCrossfadeImage(targetSrc, {
     transitionMs: TRANSITION_MS,
   });
+
   const getNextTag = useCallback((prev: Tag) => nextInArray(TAGS, prev), []);
   const resumeTimerRef = useRef<number | null>(null);
   const resumeAtRef = useRef<number | null>(null);
@@ -50,25 +67,20 @@ const LifestylePage = () => {
     setSelectedLabel(label);
     setIsAutoRotate(false);
     resumeAtRef.current = now + USER_INTERACTION_PAUSE_MS;
-    if (resumeTimerRef.current) {
-      clearTimeout(resumeTimerRef.current);
-    }
-    const delay = USER_INTERACTION_PAUSE_MS;
+    if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current);
     resumeTimerRef.current = window.setTimeout(() => {
-      if (Date.now() >= (resumeAtRef.current ?? 0)) {
-        setIsAutoRotate(true);
-      }
-    }, delay);
+      if (Date.now() >= (resumeAtRef.current ?? 0)) setIsAutoRotate(true);
+    }, USER_INTERACTION_PAUSE_MS);
   };
 
-useEffect(() => {
-  return () => {
-    if (resumeTimerRef.current) {
-      clearTimeout(resumeTimerRef.current);
-      resumeTimerRef.current = null;
-    }
-  };
-}, []);
+  useEffect(() => {
+    return () => {
+      if (resumeTimerRef.current) {
+        clearTimeout(resumeTimerRef.current);
+        resumeTimerRef.current = null;
+      }
+    };
+  }, []);
 
   return (
     <div className="min-h-[calc(100vh-80px)] flex items-center justify-center">
@@ -90,9 +102,9 @@ useEffect(() => {
             onMouseLeave={() => setIsPaused(false)}
           >
             <div className="flex absolute bottom-24 left-1/2 -translate-x-1/2 gap-20 z-10">
-              <DeviceSummaryCard />
-              <DeviceSummaryCard />
-              <DeviceSummaryCard />
+              <DeviceSummaryCard device={devices[0]} />
+              <DeviceSummaryCard device={devices[1]} />
+              <DeviceSummaryCard device={devices[2]} />
             </div>
             <img
               src={currentSrc}
