@@ -16,9 +16,6 @@ import MyCombinationDetailPage from '@/pages/my/MyCombinationDetailPage';
 import MySettingsProfilePage from '@/pages/my/settings/ProfileEditPage';
 import MySettingsPasswordPage from '@/pages/my/settings/PasswordEditPage';
 
-// combination
-import CombinationCreatePage from '@/pages/combination/CombinationCreatePage';
-
 import NotFoundPage from '@/pages/NotFoundPage';
 
 /**
@@ -61,9 +58,6 @@ export const PrivateRoutes = {
             { path: 'password', element: <MySettingsPasswordPage /> },
           ],
         },
-
-        // 조합 생성
-        { path: 'combination/create', element: <CombinationCreatePage /> },
       ],
     },
   ],

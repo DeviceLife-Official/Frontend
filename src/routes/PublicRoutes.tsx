@@ -8,6 +8,9 @@ import LifestylePage from '@/pages/lifestyle/LifestylePage';
 import DeviceSearchPage from '@/pages/devices/DeviceSearchPage';
 import DeviceDetailPage from '@/pages/devices/DeviceDetailPage';
 
+// combination
+import CombinationCreatePage from '@/pages/combination/CombinationCreatePage';
+
 // auth
 import LoginPage from '@/pages/auth/LoginPage';
 import FindIdPage from '@/pages/auth/FindIdPage';
@@ -35,6 +38,9 @@ export const PublicRoutes = {
         { path: ':deviceId', element: <DeviceDetailPage /> },
       ],
     },
+
+    // 조합 생성
+    { path: 'combination/create', element: <CombinationCreatePage /> },
 
     // auth (로그인/회원가입/찾기)
     {
