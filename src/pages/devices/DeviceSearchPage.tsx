@@ -625,7 +625,7 @@ const DeviceSearchPage = () => {
                     </button>
                   )}
 
-                  {/* 버튼 컨테이너 - 토글 버튼으로부터 72px 간격 유지하며 하단 고정 */}
+                  {/* 버튼 컨테이너 - 토글 버튼으로부터 간격 유지하며 하단 고정 */}
                   <div className="px-40 pb-40 pt-30 mt-auto">
                     <div className="flex justify-end">
                       <PrimaryButton
