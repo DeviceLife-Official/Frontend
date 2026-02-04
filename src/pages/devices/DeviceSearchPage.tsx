@@ -25,7 +25,7 @@ import {
 } from '@/constants/devices';
 import { MOCK_PRODUCTS } from '@/constants/mockData';
 import { ROUTES } from '@/constants/routes';
-import { type AuthStatus, type ModalView } from '@/types/devices';
+import { type ModalView } from '@/types/devices';
 import { useGetCombos } from '@/apis/combo/getCombos';
 import { useGetCombo } from '@/apis/combo/getComboId';
 import { usePostComboDevice } from '@/apis/combo/postComboDevices';
@@ -45,9 +45,6 @@ const DeviceSearchPage = () => {
 
   // 온보딩 완료 여부 확인 (로딩 중에는 false로 기본 처리)
   const hasOnboarding = isProfileLoading ? false : hasCompletedOnboarding(userProfile);
-
-  // 기존 코드와의 호환성을 위한 authStatus
-  const authStatus: AuthStatus = isLoggedIn ? 'login' : 'logout';
 
   const [modalView, setModalView] = useState<ModalView>('device');
 
