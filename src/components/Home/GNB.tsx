@@ -3,14 +3,13 @@ import UserBlack from '@/assets/icons/userblack.svg?react';
 import UserBlue500 from '@/assets/icons/userblue500.svg?react';
 import UserBlue600 from '@/assets/icons/userblue600.svg?react';
 import { NavLink } from 'react-router-dom';
-import { useState } from 'react';
 import clsx from 'clsx';
 import { useLogout } from '@/hooks/useLogout';
+import { useAuth } from '@/hooks/useAuth';
+import { ROUTES } from '@/constants/routes';
 
 const NAV_TEXT_CLASS = 'font-body-1-sm text-black hover:text-blue-500 active:text-blue-600';
 const USER_BLUE_500_CLASS = 'absolute inset-0 opacity-0 group-hover:opacity-100';
-
-type AuthStatus = 'logout' | 'login';
 
 interface GNBProps {
   paddingRight?: number;
@@ -31,7 +30,7 @@ const getUserBlue600Class = (isActive: boolean) =>
   clsx('absolute inset-0', isActive ? 'opacity-100' : 'opacity-0 group-active:opacity-100');
 
 const GNB = ({ paddingRight: _paddingRight = 0 }: GNBProps) => {
-  const [authStatus] = useState<AuthStatus>('login');
+  const { isLoggedIn } = useAuth();
   const { logout } = useLogout();
 
   const handleLogout = async () => {
@@ -59,18 +58,10 @@ const GNB = ({ paddingRight: _paddingRight = 0 }: GNBProps) => {
               </NavLink>
             </div>
             <div className="flex items-center gap-56 shrink-0">
-              {authStatus === 'logout' ? (
+              {isLoggedIn ? (
+              // 로그인 상태: MY | 로그아웃
                 <>
-                  <NavLink to="/auth/login" className={getNavClass}>
-                    로그인
-                  </NavLink>
-                  <NavLink to="/auth/signup" className={getNavClass}>
-                    회원가입
-                  </NavLink>
-                </>
-              ) : (
-                <>
-                  <NavLink to="/my" className={getMyNavLinkClass}>
+                  <NavLink to={ROUTES.my.base} className={getMyNavLinkClass}>
                     {({ isActive }) => (
                       <>
                         <span className="relative w-32 h-32">
@@ -82,14 +73,19 @@ const GNB = ({ paddingRight: _paddingRight = 0 }: GNBProps) => {
                       </>
                     )}
                   </NavLink>
-
-                    <button
-                      type="button"
-                    className={NAV_TEXT_CLASS}
-                      onClick={handleLogout}
-                  >
+                  <button type="button" className={NAV_TEXT_CLASS} onClick={handleLogout}>
                     로그아웃
-                    </button>
+                  </button>
+                </>
+              ) : (
+                // 비로그인 상태: 로그인 | 회원가입
+                <>
+                  <NavLink to={ROUTES.auth.login} className={getNavClass}>
+                    로그인
+                  </NavLink>
+                  <NavLink to={ROUTES.auth.signup.base} className={getNavClass}>
+                    회원가입
+                  </NavLink>
                 </>
               )}
             </div>
