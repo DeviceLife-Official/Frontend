@@ -371,7 +371,7 @@ const DeviceSearchPage = () => {
 
                 {/* Card */}
                 <div
-                  className="bg-white rounded-card px-56 py-40"
+                  className="bg-white rounded-card px-56 py-40 overflow-y-auto scrollbar-minimal"
                   style={{
                     width: '907px',
                     height: '670px',
