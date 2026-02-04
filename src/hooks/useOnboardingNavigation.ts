@@ -21,10 +21,10 @@ export const useOnboardingNavigation = () => {
         navigate(ROUTES.auth.signup.profile, options);
         break;
       case 3:
-        navigate(ROUTES.auth.onboarding.lifestyle, options);
+        navigate(ROUTES.onboarding.lifestyle, options);
         break;
       case 4:
-        navigate(ROUTES.auth.onboarding.combination, options);
+        navigate(ROUTES.onboarding.combination, options);
         break;
       default:
         break;

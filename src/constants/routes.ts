@@ -16,12 +16,14 @@ export const ROUTES = {
       account: '/auth/signup/account',
       profile: '/auth/signup/profile',
     },
-    onboarding: {
-      lifestyle: '/auth/onboarding/lifestyle',
-      recommendation: '/auth/onboarding/recommendation',
-      combination: '/auth/onboarding/combination',
-      complete: '/auth/onboarding/complete',
-    },
+  },
+
+  // onboarding
+  onboarding: {
+    lifestyle: '/onboarding/lifestyle',
+    recommendation: '/onboarding/recommendation',
+    combination: '/onboarding/combination',
+    complete: '/onboarding/complete',
   },
 
   // lifestyle

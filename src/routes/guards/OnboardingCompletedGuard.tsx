@@ -14,7 +14,7 @@ export const OnboardingCompletedGuard = () => {
 
   if (!isOnboardingCompleted) {
     alert('온보딩을 완료한 후 이용해주세요.');
-    return <Navigate to={ROUTES.auth.onboarding.lifestyle} replace />;
+    return <Navigate to={ROUTES.onboarding.lifestyle} replace />;
   }
 
   return <Outlet />;

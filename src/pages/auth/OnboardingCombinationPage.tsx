@@ -37,7 +37,7 @@ const OnboardingCombinationPage = () => {
 
     try {
       await createCombo({ comboName: combinationName });
-      navigate(ROUTES.auth.onboarding.complete, { replace: true });
+      navigate(ROUTES.onboarding.complete, { replace: true });
     } catch (error) {
       alert('조합 생성에 실패했습니다. 잠시 후 다시 시도해주세요.');
     }

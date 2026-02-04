@@ -66,7 +66,7 @@ const SignupProfilePage = () => {
         });
 
         // 로그인 성공 시 온보딩으로 이동
-        navigate(ROUTES.auth.onboarding.lifestyle, { replace: true });
+        navigate(ROUTES.onboarding.lifestyle, { replace: true });
       } catch (loginError) {
         // 로그인 실패 시 알림
         alert('회원가입은 완료되었지만 자동 로그인에 실패했습니다. 로그인 페이지에서 다시 시도해주세요.');
