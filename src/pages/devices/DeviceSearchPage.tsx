@@ -566,6 +566,7 @@ const DeviceSearchPage = () => {
                     showExpandButton={false}
                     showGradient={true}
                     className="px-56 pt-40 pb-0"
+                    index={combos.findIndex(c => c.comboId === selectedCombinationId)}
                   />
 
                   {/* 토글 버튼 - CombinationDeviceCard 외부에 배치 */}

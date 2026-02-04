@@ -12,6 +12,7 @@ type CombinationDeviceCardProps = {
   className?: string;
   expanded?: boolean;
   onExpand?: (expanded: boolean) => void;
+  index?: number;
 };
 
 const CombinationDeviceCard = ({
@@ -24,6 +25,7 @@ const CombinationDeviceCard = ({
   className = '',
   expanded,
   onExpand,
+  index,
 }: CombinationDeviceCardProps) => {
   const [internalExpanded, setInternalExpanded] = useState(false);
 
@@ -61,6 +63,11 @@ const CombinationDeviceCard = ({
       <div className="flex flex-col gap-24 pl-20 py-24">
         {/* 조합명 */}
         <div className="flex flex-col gap-8">
+          {/* 조합 번호 */}
+          {index !== undefined && (
+            <p className="font-body-3-r text-gray-400">조합 {index + 1}</p>
+          )}
+          {/* 조합명 + 별 */}
           <div className="flex items-center gap-8">
             <p className="font-body-1-sm text-black">{combination.comboName}</p>
             {combination.isPinned && <StarIcon className="w-22 h-22" />}
