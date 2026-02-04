@@ -93,8 +93,8 @@ const CombinationDeviceCard = ({
               className={`bg-white rounded-card shadow-[0_0_4px_rgba(0,0,0,0.1)] p-12 ${deviceCardWidth} flex items-center gap-12`}
             >
               <div className={`${deviceImageSize} bg-gray-200 flex-shrink-0`} />
-              <div className="flex flex-col gap-4">
-                <p className="font-body-3-sm text-black">{device.name}</p>
+              <div className="flex flex-col gap-4 min-w-0">
+                <p className="font-body-3-sm text-black truncate">{device.name}</p>
                 <p className="font-body-4-r text-gray-300">{device.brandName}</p>
                 <p className="font-body-3-r text-gray-300">{device.deviceType}</p>
               </div>
