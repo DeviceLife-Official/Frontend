@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import GNB from '@/components/Home/GNB';
 import ProductCard from '@/components/ProductCard/ProductCard';
@@ -20,7 +20,6 @@ import {
   DEVICE_CATEGORIES,
   SORT_OPTIONS,
   PRICE_OPTIONS,
-  BRAND_OPTIONS,
   SCROLL_CONSTANTS,
 } from '@/constants/devices';
 import { MOCK_PRODUCTS } from '@/constants/mockData';
@@ -30,7 +29,24 @@ import { useGetCombos } from '@/apis/combo/getCombos';
 import { useGetCombo } from '@/apis/combo/getComboId';
 import { usePostComboDevice } from '@/apis/combo/postComboDevices';
 import { useGetUserProfile } from '@/apis/mypage/getUserProfile';
+import { useGetBrands } from '@/apis/devices/getBrands';
 import { hasAuthTokens, hasCompletedOnboarding } from '@/utils/auth/authStorage';
+
+// 카테고리 ID를 API deviceType으로 변환
+const getCategoryDeviceType = (categoryId: number | null): string | undefined => {
+  if (!categoryId) return undefined;
+  const mapping: Record<number, string> = {
+    1: 'SMARTPHONE',
+    2: 'LAPTOP',
+    3: 'TABLET',
+    4: 'SMARTWATCH',
+    5: 'AUDIO',
+    6: 'KEYBOARD',
+    7: 'MOUSE',
+    8: 'CHARGER',
+  };
+  return mapping[categoryId];
+};
 
 const DeviceSearchPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -69,10 +85,27 @@ const DeviceSearchPage = () => {
 
   const productGridRef = useRef<HTMLDivElement>(null);
 
+  // 브랜드 API 조회 - 선택된 카테고리에 따라 deviceType 전달
+  const { data: brandsData } = useGetBrands(getCategoryDeviceType(selectedCategory));
+
+  // API 데이터를 FilterOption 형식으로 변환
+  const brandOptions = useMemo(() => {
+    if (!brandsData?.result) return [];
+    return brandsData.result.map(brand => ({
+      value: brand.brandId.toString(),
+      label: brand.brandName,
+    }));
+  }, [brandsData]);
+
   // 페이지 마운트 시 상단으로 스크롤
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
+  // 카테고리 변경 시 선택된 브랜드 초기화
+  useEffect(() => {
+    setSelectedBrand(null);
+  }, [selectedCategory]);
 
   /* 선택된 제품 찾기 */
   const selectedProduct = selectedProductId
@@ -329,7 +362,7 @@ const DeviceSearchPage = () => {
             <div className="ml-20">
               <FilterDropdown
                 label="브랜드"
-                options={BRAND_OPTIONS}
+                options={brandOptions}
                 selectedValue={selectedBrand}
                 onSelect={(value) => setSelectedBrand(value as string | null)}
               />
