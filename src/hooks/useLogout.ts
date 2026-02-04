@@ -1,6 +1,6 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { usePostLogout } from '@/apis/auth/postLogout';
-import { handleLogout } from '@/utils/auth/logout';
+import { finalizeLogout } from '@/utils/auth/finalizeLogout';
 import { hasAuthTokens } from '@/utils/auth/authStorage';
 import { ROUTES } from '@/constants/routes';
 import { useNavigate } from 'react-router-dom';
@@ -8,8 +8,8 @@ import { useNavigate } from 'react-router-dom';
 /**
  * 로그아웃 훅
 
-  - API 호출과 로그아웃 후처리를 모두 포함
-  - 비회원(토큰 없음) 케이스도 처리: API 호출 없이 후처리만 수행
+  - 로그아웃 API 호출과 로그아웃 후처리를 모두 포함
+  - 비회원(토큰 없음) 케이스도 처리: 로그아웃 API 호출 없이 후처리만 수행
   - 로그인 페이지로 이동
  */
 export const useLogout = () => {
@@ -30,7 +30,7 @@ export const useLogout = () => {
       // 에러는 무시하고 후처리 진행
     } finally {
       // API 호출 성공/실패와 관계없이 항상 후처리 수행
-      handleLogout(queryClient);
+      finalizeLogout(queryClient);
       navigate(ROUTES.auth.login);
     }
   };
