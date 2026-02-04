@@ -2,10 +2,17 @@ import DeviceLifeLogo from '@/assets/logos/logo_circle.svg?react';
 import GoogleLogo from '@/assets/logos/google.svg?react';
 import SignupButton from '@/components/Button/SignupButton';
 import { ROUTES } from '@/constants/routes';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Navigate } from 'react-router-dom';
+import { useAuth } from '@/hooks/useAuth';
 
 const SignupPage = () => {
   const navigate = useNavigate();
+  const { isLoggedIn } = useAuth();
+
+  // 로그인된 상태에서 회원가입 페이지 접근 시 홈으로 리다이렉트
+  if (isLoggedIn) {
+    return <Navigate to={ROUTES.home} replace />;
+  }
 
   return (
     <div className="flex flex-col items-center justify-center h-[calc(100vh-80px)]">

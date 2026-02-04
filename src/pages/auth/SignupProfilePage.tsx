@@ -11,6 +11,7 @@ import { ROUTES } from '@/constants/routes';
 import { useSignupStore } from '@/stores/signupStore';
 import { usePostJoin } from '@/apis/auth/postJoin';
 import { useLogin } from '@/hooks/useLogin';
+import { useAuth } from '@/hooks/useAuth';
 
 const SignupProfilePage = () => {
   const navigate = useNavigate();
@@ -18,6 +19,12 @@ const SignupProfilePage = () => {
   const { account, setProfile } = useSignupStore();
   const { mutateAsync: signup } = usePostJoin();
   const { loginAndFinalize } = useLogin();
+  const { isLoggedIn } = useAuth();
+
+  // 로그인된 상태에서 회원가입 페이지 접근 시 홈으로 리다이렉트
+  if (isLoggedIn) {
+    return <Navigate to={ROUTES.home} replace />;
+  }
 
   // 이메일, 비밀번호, 중복확인이 모두 완료되었는지 확인
   const isAccountComplete = account.email && account.password && account.isEmailVerified;
