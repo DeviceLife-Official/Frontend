@@ -484,7 +484,7 @@ const DeviceSearchPage = () => {
                   onClick={(e) => e.stopPropagation()}
                 >
                   {/* Combination List */}
-                  <div className="flex flex-col mx-20 overflow-y-auto max-h-630 scrollbar-minimal">
+                  <div className="flex flex-col ml-20 overflow-y-auto h-full scrollbar-minimal">
                     {combos.map((combo, index) => (
                       <button
                         key={combo.comboId}

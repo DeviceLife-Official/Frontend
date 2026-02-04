@@ -98,7 +98,7 @@ const CombinationDeviceCard = ({
         {/* 그라데이션 */}
         {showGradient && shouldShowGradient && !showAllDevices && (
           <div
-            className={`absolute right-0 bottom-0 ${deviceCardWidth} h-80 rounded-card pointer-events-none`}
+            className={`absolute right-0 bottom-0 ${deviceCardWidth} h-82 rounded-card pointer-events-none`}
             style={{
               background: 'linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 70%)',
             }}
