@@ -565,7 +565,7 @@ const DeviceSearchPage = () => {
                     onExpand={(value) => setShowAllDevices(value)}
                     showExpandButton={false}
                     showGradient={true}
-                    className="px-56 pt-40 pb-0"
+                    className="px-56 pt-40 pb-0 flex-shrink-0"
                     index={combos.findIndex(c => c.comboId === selectedCombinationId)}
                   />
 

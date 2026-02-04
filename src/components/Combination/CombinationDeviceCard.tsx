@@ -60,7 +60,7 @@ const CombinationDeviceCard = ({
   return (
     <div className={className}>
       {/* 조합 정보 */}
-      <div className="flex flex-col gap-24 pl-20 py-24">
+      <div className="flex flex-col gap-24 pl-20 py-24 flex-shrink-0">
         {/* 조합명 */}
         <div className="flex flex-col gap-8">
           {/* 조합 번호 */}
