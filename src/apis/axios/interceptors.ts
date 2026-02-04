@@ -15,8 +15,20 @@ import { ROUTES } from '@/constants/routes';
 let refreshPromise: Promise<string> | null = null; // refresh 진행 중인 Promise
 let isRedirectingToLogin = false; // 중복 리다이렉트 방지
 
+// 로그인 페이지로 리다이렉트하는 함수
 const redirectToLoginOnce = () => {
+  // 이미 리다이렉트 중이면 무시
   if (isRedirectingToLogin) return;
+
+  // 토큰이 이미 없으면 플래그 리셋 후 리턴 (이미 처리됨)
+  if (!getRefreshToken() && !getAccessToken()) {
+    if (isRedirectingToLogin) {
+      isRedirectingToLogin = false;
+    }
+    return;
+  }
+
+  // 리다이렉트 중인 플래그 설정
   isRedirectingToLogin = true;
 
   clearAuthTokens();
@@ -27,6 +39,13 @@ const redirectToLoginOnce = () => {
 export const setupRequestInterceptor = (instance: AxiosInstance) => {
   instance.interceptors.request.use((config) => {
     const accessToken = getAccessToken();
+
+    // 토큰이 다시 생긴 상태라면 redirect 플래그를 복구
+    if (accessToken && isRedirectingToLogin) {
+      isRedirectingToLogin = false;
+    }
+
+    // 토큰이 있으면 헤더에 추가
     if (accessToken) {
       setAuthorizationHeader(config, accessToken);
     }
