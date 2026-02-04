@@ -1,6 +1,7 @@
 import { axiosInstance } from '@/apis/axios/axios';
 import type { GetBrandsResponse } from '@/types/devices';
 import { useQuery } from '@tanstack/react-query';
+import { queryKey } from '@/constants/queryKey';
 
 export const getBrands = async (deviceType?: string): Promise<GetBrandsResponse> => {
   const params = deviceType ? { deviceType } : {};
@@ -10,7 +11,7 @@ export const getBrands = async (deviceType?: string): Promise<GetBrandsResponse>
 
 export const useGetBrands = (deviceType?: string) => {
   return useQuery<GetBrandsResponse>({
-    queryKey: ['brands', deviceType],
+    queryKey: [queryKey.BRANDS, deviceType],
     queryFn: () => getBrands(deviceType),
     enabled: true,
   });

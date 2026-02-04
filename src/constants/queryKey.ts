@@ -7,5 +7,6 @@ export const queryKey = {
   TAGS: 'tags',
   COMBOS: 'combos',
   COMBO_DETAIL: 'combo',
-  DEVICE_LIST: 'device_list',
+  LIFESTYLE_DEVICE: 'lifestyle_device',
+  BRANDS: 'brands'
 } as const;
