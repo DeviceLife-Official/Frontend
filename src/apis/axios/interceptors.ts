@@ -36,18 +36,10 @@ let isRedirectingToLogin = false;
 
 /* 로그인 페이지로 리다이렉트 함수 (중복 방지)
  - 여러 요청이 동시에 실패해도 리다이렉트는 1번만 실행
- - 토큰이 이미 없으면 (다른 곳에서 처리됨) 리다이렉트 하지 않음
+ - 비로그인 상태에서 401 발생 시에도 리다이렉트 수행
 */
 const redirectToLoginOnce = () => {
   if (isRedirectingToLogin) return;
-
-  // 토큰이 이미 없으면 플래그 리셋 후 리턴 (다른 곳에서 이미 처리됨)
-  if (!getRefreshToken() && !getAccessToken()) {
-    if (isRedirectingToLogin) {
-      isRedirectingToLogin = false;
-    }
-    return;
-  }
 
   isRedirectingToLogin = true;
   clearAuthTokens();
