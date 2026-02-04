@@ -540,7 +540,7 @@ const DeviceSearchPage = () => {
                             {/* 조합명 + 대표조합 star */}
                             <div className="flex items-center gap-8">
                               <p className="font-body-1-sm text-black">{combo.comboName}</p>
-                              {combo.isPinned && <StarIcon className="w-22 h-22" />}
+                              {combo.isPinned && <StarIcon className="w-22 h-22 -mt-2" />}
                             </div>
                           </div>
                           {/* 기기 수 + 총 가격 */}

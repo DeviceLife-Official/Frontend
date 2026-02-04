@@ -63,7 +63,7 @@ const CombinationDeviceCard = ({
         <div className="flex flex-col gap-8">
           <div className="flex items-center gap-8">
             <p className="font-body-1-sm text-black">{combination.comboName}</p>
-            {combination.isPinned && <StarIcon className="w-22 h-22" />}
+            {combination.isPinned && <StarIcon className="w-22 h-22 -mt-2" />}
           </div>
         </div>
         {/* Tags */}
