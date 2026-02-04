@@ -9,7 +9,7 @@ import type { LoginRequest } from '@/types/auth/login';
  * - finalizeLogin 실행 (토큰 저장 + 유저 정보 캐시)
  * - pending 상태 제공
  */
-export const useLoginFlow = () => {
+export const useLogin = () => {
   const queryClient = useQueryClient();
   const { mutateAsync: postLogin, isPending } = usePostLogin();
 

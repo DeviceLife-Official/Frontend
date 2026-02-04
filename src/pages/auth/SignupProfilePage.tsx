@@ -10,14 +10,14 @@ import { useNavigate, Navigate } from 'react-router-dom';
 import { ROUTES } from '@/constants/routes';
 import { useSignupStore } from '@/stores/signupStore';
 import { usePostJoin } from '@/apis/auth/postJoin';
-import { useLoginFlow } from '@/hooks/useLoginFlow';
+import { useLogin } from '@/hooks/useLogin';
 
 const SignupProfilePage = () => {
   const navigate = useNavigate();
   const [hasSubmitted, setHasSubmitted] = useState(false);
   const { account, setProfile } = useSignupStore();
   const { mutateAsync: signup } = usePostJoin();
-  const { loginAndFinalize } = useLoginFlow();
+  const { loginAndFinalize } = useLogin();
 
   // 이메일, 비밀번호, 중복확인이 모두 완료되었는지 확인
   const isAccountComplete = account.email && account.password && account.isEmailVerified;
