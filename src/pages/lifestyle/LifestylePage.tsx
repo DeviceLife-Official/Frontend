@@ -1,81 +1,91 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ROTATION_MS, TRANSITION_MS, USER_INTERACTION_PAUSE_MS } from '@/constants/time';
 import LifestyleTag from '@/components/Lifestyle/LifestyleTag';
-import Office from '@/assets/images/lifestyle/office.jpg';
-import Developer from '@/assets/images/lifestyle/developer.jpg';
-import Game from '@/assets/images/lifestyle/game.jpg';
-import Study from '@/assets/images/lifestyle/study.jpg';
-import VideoEditing from '@/assets/images/lifestyle/video-editing.jpg';
-import Tour from '@/assets/images/lifestyle/tour.jpg';
 import DeviceSummaryCard from '@/components/Lifestyle/DeviceSummaryCard';
 import { useAutoRotate } from '@/hooks/useAutoRotate';
 import { useCrossfadeImage } from '@/hooks/useCrossfadeImage';
 import { nextInArray } from '@/utils/nextInArray';
-
-const TAGS = ['Office', 'Developer', 'Game', 'Study', 'Video-editing', 'Tour/portability'] as const;
-
-type Tag = (typeof TAGS)[number];
-
-const TAG_IMAGE_MAP: Record<Tag, string> = {
-  Office,
-  Developer,
-  Game,
-  Study,
-  'Video-editing': VideoEditing,
-  'Tour/portability': Tour,
-};
+import { useGetLifestyleDevice } from '@/apis/lifestyle/getLifestyleDevice';
+import type { LifestyleTagKey } from '@/types/lifestyle/lifestyle';
+import {
+  LIFESTYLE_TAGS,
+  type LifestyleLabel,
+  LIFESTYLE_TAG_IMAGE_MAP,
+  LIFESTYLE_LABEL_TO_TAGKEY,
+} from '@/constants/lifestyle';
 
 const LifestylePage = () => {
-  const [selectedLabel, setSelectedLabel] = useState<Tag>(TAGS[0]);
+  const [selectedLabel, setSelectedLabel] = useState<LifestyleLabel>(LIFESTYLE_TAGS[0]);
   const [isAutoRotate, setIsAutoRotate] = useState(true);
   const [isPaused, setIsPaused] = useState(false);
 
-  const targetSrc = useMemo(() => TAG_IMAGE_MAP[selectedLabel], [selectedLabel]);
+  const selectedTagKey = useMemo<LifestyleTagKey>(
+    () => LIFESTYLE_LABEL_TO_TAGKEY[selectedLabel],
+    [selectedLabel]
+  );
+
+  const { data } = useGetLifestyleDevice(selectedTagKey);
+  const isSuccess = data?.success === true;
+  const lifestyleResult = isSuccess ? data?.result : null;
+
+  const devices = useMemo(() => {
+    const list = lifestyleResult?.devices ?? [];
+    return [...list].sort((a, b) => a.slot - b.slot);
+  }, [lifestyleResult]);
+
+  const targetSrc = useMemo(() => LIFESTYLE_TAG_IMAGE_MAP[selectedLabel], [selectedLabel]);
   const { currentSrc, nextSrc, isNextVisible } = useCrossfadeImage(targetSrc, {
     transitionMs: TRANSITION_MS,
   });
-  const getNextTag = useCallback((prev: Tag) => nextInArray(TAGS, prev), []);
+
+  const getNextTag = useCallback((prev: LifestyleLabel) => nextInArray(LIFESTYLE_TAGS, prev), []);
+
   const resumeTimerRef = useRef<number | null>(null);
   const resumeAtRef = useRef<number | null>(null);
+  const isMountedRef = useRef(true);
 
-  useAutoRotate<Tag>({
+  useAutoRotate<LifestyleLabel>({
     enabled: isAutoRotate && !isPaused,
     intervalMs: ROTATION_MS,
     setValue: setSelectedLabel,
     getNext: getNextTag,
   });
 
-  const handleClickTag = (label: Tag) => {
+  const handleClickTag = useCallback((label: LifestyleLabel) => {
     const now = Date.now();
-    setSelectedLabel(label);
-    setIsAutoRotate(false);
-    resumeAtRef.current = now + USER_INTERACTION_PAUSE_MS;
-    if (resumeTimerRef.current) {
-      clearTimeout(resumeTimerRef.current);
-    }
-    const delay = USER_INTERACTION_PAUSE_MS;
-    resumeTimerRef.current = window.setTimeout(() => {
-      if (Date.now() >= (resumeAtRef.current ?? 0)) {
-        setIsAutoRotate(true);
-      }
-    }, delay);
-  };
-
-useEffect(() => {
-  return () => {
-    if (resumeTimerRef.current) {
+    if (resumeTimerRef.current !== null) {
       clearTimeout(resumeTimerRef.current);
       resumeTimerRef.current = null;
     }
-  };
-}, []);
+    setSelectedLabel(label);
+    setIsAutoRotate(false);
+
+    resumeAtRef.current = now + USER_INTERACTION_PAUSE_MS;
+
+    resumeTimerRef.current = window.setTimeout(() => {
+      if (!isMountedRef.current) return;
+      if (Date.now() >= (resumeAtRef.current ?? 0)) {
+        setIsAutoRotate(true);
+      }
+    }, USER_INTERACTION_PAUSE_MS);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      isMountedRef.current = false;
+      if (resumeTimerRef.current !== null) {
+        clearTimeout(resumeTimerRef.current);
+        resumeTimerRef.current = null;
+      }
+    };
+  }, []);
 
   return (
     <div className="min-h-[calc(100vh-80px)] flex items-center justify-center">
       <div className="w-full flex justify-center">
         <div className="w-1100 flex items-stretch">
           <div className="flex flex-col gap-16 min-[1441px]:gap-20">
-            {TAGS.map((label) => (
+            {LIFESTYLE_TAGS.map((label) => (
               <LifestyleTag
                 key={label}
                 label={label}
@@ -90,9 +100,9 @@ useEffect(() => {
             onMouseLeave={() => setIsPaused(false)}
           >
             <div className="flex absolute bottom-24 left-1/2 -translate-x-1/2 gap-20 z-10">
-              <DeviceSummaryCard />
-              <DeviceSummaryCard />
-              <DeviceSummaryCard />
+              <DeviceSummaryCard device={devices[0]} />
+              <DeviceSummaryCard device={devices[1]} />
+              <DeviceSummaryCard device={devices[2]} />
             </div>
             <img
               src={currentSrc}
