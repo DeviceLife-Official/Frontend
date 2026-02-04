@@ -12,6 +12,7 @@ type CombinationDeviceCardProps = {
   className?: string;
   expanded?: boolean;
   onExpand?: (expanded: boolean) => void;
+  index?: number;
 };
 
 const CombinationDeviceCard = ({
@@ -24,6 +25,7 @@ const CombinationDeviceCard = ({
   className = '',
   expanded,
   onExpand,
+  index,
 }: CombinationDeviceCardProps) => {
   const [internalExpanded, setInternalExpanded] = useState(false);
 
@@ -52,18 +54,23 @@ const CombinationDeviceCard = ({
   };
 
   const gridColsClass = columns === 4 ? 'grid-cols-4' : 'grid-cols-3';
-  const deviceCardWidth = columns === 4 ? 'w-244' : 'w-244';
-  const deviceImageSize = columns === 4 ? 'w-64 h-64' : 'w-64 h-64';
+  const deviceCardWidth = 'w-244 h-87';
+  const deviceImageSize = 'w-63 h-63';
 
   return (
     <div className={className}>
       {/* 조합 정보 */}
-      <div className="flex flex-col gap-24 pl-20 py-24">
+      <div className="flex flex-col gap-24 pl-20 py-24 flex-shrink-0">
         {/* 조합명 */}
         <div className="flex flex-col gap-8">
+          {/* 조합 번호 */}
+          {index !== undefined && (
+            <p className="font-body-3-r text-gray-400">조합 {index + 1}</p>
+          )}
+          {/* 조합명 + 별 */}
           <div className="flex items-center gap-8">
             <p className="font-body-1-sm text-black">{combination.comboName}</p>
-            {combination.isPinned && <StarIcon className="w-22 h-22 -mt-2" />}
+            {combination.isPinned && <StarIcon className="w-22 h-22 -mt-3" />}
           </div>
         </div>
         {/* Tags */}
@@ -86,8 +93,8 @@ const CombinationDeviceCard = ({
               className={`bg-white rounded-card shadow-[0_0_4px_rgba(0,0,0,0.1)] p-12 ${deviceCardWidth} flex items-center gap-12`}
             >
               <div className={`${deviceImageSize} bg-gray-200 flex-shrink-0`} />
-              <div className="flex flex-col gap-4">
-                <p className="font-body-3-sm text-black">{device.name}</p>
+              <div className="flex flex-col gap-4 min-w-0">
+                <p className="font-body-3-sm text-black truncate">{device.name}</p>
                 <p className="font-body-4-r text-gray-300">{device.brandName}</p>
                 <p className="font-body-3-r text-gray-300">{device.deviceType}</p>
               </div>
@@ -98,7 +105,7 @@ const CombinationDeviceCard = ({
         {/* 그라데이션 */}
         {showGradient && shouldShowGradient && !showAllDevices && (
           <div
-            className={`absolute right-0 bottom-0 ${deviceCardWidth} h-80 rounded-card pointer-events-none`}
+            className={`absolute right-0 bottom-0 ${deviceCardWidth} h-82 rounded-card pointer-events-none`}
             style={{
               background: 'linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 70%)',
             }}

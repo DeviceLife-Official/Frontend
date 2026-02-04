@@ -408,7 +408,7 @@ const DeviceSearchPage = () => {
 
                 {/* Card */}
                 <div
-                  className="bg-white rounded-card px-56 py-40"
+                  className="bg-white rounded-card px-56 py-40 overflow-y-auto scrollbar-minimal"
                   style={{
                     width: '907px',
                     height: '670px',
@@ -522,7 +522,7 @@ const DeviceSearchPage = () => {
                   onClick={(e) => e.stopPropagation()}
                 >
                   {/* Combination List */}
-                  <div className="flex flex-col mx-20 overflow-y-auto max-h-630 scrollbar-minimal">
+                  <div className="flex flex-col ml-20 overflow-y-auto h-full scrollbar-minimal">
                     {combos.map((combo, index) => (
                       <button
                         key={combo.comboId}
@@ -537,7 +537,7 @@ const DeviceSearchPage = () => {
                             {/* 조합명 + 대표조합 star */}
                             <div className="flex items-center gap-8">
                               <p className="font-body-1-sm text-black">{combo.comboName}</p>
-                              {combo.isPinned && <StarIcon className="w-22 h-22 -mt-2" />}
+                              {combo.isPinned && <StarIcon className="w-22 h-22 -mt-3" />}
                             </div>
                           </div>
                           {/* 기기 수 + 총 가격 */}
@@ -586,10 +586,10 @@ const DeviceSearchPage = () => {
 
                 {/* Card */}
                 <div
-                  className="bg-white rounded-card shadow-[0_0_10px_rgba(0,0,0,0.25)] mb-50 overflow-y-auto scrollbar-minimal"
+                  className="bg-white rounded-card shadow-[0_0_10px_rgba(0,0,0,0.25)] mb-50 flex flex-col overflow-y-auto scrollbar-minimal"
                   style={{
                     width: '907px',
-                    height: '670px',
+                    height:'670px',
                   }}
                   onClick={(e) => e.stopPropagation()}
                 >
@@ -603,14 +603,15 @@ const DeviceSearchPage = () => {
                     onExpand={(value) => setShowAllDevices(value)}
                     showExpandButton={false}
                     showGradient={true}
-                    className="px-56 pt-40 pb-0"
+                    className="px-56 pt-40 pb-0 flex-shrink-0"
+                    index={combos.findIndex(c => c.comboId === selectedCombinationId)}
                   />
 
                   {/* 토글 버튼 - CombinationDeviceCard 외부에 배치 */}
                   {combinationDevices.length > 9 && !showAllDevices && (
                     <button
                       onClick={() => setShowAllDevices(true)}
-                      className="mt-16 px-56 pl-68 font-body-2-r text-gray-500 underline cursor-pointer hover:opacity-80"
+                      className="mt-16 px-56 pl-68 font-body-2-r text-gray-500 underline cursor-pointer hover:opacity-80 w-fit"
                     >
                       기기 전체보기
                     </button>
@@ -618,14 +619,14 @@ const DeviceSearchPage = () => {
                   {combinationDevices.length > 9 && showAllDevices && (
                     <button
                       onClick={() => setShowAllDevices(false)}
-                      className="mt-16 px-56 pl-68 font-body-2-r text-gray-500 underline cursor-pointer hover:opacity-80"
+                      className="mt-16 px-56 pl-68 font-body-2-r text-gray-500 underline cursor-pointer hover:opacity-80 w-fit"
                     >
                       간략히 보기
                     </button>
                   )}
 
-                  {/* 버튼 컨테이너 - 토글 버튼으로부터 72px 간격 유지 */}
-                  <div className="px-40 pb-40 pt-72">
+                  {/* 버튼 컨테이너 - 토글 버튼으로부터 간격 유지하며 하단 고정 */}
+                  <div className="px-40 pb-40 pt-30 mt-auto">
                     <div className="flex justify-end">
                       <PrimaryButton
                         text={isAlreadyInSelectedCombination ? '이미 담은 상품입니다.' : `${selectedCombination.comboName}에 담기`}

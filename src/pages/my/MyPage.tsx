@@ -1034,7 +1034,7 @@ const MyPage = () => {
                                     {combination.isPinned ? (
                                       <StarIcon
                                         onClick={(e) => handleTogglePin(e, combination.comboId)}
-                                        className={`!w-22 !h-22 -mt-2 cursor-pointer transition-opacity ${
+                                        className={`!w-22 !h-22 -mt-3 cursor-pointer transition-opacity ${
                                           hoveredStarComboId === combination.comboId ? 'opacity-80' : ''
                                         }`}
                                         onMouseEnter={() => setHoveredStarComboId(combination.comboId)}
@@ -1045,14 +1045,14 @@ const MyPage = () => {
                                         {hoveredStarComboId === combination.comboId ? (
                                           <StarHoverIcon
                                             onClick={(e) => handleTogglePin(e, combination.comboId)}
-                                            className="!w-22 !h-22 -mt-2 cursor-pointer"
+                                            className="!w-22 !h-22 -mt-3 cursor-pointer"
                                             onMouseEnter={() => setHoveredStarComboId(combination.comboId)}
                                             onMouseLeave={() => setHoveredStarComboId(null)}
                                           />
                                         ) : (
                                           <StarXIcon
                                             onClick={(e) => handleTogglePin(e, combination.comboId)}
-                                            className="!w-22 !h-22 -mt-2 cursor-pointer"
+                                            className="!w-22 !h-22 -mt-3 cursor-pointer"
                                             onMouseEnter={() => setHoveredStarComboId(combination.comboId)}
                                             onMouseLeave={() => setHoveredStarComboId(null)}
                                           />
@@ -1127,7 +1127,7 @@ const MyPage = () => {
                                   {combination.isPinned ? (
                                     <StarIcon
                                       onClick={(e) => handleTogglePin(e, combination.comboId)}
-                                      className={`!w-22 !h-22 -mt-2 cursor-pointer transition-opacity ${
+                                      className={`!w-22 !h-22 -mt-3 cursor-pointer transition-opacity ${
                                         hoveredStarComboId === combination.comboId ? 'opacity-80' : ''
                                       }`}
                                       onMouseEnter={() => setHoveredStarComboId(combination.comboId)}
@@ -1138,14 +1138,14 @@ const MyPage = () => {
                                       {hoveredStarComboId === combination.comboId ? (
                                         <StarHoverIcon
                                           onClick={(e) => handleTogglePin(e, combination.comboId)}
-                                          className="!w-22 !h-22 -mt-2 cursor-pointer"
+                                          className="!w-22 !h-22 -mt-3 cursor-pointer"
                                           onMouseEnter={() => setHoveredStarComboId(combination.comboId)}
                                           onMouseLeave={() => setHoveredStarComboId(null)}
                                         />
                                       ) : (
                                         <StarXIcon
                                           onClick={(e) => handleTogglePin(e, combination.comboId)}
-                                          className="!w-22 !h-22 -mt-2 cursor-pointer"
+                                          className="!w-22 !h-22 -mt-3 cursor-pointer"
                                           onMouseEnter={() => setHoveredStarComboId(combination.comboId)}
                                           onMouseLeave={() => setHoveredStarComboId(null)}
                                         />
