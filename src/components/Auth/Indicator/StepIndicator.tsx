@@ -1,6 +1,7 @@
 import EllipseBlack from '@/assets/icons/ellipse_black.svg?react';
 import EllipseGray from '@/assets/icons/ellipse_gray.svg?react';
 import { useOnboardingNavigation } from '@/hooks/useOnboardingNavigation';
+import { useAuth } from '@/hooks/useAuth';
 import clsx from 'clsx';
 
 type StepIndicatorProps = {
@@ -11,6 +12,7 @@ type StepIndicatorProps = {
 
 const StepIndicator = ({ currentStep, totalSteps = 4, className = '' }: StepIndicatorProps) => {
   const { handleStepClick: navigateToStep } = useOnboardingNavigation();
+  const { isLoggedIn } = useAuth();
 
   const handleStepClick = (step: number) => {
     // 이전 step만 클릭 가능
@@ -26,15 +28,19 @@ const StepIndicator = ({ currentStep, totalSteps = 4, className = '' }: StepIndi
         const isActive = step === currentStep;
         const isPrevious = step < currentStep;
         const isFuture = step > currentStep;
+        // 로그인된 상태에서는 회원가입 페이지(step 1, 2) 클릭 불가
+        const isSignupStep = step === 1 || step === 2;
+        const isClickable = isPrevious && (!isLoggedIn || !isSignupStep);
         const Icon = isActive ? EllipseBlack : EllipseGray;
         return (
           <button
             key={step}
             type="button"
             onClick={() => handleStepClick(step)}
-            disabled={!isPrevious}
+            disabled={!isClickable}
             className={clsx(
-              isPrevious && 'cursor-pointer hover:opacity-70',
+              isClickable && 'cursor-pointer hover:opacity-70',
+              !isClickable && 'cursor-not-allowed opacity-50',
               isFuture && 'opacity-50',
               isActive && 'cursor-default'
             )}
