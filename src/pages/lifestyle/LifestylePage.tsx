@@ -40,11 +40,15 @@ const LifestylePage = () => {
   const [isAutoRotate, setIsAutoRotate] = useState(true);
   const [isPaused, setIsPaused] = useState(false);
   const selectedTagKey = useMemo(() => LABEL_TO_TAGKEY[selectedLabel], [selectedLabel]);
-  const { data: lifestyleResult } = useGetLifestyleDevice(selectedTagKey);
+  const { data } = useGetLifestyleDevice(selectedTagKey);
+  const isSuccess = data?.success === true;
+  const lifestyleResult = isSuccess ? data?.result : null;
+  
   const devices = useMemo(() => {
     const list = lifestyleResult?.devices ?? [];
     return [...list].sort((a, b) => a.slot - b.slot);
   }, [lifestyleResult]);
+
 
   const targetSrc = useMemo(() => TAG_IMAGE_MAP[selectedLabel], [selectedLabel]);
   const { currentSrc, nextSrc, isNextVisible } = useCrossfadeImage(targetSrc, {
