@@ -6,31 +6,49 @@ import VideoEditing from '@/assets/images/lifestyle/video-editing.jpg';
 import Tour from '@/assets/images/lifestyle/tour.jpg';
 import type { LifestyleTagKey } from '@/types/lifestyle/lifestyle';
 
-export const LIFESTYLE_TAGS = [
-  'Office',
-  'Developer',
-  'Game',
-  'Study',
-  'Video-editing',
-  'Tour/portability',
-] as const;
+export const LIFESTYLE_CONFIG = {
+  Office: {
+    image: Office,
+    tagKey: 'Office',
+  },
+  Developer: {
+    image: Developer,
+    tagKey: 'Developer',
+  },
+  Game: {
+    image: Game,
+    tagKey: 'Game',
+  },
+  Study: {
+    image: Study,
+    tagKey: 'Study',
+  },
+  'Video-editing': {
+    image: VideoEditing,
+    tagKey: 'Video-editing',
+  },
+  'Tour/portability': {
+    image: Tour,
+    tagKey: 'Tour',
+  },
+} as const satisfies Record<
+  string,
+  {
+    image: string;
+    tagKey: LifestyleTagKey;
+  }
+>;
 
-export type LifestyleLabel = (typeof LIFESTYLE_TAGS)[number];
+export type LifestyleLabel = keyof typeof LIFESTYLE_CONFIG;
 
-export const LIFESTYLE_TAG_IMAGE_MAP: Record<LifestyleLabel, string> = {
-  Office,
-  Developer,
-  Game,
-  Study,
-  'Video-editing': VideoEditing,
-  'Tour/portability': Tour,
-};
+export const LIFESTYLE_TAGS = Object.keys(LIFESTYLE_CONFIG) as LifestyleLabel[];
 
-export const LIFESTYLE_LABEL_TO_TAGKEY: Record<LifestyleLabel, LifestyleTagKey> = {
-  Office: 'Office',
-  Developer: 'Developer',
-  Game: 'Game',
-  Study: 'Study',
-  'Video-editing': 'Video-editing',
-  'Tour/portability': 'Tour',
-};
+// label -> image
+export const LIFESTYLE_TAG_IMAGE_MAP = Object.fromEntries(
+  Object.entries(LIFESTYLE_CONFIG).map(([label, { image }]) => [label, image])
+) as Record<LifestyleLabel, string>;
+
+// label -> tagkey
+export const LIFESTYLE_LABEL_TO_TAGKEY = Object.fromEntries(
+  Object.entries(LIFESTYLE_CONFIG).map(([label, { tagKey }]) => [label, tagKey])
+) as Record<LifestyleLabel, LifestyleTagKey>;
