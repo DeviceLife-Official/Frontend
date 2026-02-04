@@ -4,9 +4,10 @@ import { OnboardingOnlyGuard } from './guards/OnboardingOnlyGuard';
 import { OnboardingCompletedGuard } from './guards/OnboardingCompletedGuard';
 
 // onboarding
-import OnboardingLifestylePage from '@/pages/auth/OnboardingLifestylePage';
-import OnboardingCombinationPage from '@/pages/auth/OnboardingCombinationPage';
-import OnboardingCompletePage from '@/pages/auth/OnboardingCompletePage';
+import OnboardingLifestylePage from '@/pages/onboarding/OnboardingLifestylePage';
+import OnboardingCombinationPage from '@/pages/onboarding/OnboardingCombinationPage';
+import OnboardingCompletePage from '@/pages/onboarding/OnboardingCompletePage';
+import OnboardingRecommendationPage from '@/pages/onboarding/OnboardingRecommendationPage';
 
 
 // my
@@ -35,7 +36,7 @@ export const PrivateRoutes = {
         { path: 'lifestyle', element: <OnboardingLifestylePage /> },
         { path: 'combination', element: <OnboardingCombinationPage /> },
         { path: 'complete', element: <OnboardingCompletePage /> },
-        // { path: 'recommendation', element: <OnboardingRecommendationPage /> },
+        { path: 'recommendation', element: <OnboardingRecommendationPage /> },
         { path: '*', element: <NotFoundPage /> },
       ],
     },
