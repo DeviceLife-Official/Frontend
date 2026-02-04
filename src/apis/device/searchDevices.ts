@@ -32,5 +32,6 @@ export const useInfiniteSearchDevices = (params: Omit<SearchDevicesParams, 'curs
     getNextPageParam: (lastPage) => (lastPage.hasNext ? lastPage.nextCursor : undefined),
     staleTime: 1 * 60 * 1000, // 1분
     gcTime: 5 * 60 * 1000, // 5분
+    placeholderData: (previousData) => previousData, // 이전 데이터 유지하여 Layout Shift 방지
   });
 };

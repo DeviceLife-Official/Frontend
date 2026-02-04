@@ -45,7 +45,7 @@ export const convertDeviceToProduct = (device: Device): Product => ({
   id: device.deviceId,
   name: device.name,
   category: getDeviceCategoryName(device.deviceType),
-  price: device.price,
+  price: device.price ?? 0,
   image: device.imageUrl,
   colors: [], // API에서 제공하지 않으므로 빈 배열
 });
