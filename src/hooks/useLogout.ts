@@ -1,7 +1,7 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { usePostLogout } from '@/apis/auth/postLogout';
 import { finalizeLogout } from '@/utils/auth/finalizeLogout';
-import { hasAuthTokens } from '@/utils/auth/authStorage';
+import { useAuth } from '@/hooks/useAuth';
 import { ROUTES } from '@/constants/routes';
 import { useNavigate } from 'react-router-dom';
 
@@ -16,13 +16,12 @@ export const useLogout = () => {
   const queryClient = useQueryClient();
   const { mutateAsync: postLogout, isPending } = usePostLogout();
   const navigate = useNavigate();
+  const { hasToken } = useAuth();
 
   const logout = async () => {
-    const hasTokens = hasAuthTokens();
-
     try {
       // 토큰이 있으면 API 호출
-      if (hasTokens) {
+      if (hasToken) {
         await postLogout();
       }
     } catch (error) {

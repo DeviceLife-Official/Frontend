@@ -20,13 +20,14 @@ export type UserProfile = UserProfileResult;
 
 export const useAuth = () => {
   const hasToken = hasAuthTokens();
-  const { data: user, isLoading, isFetching } = useGetUserProfile();
+  const { data: user, isLoading } = useGetUserProfile();
 
-  // 모든 인증 관련 로딩 상태 (토큰 확인 + userProfile 조회)
-  // - 토큰이 있을 때: userProfile 조회 중
-  // - 토큰이 없을 때: enabled=false이므로 로딩 없음
+  // 인증 관련 초기 로딩 상태
+  // - 토큰이 있을 때: userProfile 조회 중 (isLoading = true)
+  // - 토큰이 없을 때: enabled=false이므로 isLoading = false
   // - 초기 마운트 시: isLoading이 true일 수 있음
-  const isAuthLoading = isLoading || isFetching;
+  // - isFetching은 백그라운드 리페치를 나타내므로 가드에서는 사용하지 않음
+  const isAuthLoading = isLoading;
 
   // 토큰이 있고 userProfile이 있을 때만 로그인 상태
   const isLoggedIn = hasToken && !!user;
