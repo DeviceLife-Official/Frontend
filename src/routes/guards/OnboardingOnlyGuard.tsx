@@ -16,7 +16,7 @@ export const OnboardingOnlyGuard = () => {
   }
 
   if (user?.isOnboardingCompleted) {
-    alert('온보딩을 완료한 후 이용해주세요.');
+    alert('온보딩이 이미 완료되었습니다.');
     return <Navigate to={ROUTES.home} replace />;
   }
 

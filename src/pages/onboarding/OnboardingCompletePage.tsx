@@ -1,19 +1,27 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Navigate } from 'react-router-dom';
 import OnboardingLines from '@/assets/icons/onboarding_lines.svg?react';
+import LoadingSpinner from '@/components/LoadingSpinner';
 import { useGetUserProfile } from '@/apis/mypage/getUserProfile';
 import { usePostOnboardingComplete } from '@/apis/onboarding/postComplete';
 import { ROUTES } from '@/constants/routes';
 
 const OnboardingCompletePage = () => {
   const navigate = useNavigate();
-  const { data: userProfile } = useGetUserProfile();
+  const { data: userProfile, isLoading: isProfileLoading } = useGetUserProfile();
   const { mutateAsync: completeOnboarding } = usePostOnboardingComplete();
   const [isCompleted, setIsCompleted] = useState(false);
   const userName = userProfile?.username ?? '';
 
-  // 페이지 진입 시 온보딩 완료 API 호출
+  // 검증 조건(온보딩 과정 스킵하고 바로 들어오는 유저 대비비)
+  const isAlreadyCompleted = userProfile?.isOnboardingCompleted;
+  const hasNoLifestyleTags = !userProfile?.lifestyleList?.length;
+  const shouldSkipApiCall = isProfileLoading || isAlreadyCompleted || hasNoLifestyleTags;
+
+  // 페이지 진입 시 온보딩 완료 API 호출 (검증 통과 시에만)
   useEffect(() => {
+    if (shouldSkipApiCall) return;
+
     const complete = async () => {
       try {
         await completeOnboarding();
@@ -24,7 +32,7 @@ const OnboardingCompletePage = () => {
       }
     };
     complete();
-  }, [completeOnboarding]);
+  }, [shouldSkipApiCall, completeOnboarding, navigate]);
 
   // 온보딩 완료 후 5초 뒤 추천 페이지로 이동
   useEffect(() => {
@@ -36,6 +44,21 @@ const OnboardingCompletePage = () => {
 
     return () => clearTimeout(timer);
   }, [isCompleted, navigate]);
+
+  // 프로필 로딩 중이면 로딩 스피너 표시
+  if (isProfileLoading) {
+    return <LoadingSpinner />;
+  }
+
+  // 이미 온보딩 완료된 경우 → 추천 페이지로 리다이렉트 (중복 API 호출 방지)
+  if (isAlreadyCompleted) {
+    return <Navigate to={ROUTES.recommendation} replace />;
+  }
+
+  // 라이프스타일 태그가 없는 경우 → 라이프스타일 페이지로 리다이렉트
+  if (hasNoLifestyleTags) {
+    return <Navigate to={ROUTES.onboarding.lifestyle} replace />;
+  }
 
   // 한글과 영문 길이 체크 함수
   const checkNameLength = (name: string) => {
