@@ -3,20 +3,17 @@ import PrimaryButton from '@/components/Button/PrimaryButton';
 import RecentlyViewedCard from '@/components/RecentlyViewed/RecentlyViewedCard';
 import { MOCK_PRODUCTS } from '@/constants/mockData';
 import type { RecentlyViewedDevice } from '@/types/recentlyViewed';
-import { useSignupStore } from '@/stores/signupStore';
-import { useGetUserProfile } from '@/apis/mypage/getUserProfile';
+import { useAuth } from '@/hooks/useAuth';
 import { ROUTES } from '@/constants/routes';
 
 const OnboardingRecommendationPage = () => {
   const navigate = useNavigate();
-  // useGetUserProfile 훅 사용: 캐시에 있으면 사용, 없으면 자동으로 API 호출
-  const { data: userProfile } = useGetUserProfile();
-  const { profile } = useSignupStore();
+  const { user } = useAuth();
 
   // 라이프스타일 태그명 (주된 용도에서 선택한 태그)
-  const lifestyleTagLabel = userProfile?.lifestyleList?.[0] || '';
+  const lifestyleTagLabel = user?.lifestyleList?.[0] || '';
   // 유저명
-  const userName = profile.username || userProfile?.username || '';
+  const userName = user?.username || '';
 
   // 타이틀 표시 여부
   const hasTitleData = lifestyleTagLabel && userName;
