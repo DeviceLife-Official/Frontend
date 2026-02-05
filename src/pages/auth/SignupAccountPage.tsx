@@ -121,7 +121,7 @@ const SignupAccountPage = () => {
             {/* 이메일 필드 */}
             <div className="flex flex-col gap-4">
               <div className="relative w-400">
-                <InputLabel text="이메일(ID)" className="absolute right-full mr-95 top-1/2 -translate-y-1/2" />
+                <InputLabel text="이메일(ID)" className="!absolute right-full mr-95 top-1/2 -translate-y-1/2" />
                 <PrimaryInput
                   {...register('email', {
                     onChange: () => {
