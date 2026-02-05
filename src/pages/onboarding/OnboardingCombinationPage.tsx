@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Navigate } from 'react-router-dom';
 import PrimaryButton from '@/components/Button/PrimaryButton';
 import StepIndicator from '@/components/Auth/Indicator/StepIndicator';
+import LoadingSpinner from '@/components/LoadingSpinner';
 import {
   onboardingCombinationSchema,
   type OnboardingCombinationFormData,
@@ -11,6 +12,7 @@ import {
 import { ROUTES } from '@/constants/routes';
 import { usePostCreateCombination } from '@/apis/combo/postCreateCombination';
 import { usePostOnboardingComplete } from '@/apis/onboarding/postComplete';
+import { useGetUserProfile } from '@/apis/mypage/getUserProfile';
 
 const OnboardingCombinationPage = () => {
   const [step, setStep] = useState(1);
@@ -18,8 +20,19 @@ const OnboardingCombinationPage = () => {
   const navigate = useNavigate();
   const { mutateAsync: createCombo, isPending: isCreatingCombo } = usePostCreateCombination();
   const { mutateAsync: completeOnboarding, isPending: isCompletingOnboarding } = usePostOnboardingComplete();
+  const { data: userProfile, isLoading: isProfileLoading } = useGetUserProfile();
 
   const isPending = isCreatingCombo || isCompletingOnboarding;
+
+  // 로딩 중이면 로딩 스피너 표시
+  if (isProfileLoading) {
+    return <LoadingSpinner />;
+  }
+
+  // 라이프스타일 태그가 없으면 라이프스타일 선택 페이지로 리다이렉트
+  if (!userProfile?.lifestyleList?.length) {
+    return <Navigate to={ROUTES.onboarding.lifestyle} replace />;
+  }
 
   const {
     register,
