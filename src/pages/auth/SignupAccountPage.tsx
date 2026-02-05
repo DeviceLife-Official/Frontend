@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { signupAccountSchema, type SignupAccountFormData } from '@/schemas/authSchema';
@@ -25,6 +25,11 @@ const SignupAccountPage = () => {
   const [hasEmailSubmitted, setHasEmailSubmitted] = useState(false);
 
   const { setAccount, isEmailVerified, setIsEmailVerified } = useSignupStore();
+
+  // 페이지 마운트 시 이메일 중복확인 상태 초기화 (뒤로가기/인디케이터로 돌아올 때 대비)
+  useEffect(() => {
+    setIsEmailVerified(false);
+  }, [setIsEmailVerified]);
   const { mutateAsync: checkEmailDuplicate, isPending: isCheckingEmail } = usePostJoinEmail();
 
   const {
