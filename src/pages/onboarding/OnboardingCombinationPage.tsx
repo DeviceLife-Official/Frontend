@@ -10,12 +10,16 @@ import {
 } from '@/schemas/authSchema';
 import { ROUTES } from '@/constants/routes';
 import { usePostCreateCombination } from '@/apis/combo/postCreateCombination';
+import { usePostOnboardingComplete } from '@/apis/onboarding/postComplete';
 
 const OnboardingCombinationPage = () => {
   const [step, setStep] = useState(1);
   const [combinationName, setCombinationName] = useState('');
   const navigate = useNavigate();
-  const { mutateAsync: createCombo, isPending } = usePostCreateCombination();
+  const { mutateAsync: createCombo, isPending: isCreatingCombo } = usePostCreateCombination();
+  const { mutateAsync: completeOnboarding, isPending: isCompletingOnboarding } = usePostOnboardingComplete();
+
+  const isPending = isCreatingCombo || isCompletingOnboarding;
 
   const {
     register,
@@ -36,7 +40,13 @@ const OnboardingCombinationPage = () => {
     if (isPending) return;
 
     try {
+      // 1. 조합 생성
       await createCombo({ comboName: combinationName });
+
+      // 2. 온보딩 완료 처리
+      await completeOnboarding();
+
+      // 3. 완료 페이지로 이동
       navigate(ROUTES.onboarding.complete, { replace: true });
     } catch (error) {
       alert('조합 생성에 실패했습니다. 잠시 후 다시 시도해주세요.');
