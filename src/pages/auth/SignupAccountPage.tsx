@@ -7,13 +7,20 @@ import PrimaryButton from '@/components/Button/PrimaryButton';
 import SecondaryButton from '@/components/Button/SecondaryButton';
 import InputLabel from '@/components/Auth/Label/InputLabel';
 import StepIndicator from '@/components/Auth/Indicator/StepIndicator';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Navigate } from 'react-router-dom';
 import { ROUTES } from '@/constants/routes';
 import { useSignupStore } from '@/stores/signupStore';
 import { usePostJoinEmail } from '@/apis/auth/postJoinEmail';
+import { useAuth } from '@/hooks/useAuth';
 
 const SignupAccountPage = () => {
   const navigate = useNavigate();
+  const { isLoggedIn } = useAuth();
+
+  // 로그인된 상태에서 회원가입 페이지 접근 시 홈으로 리다이렉트
+  if (isLoggedIn) {
+    return <Navigate to={ROUTES.home} replace />;
+  }
   const [hasSubmitted, setHasSubmitted] = useState(false);
   const [hasEmailSubmitted, setHasEmailSubmitted] = useState(false);
 

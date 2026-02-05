@@ -38,7 +38,7 @@ const OnboardingLifestylePage = () => {
 
     try {
       await saveTags({ tagIds: allSelectedTagIds });
-      navigate(ROUTES.auth.onboarding.combination, { replace: true });
+      navigate(ROUTES.onboarding.combination, { replace: true });
     } catch (error) {
       alert('태그 저장에 실패했습니다. 잠시 후 다시 시도해주세요.');
     }

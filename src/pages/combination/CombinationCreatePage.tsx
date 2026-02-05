@@ -1,5 +1,4 @@
 import { useMemo, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import PrimaryButton from '@/components/Button/PrimaryButton';
 import Stage1Section from '@/components/Combination/Stage1Section';
 import Stage2Section from '@/components/Combination/Stage2Section';
@@ -16,7 +15,6 @@ import type { CommonResponse } from '@/types/common';
 type ResultPhase = 'idle' | 'shrink' | 'stack' | 'done';
 
 const CombinationCreatePage = () => {
-  const navigate = useNavigate();
   const [centerText, setCenterText] = useState<string>('');
   const [mode, setMode] = useState<'form' | 'result'>('form');
   const [bgOn, setBgOn] = useState(false);
@@ -73,17 +71,18 @@ const CombinationCreatePage = () => {
       if (axios.isAxiosError(err)) {
         const axiosErr = err as AxiosError<CommonResponse<null>>;
         const code = axiosErr.response?.data?.code;
-        // 인터셉터 로그인 리다이렉트 구현 후 아래 코드는 삭제
-        if (code === 'AUTH_401') {
-          navigate('/auth/login');
-          return;
-        }
+
+        // 401 에러는 인터셉터에서 로그인 페이지로 리다이렉트 처리
+        // (비로그인 유저의 경우 인터셉터가 이미 리다이렉트했으므로 여기서는 처리하지 않음)
+
         if (code === 'COMBO_4005') {
           setServerErrorMessage('이미 동일한 이름의 조합이 존재합니다.');
           return;
         }
       }
       setServerErrorMessage('조합 생성 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+    } finally {
+      submitLockedRef.current = false;
     }
   };
 

@@ -6,18 +6,33 @@ import PrimaryInput from '@/components/Input/PrimaryInput';
 import PrimaryButton from '@/components/Button/PrimaryButton';
 import InputLabel from '@/components/Auth/Label/InputLabel';
 import StepIndicator from '@/components/Auth/Indicator/StepIndicator';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Navigate } from 'react-router-dom';
 import { ROUTES } from '@/constants/routes';
 import { useSignupStore } from '@/stores/signupStore';
 import { usePostJoin } from '@/apis/auth/postJoin';
-import { useLoginFlow } from '@/hooks/useLoginFlow';
+import { useLogin } from '@/hooks/useLogin';
+import { useAuth } from '@/hooks/useAuth';
 
 const SignupProfilePage = () => {
   const navigate = useNavigate();
   const [hasSubmitted, setHasSubmitted] = useState(false);
   const { account, setProfile } = useSignupStore();
   const { mutateAsync: signup } = usePostJoin();
-  const { loginAndFinalize } = useLoginFlow();
+  const { loginAndFinalize } = useLogin();
+  const { isLoggedIn } = useAuth();
+
+  // 로그인된 상태에서 회원가입 페이지 접근 시 홈으로 리다이렉트
+  if (isLoggedIn) {
+    return <Navigate to={ROUTES.home} replace />;
+  }
+
+  // 이메일, 비밀번호, 중복확인이 모두 완료되었는지 확인
+  const isAccountComplete = account.email && account.password && account.isEmailVerified;
+
+  // 하나라도 빠지면 계정 페이지로 리다이렉트
+  if (!isAccountComplete) {
+    return <Navigate to={ROUTES.auth.signup.account} replace />;
+  }
 
   // 프로필 정보 입력 폼 상태 관리
   const {
@@ -34,13 +49,6 @@ const SignupProfilePage = () => {
   // 프로필 정보 제출 성공 핸들러
   const onSubmitValid = async (data: SignupProfileFormData) => {
     setHasSubmitted(true);
-
-    // 이메일 중복확인 여부 확인
-    if (!account.isEmailVerified) {
-      // 중복확인 안 했으면 계정 페이지로 이동
-      navigate(ROUTES.auth.signup.account, { replace: true });
-      return;
-    }
 
     // zustand에 프로필 정보 저장
     setProfile({
@@ -65,7 +73,7 @@ const SignupProfilePage = () => {
         });
 
         // 로그인 성공 시 온보딩으로 이동
-        navigate(ROUTES.auth.onboarding.lifestyle, { replace: true });
+        navigate(ROUTES.onboarding.lifestyle, { replace: true });
       } catch (loginError) {
         // 로그인 실패 시 알림
         alert('회원가입은 완료되었지만 자동 로그인에 실패했습니다. 로그인 페이지에서 다시 시도해주세요.');

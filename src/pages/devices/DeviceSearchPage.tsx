@@ -133,7 +133,7 @@ const DeviceSearchPage = () => {
       return {
         text: '맞춤 설정하고 담기',
         handler: () => {
-          navigate(ROUTES.auth.onboarding.lifestyle);
+          navigate(ROUTES.onboarding.lifestyle);
         },
       };
     }

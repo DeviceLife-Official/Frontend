@@ -9,7 +9,7 @@ import CheckboxOn from '@/assets/icons/checkbox_on.svg?react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { ROUTES } from '@/constants/routes';
 import GoogleLoginButton from '@/components/Button/GoogleLoginButton';
-import { useLoginFlow } from '@/hooks/useLoginFlow';
+import { useLogin } from '@/hooks/useLogin';
 
 // 라우터 state 타입 (아이디 찾기에서 넘어올 때)
 type LoginPageState = {
@@ -42,8 +42,8 @@ const LoginPage = () => {
   // 비밀번호 입력 필드 등록
   const passwordRegister = register('password');
 
-  // 로그인 플로우 훅
-  const { loginAndFinalize, isPending } = useLoginFlow();
+  // 로그인 훅
+  const { loginAndFinalize, isPending } = useLogin();
 
   // 로그인 제출 핸들러
   const onSubmit = async (data: LoginFormData) => {

@@ -86,4 +86,3 @@ const OnboardingRecommendationPage = () => {
 
 export default OnboardingRecommendationPage;
 
-
