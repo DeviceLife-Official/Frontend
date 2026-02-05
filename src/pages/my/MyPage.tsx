@@ -529,11 +529,7 @@ const MyPage = () => {
               <div className="flex items-center gap-24">
                 <p className="font-body-2-sm text-black whitespace-nowrap">라이프스타일</p>
                 <div className="flex flex-wrap gap-12 content-start">
-                  <RoundedLifestyleTag
-                    label={
-                      (userProfile?.lifestyleList?.[0] ?? '').replace(/^#\s*/, '')
-                    }
-                  />
+                  <RoundedLifestyleTag label={userProfile?.lifestyleList?.[0] ?? ''} />
                 </div>
               </div>
             </div>
