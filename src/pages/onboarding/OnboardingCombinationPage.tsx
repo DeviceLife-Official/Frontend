@@ -22,18 +22,6 @@ const OnboardingCombinationPage = () => {
   const { mutateAsync: completeOnboarding, isPending: isCompletingOnboarding } = usePostOnboardingComplete();
   const { data: userProfile, isLoading: isProfileLoading } = useGetUserProfile();
 
-  const isPending = isCreatingCombo || isCompletingOnboarding;
-
-  // 로딩 중이면 로딩 스피너 표시
-  if (isProfileLoading) {
-    return <LoadingSpinner />;
-  }
-
-  // 라이프스타일 태그가 없으면 라이프스타일 선택 페이지로 리다이렉트
-  if (!userProfile?.lifestyleList?.length) {
-    return <Navigate to={ROUTES.onboarding.lifestyle} replace />;
-  }
-
   const {
     register,
     handleSubmit,
@@ -42,6 +30,18 @@ const OnboardingCombinationPage = () => {
     resolver: zodResolver(onboardingCombinationSchema),
     mode: 'onChange',
   });
+
+  const isPending = isCreatingCombo || isCompletingOnboarding;
+
+  // 프로필 초기 로딩 중이면 로딩 스피너 표시
+  if (isProfileLoading) {
+    return <LoadingSpinner />;
+  }
+
+  // 라이프스타일 태그가 없으면 라이프스타일 선택 페이지로 리다이렉트
+  if (!userProfile?.lifestyleList?.length) {
+    return <Navigate to={ROUTES.onboarding.lifestyle} replace />;
+  }
 
   const onSubmit = (data: OnboardingCombinationFormData) => {
     setCombinationName(data.combinationName.trim());

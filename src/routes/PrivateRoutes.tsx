@@ -36,7 +36,6 @@ export const PrivateRoutes = {
         { path: 'lifestyle', element: <OnboardingLifestylePage /> },
         { path: 'combination', element: <OnboardingCombinationPage /> },
         { path: 'complete', element: <OnboardingCompletePage /> },
-        { path: 'recommendation', element: <OnboardingRecommendationPage /> },
         { path: '*', element: <NotFoundPage /> },
       ],
     },
@@ -45,6 +44,9 @@ export const PrivateRoutes = {
     {
       element: <OnboardingCompletedGuard />,
       children: [
+        // 추천 페이지 (온보딩 완료 후 접근 가능)
+        { path: 'recommendation', element: <OnboardingRecommendationPage /> },
+
         // 마이페이지
         { path: 'my', element: <MyPage /> },
         { path: 'my/trash', element: <MyTrashPage /> },
