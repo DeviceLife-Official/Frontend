@@ -1,22 +1,41 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import OnboardingLines from '@/assets/icons/onboarding_lines.svg?react';
 import { useGetUserProfile } from '@/apis/mypage/getUserProfile';
+import { usePostOnboardingComplete } from '@/apis/onboarding/postComplete';
 import { ROUTES } from '@/constants/routes';
 
 const OnboardingCompletePage = () => {
   const navigate = useNavigate();
   const { data: userProfile } = useGetUserProfile();
+  const { mutateAsync: completeOnboarding } = usePostOnboardingComplete();
+  const [isCompleted, setIsCompleted] = useState(false);
   const userName = userProfile?.username ?? '';
 
-  // 애니메이션(2초) 종료 후 3초 뒤 추천 기기 페이지로 이동
+  // 페이지 진입 시 온보딩 완료 API 호출
   useEffect(() => {
+    const complete = async () => {
+      try {
+        await completeOnboarding();
+        setIsCompleted(true);
+      } catch (error) {
+        alert('온보딩 완료에 실패했습니다. 잠시 후 다시 시도해주세요.');
+        navigate(ROUTES.onboarding.lifestyle, { replace: true });
+      }
+    };
+    complete();
+  }, [completeOnboarding]);
+
+  // 온보딩 완료 후 5초 뒤 추천 페이지로 이동
+  useEffect(() => {
+    if (!isCompleted) return;
+
     const timer = setTimeout(() => {
       navigate(ROUTES.recommendation, { replace: true });
-    }, 5000); // 2초(애니메이션) + 3초(대기)
+    }, 5000);
 
     return () => clearTimeout(timer);
-  }, [navigate]);
+  }, [isCompleted, navigate]);
 
   // 한글과 영문 길이 체크 함수
   const checkNameLength = (name: string) => {
