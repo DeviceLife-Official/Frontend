@@ -32,7 +32,13 @@ const RecentlyViewedCard = ({ device, onClick }: RecentlyViewedCardProps) => {
 
         {/* 가격 - 16px, SemiBold */}
         <p className="font-body-2-sm text-black mt-8">
-          {device.price.toLocaleString()}
+          {device.price != null
+            ? new Intl.NumberFormat('ko-KR', {
+                style: 'currency',
+                currency: 'KRW',
+                maximumFractionDigits: 0,
+              }).format(device.price)
+            : '-'}
         </p>
       </div>
     </div>
