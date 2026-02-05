@@ -64,7 +64,6 @@ const SignupAccountPage = () => {
       }
       setIsEmailVerified(true);
       clearErrors('email');
-      alert('사용 가능한 이메일입니다');
     } catch (error) {
       setError('email', {
         type: 'manual',
@@ -121,7 +120,7 @@ const SignupAccountPage = () => {
             {/* 이메일 필드 */}
             <div className="flex flex-col gap-4">
               <div className="relative w-400">
-                <InputLabel text="이메일(ID)" className="!absolute right-full mr-95 top-1/2 -translate-y-1/2" />
+                <InputLabel text="이메일(ID)" className="absolute right-full mr-95 top-1/2 -translate-y-1/2" />
                 <PrimaryInput
                   {...register('email', {
                     onChange: () => {
@@ -141,6 +140,9 @@ const SignupAccountPage = () => {
               </div>
               {(hasSubmitted || hasEmailSubmitted) && errors.email && (
                 <p className="font-body-3-r text-warning">{errors.email.message}</p>
+              )}
+              {hasEmailSubmitted && !errors.email && isEmailVerified && (
+                <p className="font-body-3-r text-blue-600">사용 가능한 이메일입니다</p>
               )}
             </div>
 
