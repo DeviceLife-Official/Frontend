@@ -29,9 +29,7 @@ import { useDeleteCombo } from '@/apis/combo/deleteCombo';
 import { usePostComboPin } from '@/apis/combo/postComboPin';
 import { useDeleteComboDevice } from '@/apis/combo/deleteComboDevice';
 import type { ComboListItem } from '@/types/combo/combo';
-import { useQueryClient } from '@tanstack/react-query';
-import type { UserProfileResult } from '@/types/mypage/user';
-import { queryKey } from '@/constants/queryKey';
+import { useAuth } from '@/hooks/useAuth';
 
 // 조합 평가 Mock 데이터
 const MOCK_EVALUATION = {
@@ -101,8 +99,7 @@ const MyPage = () => {
   const { mutate: deleteCombo, isPending: isDeleting } = useDeleteCombo();
   const { mutate: togglePin } = usePostComboPin();
   const { mutate: deleteDevice, isPending: isDeletingDevice } = useDeleteComboDevice();
-  const queryClient = useQueryClient();
-  const userProfile = queryClient.getQueryData<UserProfileResult>([queryKey.USER_PROFILE]);
+  const { user: userProfile, isAuthLoading } = useAuth();
 
   // 정렬된 조합 목록
   const sortedCombos = useMemo(() => {
@@ -511,7 +508,9 @@ const MyPage = () => {
             {/* 프로필 카드 */}
             <div className="mt-60 h-100 rounded-card border border-blue-300 flex items-center justify-center gap-30">
               <Logo className="w-48 h-48 flex-shrink-0" />
-              <p className="font-heading-2 text-black">{userProfile?.username ?? '000'} 님</p>
+              <p className="font-heading-2 text-black">
+                {isAuthLoading ? '불러오는 중...' : `${userProfile?.username ?? '000'} 님`}
+              </p>
             </div>
 
             {/* 사용자 정보 */}
@@ -529,7 +528,9 @@ const MyPage = () => {
               <div className="flex items-center gap-24">
                 <p className="font-body-2-sm text-black whitespace-nowrap">라이프스타일</p>
                 <div className="flex flex-wrap gap-12 content-start">
-                  <RoundedLifestyleTag label={userProfile?.lifestyleList?.[0] ?? ''} />
+                  {userProfile?.lifestyleList?.[0] && (
+                    <RoundedLifestyleTag label={userProfile.lifestyleList[0]} />
+                  )}
                 </div>
               </div>
             </div>

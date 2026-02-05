@@ -1,6 +1,6 @@
 import { axiosInstance } from '@/apis/axios/axios';
 import type { UserProfileResponse, UserProfileResult } from '@/types/mypage/user';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { queryKey } from '@/constants/queryKey';
 import { hasAuthTokens } from '@/utils/auth/authStorage';
 
@@ -13,13 +13,11 @@ export const getUserProfile = async (): Promise<UserProfileResult | undefined> =
 // 유저 정보 조회 Query
 export const useGetUserProfile = () => {
   const hasTokens = hasAuthTokens();
-  const queryClient = useQueryClient();
+
   return useQuery<UserProfileResult | undefined>({
     queryKey: [queryKey.USER_PROFILE],
     queryFn: getUserProfile,
     enabled: hasTokens, // 토큰이 있을 때만 조회
     staleTime: 1000 * 60 * 10,
-    placeholderData: () =>
-      queryClient.getQueryData<UserProfileResult | undefined>([queryKey.USER_PROFILE]),
   });
 };
