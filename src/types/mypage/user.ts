@@ -7,6 +7,7 @@ export type UserProfileResult = {
   email: string;
   lifestyleList: string[];
   authProvider: string;
+  isOnboardingCompleted: boolean;
 };
 
 // 유저 정보 응답 타입
