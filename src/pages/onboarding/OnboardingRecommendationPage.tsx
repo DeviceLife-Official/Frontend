@@ -1,32 +1,49 @@
+import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PrimaryButton from '@/components/Button/PrimaryButton';
 import RecentlyViewedCard from '@/components/RecentlyViewed/RecentlyViewedCard';
-import { MOCK_PRODUCTS } from '@/constants/mockData';
+import LoadingSpinner from '@/components/LoadingSpinner';
 import type { RecentlyViewedDevice } from '@/types/recentlyViewed';
+import type { LifestyleTagKey } from '@/types/lifestyle/lifestyle';
 import { useAuth } from '@/hooks/useAuth';
+import { useGroupedTags } from '@/hooks/useGroupedTags';
+import { useGetLifestyleDevice } from '@/apis/lifestyle/getLifestyleDevice';
 import { ROUTES } from '@/constants/routes';
 
 const OnboardingRecommendationPage = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { tags } = useGroupedTags();
 
-  // 라이프스타일 태그명 (주된 용도에서 선택한 태그)
+  // 라이프스타일 태그 라벨 (유저 프로필에서 가져온 값, 예: "사무/업무")
   const lifestyleTagLabel = user?.lifestyleList?.[0] || '';
+
+  // 태그 목록에서 tagLabel로 매칭하여 tagKey 추출 (API 파라미터용)
+  const lifestyleTagKey = useMemo(() => {
+    const matched = tags.lifestyle.find((t) => t.tagLabel === lifestyleTagLabel);
+    return matched?.tagKey || '';
+  }, [tags.lifestyle, lifestyleTagLabel]);
+
+  // 추천 기기 조회
+  const { data: lifestyleData, isLoading: isDevicesLoading } = useGetLifestyleDevice(lifestyleTagKey as LifestyleTagKey);
+
   // 유저명
   const userName = user?.username || '';
 
   // 타이틀 표시 여부
   const hasTitleData = lifestyleTagLabel && userName;
 
-  // MOCK_PRODUCTS에서 3개만 가져와서 사용
-  const dummyDevices: RecentlyViewedDevice[] = MOCK_PRODUCTS.slice(0, 3).map((product) => ({
-    id: product.id,
-    name: product.name,
-    category: product.category,
-    price: product.price,
-    image: product.image,
-    viewedAt: Date.now(),
-  }));
+  // API 응답을 RecentlyViewedDevice 형태로 변환 (3개만)
+  const recommendedDevices: RecentlyViewedDevice[] = (lifestyleData?.result?.devices ?? [])
+    .slice(0, 3)
+    .map((device) => ({
+      id: device.deviceId,
+      name: device.displayName,
+      category: '',
+      price: device.price,
+      image: device.imageUrl,
+      viewedAt: Date.now(),
+    }));
 
   return (
     <div className="flex flex-col items-center justify-center h-[calc(100vh-80px)]">
@@ -60,9 +77,15 @@ const OnboardingRecommendationPage = () => {
 
           {/* 기기 카드 영역 - 가로 3개 */}
           <div className="flex gap-28 justify-center">
-            {dummyDevices.map((device) => (
-              <RecentlyViewedCard key={device.id} device={device} />
-            ))}
+            {isDevicesLoading ? (
+              <LoadingSpinner />
+            ) : recommendedDevices.length > 0 ? (
+              recommendedDevices.map((device) => (
+                <RecentlyViewedCard key={device.id} device={device} />
+              ))
+            ) : (
+              <p className="font-body-2-r text-gray-400">추천 기기가 없습니다.</p>
+            )}
           </div>
 
           <div className="flex flex-col items-center gap-12 ">
