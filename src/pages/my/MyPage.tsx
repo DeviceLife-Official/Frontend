@@ -536,7 +536,10 @@ const MyPage = () => {
           </div>
 
           {/* 최근에 본 기기 플로팅 섹션 */}
-          <RecentlyViewedFloating userName="000" sidebarContentRef={sidebarContentRef} />
+          <RecentlyViewedFloating
+            userName={userProfile?.username ?? '000'}
+            sidebarContentRef={sidebarContentRef}
+          />
         </aside>
 
         {/* 우측 메인 콘텐츠 */}
