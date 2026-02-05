@@ -8,7 +8,7 @@ import { useLogout } from '@/hooks/useLogout';
 import { useAuth } from '@/hooks/useAuth';
 import { ROUTES } from '@/constants/routes';
 
-const NAV_TEXT_CLASS = 'font-body-1-sm text-black hover:text-blue-500 active:text-blue-600';
+const NAV_TEXT_CLASS = 'font-body-1-sm text-black hover:text-blue-500 active:text-blue-600 cursor-pointer';
 const USER_BLUE_500_CLASS = 'absolute inset-0 opacity-0 group-hover:opacity-100';
 
 interface GNBProps {

@@ -13,9 +13,11 @@ export const getUserProfile = async (): Promise<UserProfileResult | undefined> =
 // 유저 정보 조회 Query
 export const useGetUserProfile = () => {
   const hasTokens = hasAuthTokens();
+
   return useQuery<UserProfileResult | undefined>({
     queryKey: [queryKey.USER_PROFILE],
     queryFn: getUserProfile,
     enabled: hasTokens, // 토큰이 있을 때만 조회
+    staleTime: 1000 * 60 * 10,
   });
 };
