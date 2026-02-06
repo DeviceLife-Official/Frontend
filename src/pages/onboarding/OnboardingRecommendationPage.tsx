@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PrimaryButton from '@/components/Button/PrimaryButton';
 import RecentlyViewedCard from '@/components/RecentlyViewed/RecentlyViewedCard';
@@ -8,6 +8,8 @@ import type { LifestyleTagKey } from '@/types/lifestyle/lifestyle';
 import { useAuth } from '@/hooks/useAuth';
 import { useGroupedTags } from '@/hooks/useGroupedTags';
 import { useGetLifestyleDevice } from '@/apis/lifestyle/getLifestyleDevice';
+import { useGetCombos } from '@/apis/combo/getCombos';
+import { usePostComboDevice } from '@/apis/combo/postComboDevices';
 import { ROUTES } from '@/constants/routes';
 
 const OnboardingRecommendationPage = () => {
@@ -27,6 +29,14 @@ const OnboardingRecommendationPage = () => {
   // 추천 기기 조회
   const { data: lifestyleData, isLoading: isDevicesLoading } = useGetLifestyleDevice(lifestyleTagKey as LifestyleTagKey);
 
+  // 조합 목록 조회 (온보딩에서 생성한 조합의 comboId를 가져오기 위함)
+  const { data: combos } = useGetCombos();
+  const comboId = combos?.[0]?.comboId ?? null;
+
+  // 조합에 기기 추가 mutation
+  const { mutateAsync: addDevice } = usePostComboDevice();
+  const [isAdding, setIsAdding] = useState(false);
+
   // 유저명
   const userName = user?.username || '';
 
@@ -44,6 +54,26 @@ const OnboardingRecommendationPage = () => {
       image: device.imageUrl,
       viewedAt: Date.now(),
     }));
+
+  // 내 조합에 담기 핸들러
+  const handleAddToCombo = async () => {
+    if (!comboId || recommendedDevices.length === 0 || isAdding) return;
+
+    setIsAdding(true);
+    try {
+      await Promise.all(
+        recommendedDevices.map((device) =>
+          addDevice({ comboId, deviceId: device.id })
+        )
+      );
+      alert('추천 기기가 내 조합에 담겼습니다!');
+      navigate(ROUTES.home, { replace: true });
+    } catch (error) {
+      alert('조합에 기기를 담는데 실패했습니다. 잠시 후 다시 시도해주세요.');
+    } finally {
+      setIsAdding(false);
+    }
+  };
 
   return (
     <div className="flex flex-col items-center justify-center h-[calc(100vh-80px)]">
@@ -90,7 +120,12 @@ const OnboardingRecommendationPage = () => {
 
           <div className="flex flex-col items-center gap-12 ">
             {/* 내 조합에 담기 버튼 */}
-            <PrimaryButton text="내 조합에 담기" className="w-280 bg-blue-500 hover:bg-blue-400" />
+            <PrimaryButton
+              text={isAdding ? '담는 중...' : '내 조합에 담기'}
+              disabled={!comboId || recommendedDevices.length === 0 || isAdding}
+              className="w-280 bg-blue-500 hover:bg-blue-400"
+              onClick={handleAddToCombo}
+            />
             {/* 다음에 하기 버튼 */}
             <PrimaryButton
               text="다음에 하기"
