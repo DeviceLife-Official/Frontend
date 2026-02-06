@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import clsx from 'clsx';
 import PrimaryButton from '@/components/Button/PrimaryButton';
 import RecentlyViewedCard from '@/components/RecentlyViewed/RecentlyViewedCard';
 import LoadingSpinner from '@/components/LoadingSpinner';
@@ -17,7 +18,7 @@ const OnboardingRecommendationPage = () => {
   const { user } = useAuth();
   const { tags } = useGroupedTags();
 
-  // 라이프스타일 태그 라벨 (유저 프로필에서 가져온 값, 예: "사무/업무")
+  // 라이프스타일 태그 라벨 (유저 프로필에서 가져온 값)
   const lifestyleTagLabel = user?.lifestyleList?.[0] || '';
 
   // 태그 목록에서 tagLabel로 매칭하여 tagKey 추출 (API 파라미터용)
@@ -36,6 +37,13 @@ const OnboardingRecommendationPage = () => {
   // 조합에 기기 추가 mutation
   const { mutateAsync: addDevice } = usePostComboDevice();
   const [isAdding, setIsAdding] = useState(false);
+
+  // 선택된 기기 ID (단일 선택)
+  const [selectedDeviceId, setSelectedDeviceId] = useState<number | null>(null);
+
+  const selectDevice = (deviceId: number) => {
+    setSelectedDeviceId(deviceId);
+  };
 
   // 유저명
   const userName = user?.username || '';
@@ -57,16 +65,12 @@ const OnboardingRecommendationPage = () => {
 
   // 내 조합에 담기 핸들러
   const handleAddToCombo = async () => {
-    if (!comboId || recommendedDevices.length === 0 || isAdding) return;
+    if (!comboId || !selectedDeviceId || isAdding) return;
 
     setIsAdding(true);
     try {
-      await Promise.all(
-        recommendedDevices.map((device) =>
-          addDevice({ comboId, deviceId: device.id })
-        )
-      );
-      alert('추천 기기가 내 조합에 담겼습니다!');
+      await addDevice({ comboId, deviceId: selectedDeviceId });
+      alert('선택한 기기가 내 조합에 담겼습니다!');
       navigate(ROUTES.home, { replace: true });
     } catch (error) {
       alert('조합에 기기를 담는데 실패했습니다. 잠시 후 다시 시도해주세요.');
@@ -110,9 +114,20 @@ const OnboardingRecommendationPage = () => {
             {isDevicesLoading ? (
               <LoadingSpinner />
             ) : recommendedDevices.length > 0 ? (
-              recommendedDevices.map((device) => (
-                <RecentlyViewedCard key={device.id} device={device} />
-              ))
+              recommendedDevices.map((device) => {
+                const isSelected = selectedDeviceId === device.id;
+                return (
+                  <RecentlyViewedCard
+                    key={device.id}
+                    device={device}
+                    className={clsx(
+                      'rounded-8 transition-all',
+                      isSelected && 'border-shadow-blue'
+                    )}
+                    onClick={() => selectDevice(device.id)}
+                  />
+                );
+              })
             ) : (
               <p className="font-body-2-r text-gray-400">추천 기기가 없습니다.</p>
             )}
@@ -122,7 +137,7 @@ const OnboardingRecommendationPage = () => {
             {/* 내 조합에 담기 버튼 */}
             <PrimaryButton
               text={isAdding ? '담는 중...' : '내 조합에 담기'}
-              disabled={!comboId || recommendedDevices.length === 0 || isAdding}
+              disabled={!comboId || !selectedDeviceId || isAdding}
               className="w-280 bg-blue-500 hover:bg-blue-400"
               onClick={handleAddToCombo}
             />
