@@ -1,4 +1,6 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/hooks/useAuth';
 import NicknameEditSection from '@/components/Setting/NicknameEditSection';
 import EmailSection from '@/components/Setting/EmailSection';
 import PasswordSettingSection from '@/components/Setting/PasswordSettingSection';
@@ -6,49 +8,45 @@ import LifestyleSelectSection from '@/components/Setting/LifestyleSelectSection'
 import PrimaryButton from '@/components/Button/PrimaryButton';
 import { validateNickname } from '@/utils/validateNickname';
 import BackIcon from '@/assets/icons/back_gray.svg?react';
-import { useNavigate } from 'react-router-dom';
-
-type AuthProvider = 'GENERAL' | 'HYBRID' | 'GOOGLE';
+import LoadingSpinner from '@/components/LoadingSpinner';
+import { LIFESTYLE_TAGS, type LifestyleLabel } from '@/constants/lifestyle';
 
 const ProfileEditPage = () => {
   const navigate = useNavigate();
-
-  // TODO: API 연동
-  const initialNickname = '000';
-  const initialEmail = 'example@devicelife.com';
-  const initialLifestyles: string[] = [];
-
-  const [authProvider] = useState<AuthProvider>('GENERAL');
-
-  const TAGS = [
-    'Office',
-    'Study',
-    'Tour/portability',
-    'Developer',
-    'Game',
-    'Video-editing',
-  ] as const;
-  type Tag = (typeof TAGS)[number];
-
+  const { user, isAuthLoading } = useAuth();
+  const serverLifestyleLabel = useMemo((): LifestyleLabel | null => {
+    const raw = user?.lifestyleList?.[0];
+    if (!raw) return null;
+    const normalized = raw.replace(/^#\s*/, '') as LifestyleLabel;
+    return LIFESTYLE_TAGS.includes(normalized) ? normalized : null;
+  }, [user]);
+  const initialNickname = user?.username ?? '000';
+  const initialEmail = user?.email ?? 'example@devicelife.com';
+  const initialLifestyles = serverLifestyleLabel ? [serverLifestyleLabel] : [];
+  const authProvider = user?.authProvider ?? 'GENERAL';
   const [nickname, setNickname] = useState(initialNickname);
-  const [lifestyles, setLifestyles] = useState<Tag[]>([]);
+  const [lifestyles, setLifestyles] = useState<LifestyleLabel[]>(initialLifestyles);
 
+  useEffect(() => {
+    if (!user) return;
+    setNickname(user.username ?? '000');
+    setLifestyles(serverLifestyleLabel ? [serverLifestyleLabel] : []);
+  }, [user, serverLifestyleLabel]);
+
+  const nicknameError = validateNickname(nickname);
+  const isLifestyleValid = lifestyles.length === 1;
   const isDirty = useMemo(() => {
     if (nickname !== initialNickname) return true;
     if (lifestyles.join(',') !== initialLifestyles.join(',')) return true;
     return false;
-  }, [nickname, lifestyles]);
+  }, [nickname, lifestyles, initialNickname, initialLifestyles]);
 
-  const nicknameError = validateNickname(nickname);
-  const isLifestyleValid = lifestyles.length === 1;
+  if (isAuthLoading) return <LoadingSpinner />;
 
   return (
     <div className="flex flex-col gap-72 mx-auto w-560 mt-92 mb-92">
       <div className="flex flex-row gap-20 h-40 items-center">
-        <BackIcon
-          className="w-34 h-34 cursor-pointer"
-          onClick={() => navigate('/my')}
-        />
+        <BackIcon className="w-34 h-34 cursor-pointer" onClick={() => navigate('/my')} />
         <p className="font-heading-2 text-black">프로필 수정</p>
       </div>
       <div className="flex flex-col gap-20 w-560">
