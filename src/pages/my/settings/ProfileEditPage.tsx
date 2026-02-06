@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
+import { usePatchEditProfile } from '@/apis/mypage/patchEditProfile';
 import NicknameEditSection from '@/components/Setting/NicknameEditSection';
 import EmailSection from '@/components/Setting/EmailSection';
 import PasswordSettingSection from '@/components/Setting/PasswordSettingSection';
@@ -9,29 +10,31 @@ import PrimaryButton from '@/components/Button/PrimaryButton';
 import { validateNickname } from '@/utils/validateNickname';
 import BackIcon from '@/assets/icons/back_gray.svg?react';
 import LoadingSpinner from '@/components/LoadingSpinner';
-import { LIFESTYLE_TAGS, type LifestyleLabel } from '@/constants/lifestyle';
+import { LIFESTYLE_DISPLAY_TAGS, type LifestyleDisplayTag } from '@/constants/lifestyle';
 
 const ProfileEditPage = () => {
   const navigate = useNavigate();
   const { user, isAuthLoading } = useAuth();
-  const serverLifestyleLabel = useMemo((): LifestyleLabel | null => {
-    const raw = user?.lifestyleList?.[0];
-    if (!raw) return null;
-    const normalized = raw.replace(/^#\s*/, '') as LifestyleLabel;
-    return LIFESTYLE_TAGS.includes(normalized) ? normalized : null;
+  const { mutate: patchEditProfile, isPending } = usePatchEditProfile();
+  const serverLifestyle = useMemo<LifestyleDisplayTag[]>(() => {
+    const raw = user?.lifestyleList ?? [];
+    return raw.filter((t): t is LifestyleDisplayTag =>
+      LIFESTYLE_DISPLAY_TAGS.includes(t as LifestyleDisplayTag)
+    );
   }, [user]);
+
   const initialNickname = user?.username ?? '000';
   const initialEmail = user?.email ?? 'example@devicelife.com';
-  const initialLifestyles = serverLifestyleLabel ? [serverLifestyleLabel] : [];
+  const initialLifestyles = serverLifestyle; 
   const authProvider = user?.authProvider ?? 'GENERAL';
   const [nickname, setNickname] = useState(initialNickname);
-  const [lifestyles, setLifestyles] = useState<LifestyleLabel[]>(initialLifestyles);
+  const [lifestyles, setLifestyles] = useState<LifestyleDisplayTag[]>(initialLifestyles);
 
   useEffect(() => {
     if (!user) return;
     setNickname(user.username ?? '000');
-    setLifestyles(serverLifestyleLabel ? [serverLifestyleLabel] : []);
-  }, [user, serverLifestyleLabel]);
+    setLifestyles(serverLifestyle);
+  }, [user, serverLifestyle]);
 
   const nicknameError = validateNickname(nickname);
   const isLifestyleValid = lifestyles.length === 1;
@@ -40,6 +43,7 @@ const ProfileEditPage = () => {
     if (lifestyles.join(',') !== initialLifestyles.join(',')) return true;
     return false;
   }, [nickname, lifestyles, initialNickname, initialLifestyles]);
+
 
   if (isAuthLoading) return <LoadingSpinner />;
 
@@ -58,8 +62,8 @@ const ProfileEditPage = () => {
       <div className="flex justify-center">
         <PrimaryButton
           className="w-400 bg-blue-600 hover:bg-blue-500 disabled:hover:bg-gray-300"
-          text="저장하기"
-          disabled={!isDirty || !!nicknameError || !isLifestyleValid}
+          text={isPending ? '저장 중...' : '저장하기'}
+          disabled={!isDirty || !!nicknameError || !isLifestyleValid || isPending}
         />
       </div>
     </div>

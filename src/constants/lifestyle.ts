@@ -52,3 +52,9 @@ export const LIFESTYLE_TAG_IMAGE_MAP = Object.fromEntries(
 export const LIFESTYLE_LABEL_TO_TAGKEY = Object.fromEntries(
   Object.entries(LIFESTYLE_CONFIG).map(([label, { tagKey }]) => [label, tagKey])
 ) as Record<LifestyleLabel, LifestyleTagKey>;
+
+// label -> tag
+export type LifestyleDisplayTag = `# ${LifestyleLabel}`;
+export const LIFESTYLE_DISPLAY_TAGS = LIFESTYLE_TAGS.map(
+  (t) => `# ${t}` as const
+) as LifestyleDisplayTag[];
