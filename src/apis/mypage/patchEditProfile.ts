@@ -1,6 +1,6 @@
 import { axiosInstance } from '@/apis/axios/axios';
 import { useMutation } from '@tanstack/react-query';
-import type { EditProfileRequest, EditProfileResponse } from '@/types/mypage/editProfile';
+import type { EditProfileRequest, EditProfileResponse } from '@/types/mypage/editprofile';
 
 export const patchEditProfile = async (
   payload: EditProfileRequest
