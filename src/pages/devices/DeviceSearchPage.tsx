@@ -30,7 +30,7 @@ import { useGetCombos } from '@/apis/combo/getCombos';
 import { useGetCombo } from '@/apis/combo/getComboId';
 import { usePostComboDevice } from '@/apis/combo/postComboDevices';
 import { useGetUserProfile } from '@/apis/mypage/getUserProfile';
-import { hasAuthTokens, hasCompletedOnboarding } from '@/utils/auth/authStorage';
+import { hasAuthTokens, hasCompletedOnboarding } from '@/utils/authStorage';
 
 const DeviceSearchPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();

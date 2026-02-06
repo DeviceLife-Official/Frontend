@@ -2,7 +2,7 @@ import { axiosInstance } from '@/apis/axios/axios';
 import type { UserProfileResponse, UserProfileResult } from '@/types/mypage/user';
 import { useQuery } from '@tanstack/react-query';
 import { queryKey } from '@/constants/queryKey';
-import { hasAuthTokens } from '@/utils/auth/authStorage';
+import { hasAuthTokens } from '@/utils/authStorage';
 
 // 유저 정보 조회 API
 export const getUserProfile = async (): Promise<UserProfileResult | undefined> => {
