@@ -14,8 +14,8 @@ import { LIFESTYLE_DISPLAY_TAGS, type LifestyleDisplayTag } from '@/constants/li
 
 const ProfileEditPage = () => {
   const navigate = useNavigate();
-  const { user, isAuthLoading } = useAuth();
-  const { mutate: patchEditProfile, isPending } = usePatchEditProfile();
+  const { user, isAuthLoading, refetchUserProfile } = useAuth();
+  const { mutate: patchProfile, isPending } = usePatchEditProfile();
   const serverLifestyle = useMemo<LifestyleDisplayTag[]>(() => {
     const raw = user?.lifestyleList ?? [];
     return raw.filter((t): t is LifestyleDisplayTag =>
@@ -45,6 +45,21 @@ const ProfileEditPage = () => {
   }, [nickname, lifestyles, initialNickname, initialLifestyles]);
 
 
+  const handleSave = () => {
+    patchProfile(
+      {
+        username: nickname,
+        email: initialEmail,
+        lifestyleList: lifestyles,
+      },
+      {
+        onSuccess: async () => {
+          await refetchUserProfile();
+        },
+      }
+    );
+  };
+
   if (isAuthLoading) return <LoadingSpinner />;
 
   return (
@@ -63,6 +78,7 @@ const ProfileEditPage = () => {
         <PrimaryButton
           className="w-400 bg-blue-600 hover:bg-blue-500 disabled:hover:bg-gray-300"
           text={isPending ? '저장 중...' : '저장하기'}
+          onClick={handleSave}
           disabled={!isDirty || !!nicknameError || !isLifestyleValid || isPending}
         />
       </div>

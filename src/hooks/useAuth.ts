@@ -20,7 +20,7 @@ export type UserProfile = UserProfileResult;
 
 export const useAuth = () => {
   const hasToken = hasAuthTokens();
-  const { data: user, isLoading } = useGetUserProfile();
+  const { data: user, isLoading, refetch } = useGetUserProfile();
 
   // 인증 관련 초기 로딩 상태
   // - 토큰이 있을 때: userProfile 조회 중 (isLoading = true)
@@ -37,5 +37,6 @@ export const useAuth = () => {
     user: user ?? null,
     isAuthLoading,
     hasToken,
+    refetchUserProfile: refetch,
   };
 };
