@@ -12,7 +12,9 @@ const PrimaryButton = ({ text, disabled = false, className, ...props }: PrimaryB
         'flex items-center justify-center',
         'h-52 rounded-button',
         'font-body-2-sm text-white',
-        disabled ? 'bg-gray-300 cursor-not-allowed' : 'cursor-pointer',
+        disabled
+          ? 'bg-gray-300 cursor-not-allowed disabled:hover:bg-gray-300'
+          : 'cursor-pointer',
         className
       )}
       {...props}

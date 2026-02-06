@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { signupAccountSchema, type SignupAccountFormData } from '@/schemas/authSchema';
@@ -25,6 +25,11 @@ const SignupAccountPage = () => {
   const [hasEmailSubmitted, setHasEmailSubmitted] = useState(false);
 
   const { setAccount, isEmailVerified, setIsEmailVerified } = useSignupStore();
+
+  // 페이지 마운트 시 이메일 중복확인 상태 초기화 (뒤로가기/인디케이터로 돌아올 때 대비)
+  useEffect(() => {
+    setIsEmailVerified(false);
+  }, [setIsEmailVerified]);
   const { mutateAsync: checkEmailDuplicate, isPending: isCheckingEmail } = usePostJoinEmail();
 
   const {
@@ -64,7 +69,6 @@ const SignupAccountPage = () => {
       }
       setIsEmailVerified(true);
       clearErrors('email');
-      alert('사용 가능한 이메일입니다');
     } catch (error) {
       setError('email', {
         type: 'manual',
@@ -141,6 +145,9 @@ const SignupAccountPage = () => {
               </div>
               {(hasSubmitted || hasEmailSubmitted) && errors.email && (
                 <p className="font-body-3-r text-warning">{errors.email.message}</p>
+              )}
+              {hasEmailSubmitted && !errors.email && isEmailVerified && (
+                <p className="font-body-3-r text-blue-600">사용 가능한 이메일입니다</p>
               )}
             </div>
 

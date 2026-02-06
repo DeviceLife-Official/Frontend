@@ -1,4 +1,4 @@
-import { clearAuthTokens } from '@/utils/auth/authStorage';
+import { clearAuthTokens } from '@/utils/authStorage';
 import type { QueryClient } from '@tanstack/react-query';
 import { queryKey } from '@/constants/queryKey';
 import { clearRecentlyViewedDevices } from '@/utils/recentlyViewedStorage';

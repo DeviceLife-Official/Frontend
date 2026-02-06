@@ -21,10 +21,12 @@ export const ROUTES = {
   // onboarding
   onboarding: {
     lifestyle: '/onboarding/lifestyle',
-    recommendation: '/onboarding/recommendation',
     combination: '/onboarding/combination',
     complete: '/onboarding/complete',
   },
+
+  // recommendation (온보딩 완료 후 접근 가능)
+  recommendation: '/recommendation',
 
   // lifestyle
   lifestyle: '/lifestyle',

@@ -1,4 +1,6 @@
 import { Navigate, Outlet } from 'react-router-dom';
+import { useAuth } from '@/hooks/useAuth';
+import LoadingSpinner from '@/components/LoadingSpinner';
 import { ROUTES } from '@/constants/routes';
 
 /*
@@ -7,12 +9,13 @@ import { ROUTES } from '@/constants/routes';
  - 온보딩 미완료 시 온보딩 페이지로 리다이렉트
 */
 export const OnboardingCompletedGuard = () => {
+  const { user, isAuthLoading } = useAuth();
 
-  // 온보딩 완료 여부 판단 (임시)
-  // TODO: api 연동 후 수정
-  const isOnboardingCompleted = true;
+  if (isAuthLoading) {
+    return <LoadingSpinner />;
+  }
 
-  if (!isOnboardingCompleted) {
+  if (!user?.isOnboardingCompleted) {
     alert('온보딩을 완료한 후 이용해주세요.');
     return <Navigate to={ROUTES.onboarding.lifestyle} replace />;
   }

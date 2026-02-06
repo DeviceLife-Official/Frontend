@@ -30,7 +30,7 @@ import { useGetCombo } from '@/apis/combo/getComboId';
 import { usePostComboDevice } from '@/apis/combo/postComboDevices';
 import { useGetUserProfile } from '@/apis/mypage/getUserProfile';
 import { useGetBrands } from '@/apis/devices/getBrands';
-import { hasAuthTokens, hasCompletedOnboarding } from '@/utils/auth/authStorage';
+import { hasAuthTokens, hasCompletedOnboarding } from '@/utils/authStorage';
 
 // 카테고리 ID를 API deviceType으로 변환
 const getCategoryDeviceType = (categoryId: number | null): string | undefined => {

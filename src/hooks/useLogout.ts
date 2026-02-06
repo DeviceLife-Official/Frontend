@@ -1,6 +1,6 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { usePostLogout } from '@/apis/auth/postLogout';
-import { finalizeLogout } from '@/utils/auth/finalizeLogout';
+import { finalizeLogout } from '@/utils/finalizeLogout';
 import { useAuth } from '@/hooks/useAuth';
 import { ROUTES } from '@/constants/routes';
 import { useNavigate } from 'react-router-dom';

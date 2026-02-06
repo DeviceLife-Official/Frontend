@@ -27,7 +27,6 @@ const StepIndicator = ({ currentStep, totalSteps = 4, className = '' }: StepIndi
         const step = index + 1;
         const isActive = step === currentStep;
         const isPrevious = step < currentStep;
-        const isFuture = step > currentStep;
         // 로그인된 상태에서는 회원가입 페이지(step 1, 2) 클릭 불가
         const isSignupStep = step === 1 || step === 2;
         const isClickable = isPrevious && (!isLoggedIn || !isSignupStep);
@@ -39,10 +38,9 @@ const StepIndicator = ({ currentStep, totalSteps = 4, className = '' }: StepIndi
             onClick={() => handleStepClick(step)}
             disabled={!isClickable}
             className={clsx(
-              isClickable && 'cursor-pointer hover:opacity-70',
-              !isClickable && 'cursor-not-allowed opacity-50',
-              isFuture && 'opacity-50',
-              isActive && 'cursor-default'
+              isActive && 'cursor-default',
+              !isActive && isClickable && 'cursor-pointer',
+              !isActive && !isClickable && 'cursor-not-allowed'
             )}
           >
             <Icon className="size-10" />

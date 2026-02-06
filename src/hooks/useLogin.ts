@@ -1,6 +1,6 @@
 import { usePostLogin } from '@/apis/auth/postLogin';
 import { useQueryClient } from '@tanstack/react-query';
-import { finalizeLogin } from '@/utils/auth/finalizeLogin';
+import { finalizeLogin } from '@/utils/finalizeLogin';
 import type { LoginRequest } from '@/types/auth/login';
 
 /**

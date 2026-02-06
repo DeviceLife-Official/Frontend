@@ -17,10 +17,10 @@ import {
   getRefreshToken,
   setAuthTokens,
   clearAuthTokens,
-} from '@/utils/auth/authStorage';
+} from '@/utils/authStorage';
 import { refreshAxiosInstance } from '@/apis/axios/refreshAxios';
 import type { RefreshTokenResponse } from '@/types/auth/refresh';
-import { setAuthorizationHeader } from '@/utils/auth/setAuthorizationHeader';
+import { setAuthorizationHeader } from '@/utils/setAuthorizationHeader';
 import { ROUTES } from '@/constants/routes';
 
 

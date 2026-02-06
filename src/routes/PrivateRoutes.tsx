@@ -35,16 +35,20 @@ export const PrivateRoutes = {
       children: [
         { path: 'lifestyle', element: <OnboardingLifestylePage /> },
         { path: 'combination', element: <OnboardingCombinationPage /> },
-        { path: 'complete', element: <OnboardingCompletePage /> },
-        { path: 'recommendation', element: <OnboardingRecommendationPage /> },
         { path: '*', element: <NotFoundPage /> },
       ],
     },
 
-    // 2) 메인 앱 영역: (로그인 O) + (온보딩 완료만)
+    // 2) 온보딩 완료 페이지: 가드 없이 AuthGuard만 적용 (전환 페이지)
+    { path: 'onboarding/complete', element: <OnboardingCompletePage /> },
+
+    // 3) 메인 앱 영역: (로그인 O) + (온보딩 완료만)
     {
       element: <OnboardingCompletedGuard />,
       children: [
+        // 추천 페이지 (온보딩 완료 후 접근 가능)
+        { path: 'recommendation', element: <OnboardingRecommendationPage /> },
+
         // 마이페이지
         { path: 'my', element: <MyPage /> },
         { path: 'my/trash', element: <MyTrashPage /> },

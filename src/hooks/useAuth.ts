@@ -1,5 +1,5 @@
 import { useGetUserProfile } from '@/apis/mypage/getUserProfile';
-import { hasAuthTokens } from '@/utils/auth/authStorage';
+import { hasAuthTokens } from '@/utils/authStorage';
 import type { UserProfileResult } from '@/types/mypage/user';
 
 // UserProfile 타입 별칭 (UserProfileResult와 동일)
