@@ -11,6 +11,7 @@ import { useGroupedTags } from '@/hooks/useGroupedTags';
 import { useGetLifestyleDevice } from '@/apis/lifestyle/getLifestyleDevice';
 import { useGetCombos } from '@/apis/combo/getCombos';
 import { usePostComboDevice } from '@/apis/combo/postComboDevices';
+import { parseApiError } from '@/utils/error';
 import { ROUTES } from '@/constants/routes';
 
 const OnboardingRecommendationPage = () => {
@@ -73,7 +74,8 @@ const OnboardingRecommendationPage = () => {
       alert('선택한 기기가 내 조합에 담겼습니다!');
       navigate(ROUTES.home, { replace: true });
     } catch (error) {
-      alert('조합에 기기를 담는데 실패했습니다. 잠시 후 다시 시도해주세요.');
+      const { message } = parseApiError(error);
+      alert(message || '조합에 기기를 담는데 실패했습니다. 잠시 후 다시 시도해주세요.');
     } finally {
       setIsAdding(false);
     }
