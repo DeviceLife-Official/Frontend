@@ -40,7 +40,7 @@ const OnboardingCompletePage = () => {
 
     const timer = setTimeout(() => {
       navigate(ROUTES.recommendation, { replace: true });
-    }, 5000);
+    }, 4000);
 
     return () => clearTimeout(timer);
   }, [isCompleted, navigate]);
@@ -50,8 +50,9 @@ const OnboardingCompletePage = () => {
     return <LoadingSpinner />;
   }
 
-  // 이미 온보딩 완료된 경우 → 추천 페이지로 리다이렉트 (중복 API 호출 방지)
-  if (isAlreadyCompleted) {
+  // 이미 온보딩 완료된 경우 → 추천 페이지로 리다이렉트 (중복 온보딩 완료 API 호출 방지)
+  // 단, 정상적으로 현재 페이지에서 완료한 경우(isCompleted)는 4초 타이머를 기다려야 함
+  if (isAlreadyCompleted && !isCompleted) {
     return <Navigate to={ROUTES.recommendation} replace />;
   }
 
