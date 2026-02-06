@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import GNB from '@/components/Home/GNB';
 import ProductCard from '@/components/ProductCard/ProductCard';
@@ -20,7 +20,6 @@ import {
   DEVICE_CATEGORIES,
   SORT_OPTIONS,
   PRICE_OPTIONS,
-  BRAND_OPTIONS,
   SCROLL_CONSTANTS,
 } from '@/constants/devices';
 import { MOCK_PRODUCTS } from '@/constants/mockData';
@@ -30,7 +29,24 @@ import { useGetCombos } from '@/apis/combo/getCombos';
 import { useGetCombo } from '@/apis/combo/getComboId';
 import { usePostComboDevice } from '@/apis/combo/postComboDevices';
 import { useGetUserProfile } from '@/apis/mypage/getUserProfile';
+import { useGetBrands } from '@/apis/devices/getBrands';
 import { hasAuthTokens, hasCompletedOnboarding } from '@/utils/authStorage';
+
+// 카테고리 ID를 API deviceType으로 변환
+const getCategoryDeviceType = (categoryId: number | null): string | undefined => {
+  if (!categoryId) return undefined;
+  const mapping: Record<number, string> = {
+    1: 'SMARTPHONE',
+    2: 'LAPTOP',
+    3: 'TABLET',
+    4: 'SMARTWATCH',
+    5: 'AUDIO',
+    6: 'KEYBOARD',
+    7: 'MOUSE',
+    8: 'CHARGER',
+  };
+  return mapping[categoryId];
+};
 
 const DeviceSearchPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -69,10 +85,27 @@ const DeviceSearchPage = () => {
 
   const productGridRef = useRef<HTMLDivElement>(null);
 
+  // 브랜드 API 조회 - 선택된 카테고리에 따라 deviceType 전달
+  const { data: brandsData } = useGetBrands(getCategoryDeviceType(selectedCategory));
+
+  // API 데이터를 FilterOption 형식으로 변환
+  const brandOptions = useMemo(() => {
+    if (!brandsData?.result) return [];
+    return brandsData.result.map(brand => ({
+      value: brand.brandId.toString(),
+      label: brand.brandName,
+    }));
+  }, [brandsData]);
+
   // 페이지 마운트 시 상단으로 스크롤
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
+  // 카테고리 변경 시 선택된 브랜드 초기화
+  useEffect(() => {
+    setSelectedBrand(null);
+  }, [selectedCategory]);
 
   /* 선택된 제품 찾기 */
   const selectedProduct = selectedProductId
@@ -329,7 +362,7 @@ const DeviceSearchPage = () => {
             <div className="ml-20">
               <FilterDropdown
                 label="브랜드"
-                options={BRAND_OPTIONS}
+                options={brandOptions}
                 selectedValue={selectedBrand}
                 onSelect={(value) => setSelectedBrand(value as string | null)}
               />
@@ -416,76 +449,78 @@ const DeviceSearchPage = () => {
                   onClick={(e) => e.stopPropagation()}
                 >
                   {/* Content */}
-                  <div className="flex items-start justify-between gap-56">
-                    {/* Left Section */}
-                    <div className="w-400 flex flex-col gap-20">
-                      {/* Name & Price + Image */}
-                      <div className="flex flex-col gap-20">
-                        {/* Name & Price */}
-                        <div className="flex flex-col gap-12">
-                          <p className="font-heading-1 text-blue-600">{selectedProduct.name}</p>
-                          <div className="flex items-center gap-8 font-heading-2 text-black">
-                            <p>₩</p>
-                            <p>{selectedProduct.price.toLocaleString()}</p>
+                  <div className="flex flex-col gap-20">
+                    {/* Row 1: Name & Price */}
+                    <div className="w-400">
+                      {/* Name & Price */}
+                      <div className="flex flex-col gap-12">
+                        <p className="font-heading-1 text-blue-600">{selectedProduct.name}</p>
+                        <div className="flex items-center gap-8 font-heading-2 text-black">
+                          <p>₩</p>
+                          <p>{selectedProduct.price.toLocaleString()}</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Row 2: Image + Specs */}
+                    <div className="flex items-start gap-56">
+                      {/* Image */}
+                      <div className="w-400 h-400 bg-gray-200 relative">
+                      </div>
+
+                      {/* Right Section - Specs */}
+                      <div className="w-303 flex flex-col gap-40">
+                        {/* Product Info Table */}
+                        <div className="flex flex-col gap-20 pl-16">
+                          <div className="flex items-center gap-24">
+                            <p className="font-body-2-r text-gray-400 w-80 flex-shrink-0">모델명</p>
+                            <p className="font-body-2-r text-black line-clamp-1">{selectedProduct.name}</p>
+                          </div>
+                          <div className="flex items-center gap-24">
+                            <p className="font-body-2-r text-gray-400 w-80">카테고리</p>
+                            <p className="font-body-2-r text-black">{selectedProduct.category}</p>
+                          </div>
+                          <div className="flex items-center gap-24">
+                            <p className="font-body-2-r text-gray-400 w-80">브랜드</p>
+                            <p className="font-body-2-r text-black">Apple</p>
+                          </div>
+                          <div className="flex items-center gap-24">
+                            <p className="font-body-2-r text-gray-400 w-80">색상</p>
+                            <p className="font-body-2-r text-black">내추럴 티타늄</p>
+                          </div>
+                          <div className="flex items-center gap-24">
+                            <p className="font-body-2-r text-gray-400 w-80">가격</p>
+                            <div className="flex items-center gap-4 font-body-2-r text-black">
+                              <p>{selectedProduct.price.toLocaleString()}</p>
+                              <p>원</p>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-24">
+                            <p className="font-body-2-r text-gray-400 w-80">충전방식</p>
+                            <p className="font-body-2-r text-black">USB-C</p>
+                          </div>
+                          <div className="flex items-center gap-24">
+                            <p className="font-body-2-r text-gray-400 w-80">출시일</p>
+                            <p className="font-body-2-r text-black">2023년 9월</p>
                           </div>
                         </div>
 
-                        {/* Image */}
-                        <div className="w-400 h-400 bg-gray-200 relative">
+                        {/* Hashtags */}
+                        <div className="flex items-center gap-16">
+                          <ProductLife label="office" />
+                          <ProductLife label="portability" />
                         </div>
                       </div>
+                    </div>
 
-                      {/* Button */}
+                    {/* Row 3: Button */}
+                    <div className="w-400">
                       <PrimaryButton
                         text={addToCombinationConfig.text}
                         onClick={addToCombinationConfig.handler}
                         disabled={isProfileLoading}
                         className="w-full bg-blue-500 hover:bg-blue-400 transition-colors"
                       />
-                    </div>
-
-                    {/* Right Section */}
-                    <div className="w-303 flex flex-col gap-40 pt-118">
-                      {/* Product Info Table */}
-                      <div className="flex flex-col gap-20 pl-16">
-                        <div className="flex items-center gap-24">
-                          <p className="font-body-2-r text-gray-400 w-80">모델명</p>
-                          <p className="font-body-2-r text-black">{selectedProduct.name}</p>
-                        </div>
-                        <div className="flex items-center gap-24">
-                          <p className="font-body-2-r text-gray-400 w-80">카테고리</p>
-                          <p className="font-body-2-r text-black">{selectedProduct.category}</p>
-                        </div>
-                        <div className="flex items-center gap-24">
-                          <p className="font-body-2-r text-gray-400 w-80">브랜드</p>
-                          <p className="font-body-2-r text-black">Apple</p>
-                        </div>
-                        <div className="flex items-center gap-24">
-                          <p className="font-body-2-r text-gray-400 w-80">색상</p>
-                          <p className="font-body-2-r text-black">내추럴 티타늄</p>
-                        </div>
-                        <div className="flex items-center gap-24">
-                          <p className="font-body-2-r text-gray-400 w-80">가격</p>
-                          <div className="flex items-center gap-4 font-body-2-r text-black">
-                            <p>{selectedProduct.price.toLocaleString()}</p>
-                            <p>원</p>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-24">
-                          <p className="font-body-2-r text-gray-400 w-80">충전방식</p>
-                          <p className="font-body-2-r text-black">USB-C</p>
-                        </div>
-                        <div className="flex items-center gap-24">
-                          <p className="font-body-2-r text-gray-400 w-80">출시일</p>
-                          <p className="font-body-2-r text-black">2023년 9월</p>
-                        </div>
-                      </div>
-
-                      {/* Hashtags */}
-                      <div className="flex items-center gap-16">
-                        <ProductLife label="office" />
-                        <ProductLife label="portability" />
-                      </div>
                     </div>
                   </div>
                 </div>

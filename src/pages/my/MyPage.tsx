@@ -29,6 +29,7 @@ import { useDeleteCombo } from '@/apis/combo/deleteCombo';
 import { usePostComboPin } from '@/apis/combo/postComboPin';
 import { useDeleteComboDevice } from '@/apis/combo/deleteComboDevice';
 import type { ComboListItem } from '@/types/combo/combo';
+import { useAuth } from '@/hooks/useAuth';
 
 // 조합 평가 Mock 데이터
 const MOCK_EVALUATION = {
@@ -98,6 +99,7 @@ const MyPage = () => {
   const { mutate: deleteCombo, isPending: isDeleting } = useDeleteCombo();
   const { mutate: togglePin } = usePostComboPin();
   const { mutate: deleteDevice, isPending: isDeletingDevice } = useDeleteComboDevice();
+  const { user: userProfile, isAuthLoading } = useAuth();
 
   // 정렬된 조합 목록
   const sortedCombos = useMemo(() => {
@@ -490,7 +492,8 @@ const MyPage = () => {
                   href="https://lovely-potassium-7f2.notion.site/2f0c82f125c980fa8fa0d2ef430bbe79?pvs=74"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-42 h-42 flex items-center justify-center cursor-pointer hover:opacity-80">
+                  className="w-42 h-42 flex items-center justify-center cursor-pointer hover:opacity-80"
+                >
                   <SupportIcon className="w-42 h-42 text-black" />
                 </a>
                 <button
@@ -505,23 +508,29 @@ const MyPage = () => {
             {/* 프로필 카드 */}
             <div className="mt-60 h-100 rounded-card border border-blue-300 flex items-center justify-center gap-30">
               <Logo className="w-48 h-48 flex-shrink-0" />
-              <p className="font-heading-2 text-black">000 님</p>
+              <p className="font-heading-2 text-black">
+                {isAuthLoading ? '불러오는 중...' : `${userProfile?.username ?? '000'} 님`}
+              </p>
             </div>
 
             {/* 사용자 정보 */}
             <div className="mt-44 flex flex-col gap-16">
               <div className="flex items-center gap-24">
                 <p className="font-body-2-sm text-black whitespace-nowrap">가입일</p>
-                <p className="font-body-2-r text-black">2023.12.22</p>
+                <p className="font-body-2-r text-black">
+                  {userProfile?.createdAt ? formatDate(userProfile.createdAt) : '-'}
+                </p>
               </div>
               <div className="flex items-center gap-24">
                 <p className="font-body-2-sm text-black whitespace-nowrap">이메일</p>
-                <p className="font-body-2-r text-black truncate">example@devicelife.com</p>
+                <p className="font-body-2-r text-black truncate">{userProfile?.email ?? '-'}</p>
               </div>
               <div className="flex items-center gap-24">
                 <p className="font-body-2-sm text-black whitespace-nowrap">라이프스타일</p>
                 <div className="flex flex-wrap gap-12 content-start">
-                  <RoundedLifestyleTag label="Office" />
+                  {userProfile?.lifestyleList?.[0] && (
+                    <RoundedLifestyleTag label={userProfile.lifestyleList[0]} />
+                  )}
                 </div>
               </div>
             </div>
@@ -529,7 +538,7 @@ const MyPage = () => {
 
           {/* 최근에 본 기기 플로팅 섹션 */}
           <RecentlyViewedFloating
-            userName="000"
+            userName={userProfile?.username ?? '000'}
             sidebarContentRef={sidebarContentRef}
           />
         </aside>
@@ -619,7 +628,12 @@ const MyPage = () => {
 
                   {/* 조합 카드 */}
                   <div
-                    onClick={() => !isDetailView && editingComboId !== combination.comboId && hasDevices && handleDetailView(combination.comboId)}
+                    onClick={() =>
+                      !isDetailView &&
+                      editingComboId !== combination.comboId &&
+                      hasDevices &&
+                      handleDetailView(combination.comboId)
+                    }
                     className={`rounded-card relative ${
                       isDetailView
                         ? 'bg-blue-100'
@@ -645,7 +659,9 @@ const MyPage = () => {
                                 setShowSaveModal(true);
                               }
                             }}
-                            disabled={!isComboNameValid || editingCombinationName.trim().length === 0}
+                            disabled={
+                              !isComboNameValid || editingCombinationName.trim().length === 0
+                            }
                             className="w-150"
                           />
                         ) : (
@@ -653,7 +669,9 @@ const MyPage = () => {
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
-                              setOpenMenuIndex(openMenuIndex === combination.comboId ? null : combination.comboId);
+                              setOpenMenuIndex(
+                                openMenuIndex === combination.comboId ? null : combination.comboId
+                              );
                             }}
                             className="cursor-pointer hover:opacity-80"
                           >
@@ -762,14 +780,18 @@ const MyPage = () => {
                                     <StarHoverIcon
                                       onClick={(e) => handleTogglePin(e, combination.comboId)}
                                       className="!w-22 !h-22 -mt-2 cursor-pointer"
-                                      onMouseEnter={() => setHoveredStarComboId(combination.comboId)}
+                                      onMouseEnter={() =>
+                                        setHoveredStarComboId(combination.comboId)
+                                      }
                                       onMouseLeave={() => setHoveredStarComboId(null)}
                                     />
                                   ) : (
                                     <StarXIcon
                                       onClick={(e) => handleTogglePin(e, combination.comboId)}
                                       className="!w-22 !h-22 -mt-2 cursor-pointer"
-                                      onMouseEnter={() => setHoveredStarComboId(combination.comboId)}
+                                      onMouseEnter={() =>
+                                        setHoveredStarComboId(combination.comboId)
+                                      }
                                       onMouseLeave={() => setHoveredStarComboId(null)}
                                     />
                                   )}
@@ -817,7 +839,9 @@ const MyPage = () => {
                             {devices.map((device) => (
                               <div
                                 key={device.deviceId}
-                                onClick={() => window.open(`/devices?productId=${device.deviceId}`, '_blank')}
+                                onClick={() =>
+                                  window.open(`/devices?productId=${device.deviceId}`, '_blank')
+                                }
                                 className={`bg-white rounded-card shadow-[0_0_4px_rgba(0,0,0,0.1)] p-12 w-244 flex items-center gap-12 border cursor-pointer hover:shadow-[0_0_7px_#57a0ff] transition-shadow ${selectedDevices.includes(device.deviceId) ? 'border-blue-600' : 'border-transparent'}`}
                               >
                                 <div className="w-64 h-64 bg-gray-200 flex-shrink-0 relative group/image">
@@ -848,8 +872,12 @@ const MyPage = () => {
                                       )}
                                     </button>
                                   </div>
-                                  <p className="font-body-4-r text-gray-300">{device.brandName || '-'}</p>
-                                  <p className="font-body-3-r text-gray-300">{device.deviceType || '-'}</p>
+                                  <p className="font-body-4-r text-gray-300">
+                                    {device.brandName || '-'}
+                                  </p>
+                                  <p className="font-body-3-r text-gray-300">
+                                    {device.deviceType || '-'}
+                                  </p>
                                 </div>
                               </div>
                             ))}
@@ -873,7 +901,9 @@ const MyPage = () => {
                             <div className="flex items-center gap-4">
                               <p className="font-body-1-sm text-blue-600">₩</p>
                               <p className="font-body-1-sm text-blue-600">
-                                {(comboDetail?.totalPrice ?? combination.totalPrice).toLocaleString()}
+                                {(
+                                  comboDetail?.totalPrice ?? combination.totalPrice
+                                ).toLocaleString()}
                               </p>
                             </div>
                           </div>
@@ -885,7 +915,9 @@ const MyPage = () => {
                         {/* 조합 평가 정보 */}
                         <div className="px-56 py-56">
                           <div className="flex items-center justify-end gap-16 mb-32">
-                            <p className="font-body-2-r text-gray-400 underline">조합평가 전문보기</p>
+                            <p className="font-body-2-r text-gray-400 underline">
+                              조합평가 전문보기
+                            </p>
                           </div>
 
                           <div className="flex flex-col gap-20">
@@ -983,7 +1015,9 @@ const MyPage = () => {
                                       }}
                                       maxLength={20}
                                       className={`h-52 px-12 rounded-button font-body-1-sm text-gray-300 focus:outline-none ${
-                                        comboNameError ? 'border-2 border-warning' : 'border border-blue-600'
+                                        comboNameError
+                                          ? 'border-2 border-warning'
+                                          : 'border border-blue-600'
                                       }`}
                                       autoFocus
                                     />
@@ -991,9 +1025,13 @@ const MyPage = () => {
                                       <StarIcon
                                         onClick={(e) => handleTogglePin(e, combination.comboId)}
                                         className={`!w-22 !h-22 -mt-2 cursor-pointer transition-opacity ${
-                                          hoveredStarComboId === combination.comboId ? 'opacity-80' : ''
+                                          hoveredStarComboId === combination.comboId
+                                            ? 'opacity-80'
+                                            : ''
                                         }`}
-                                        onMouseEnter={() => setHoveredStarComboId(combination.comboId)}
+                                        onMouseEnter={() =>
+                                          setHoveredStarComboId(combination.comboId)
+                                        }
                                         onMouseLeave={() => setHoveredStarComboId(null)}
                                       />
                                     ) : (
@@ -1002,14 +1040,18 @@ const MyPage = () => {
                                           <StarHoverIcon
                                             onClick={(e) => handleTogglePin(e, combination.comboId)}
                                             className="!w-22 !h-22 -mt-2 cursor-pointer"
-                                            onMouseEnter={() => setHoveredStarComboId(combination.comboId)}
+                                            onMouseEnter={() =>
+                                              setHoveredStarComboId(combination.comboId)
+                                            }
                                             onMouseLeave={() => setHoveredStarComboId(null)}
                                           />
                                         ) : (
                                           <StarXIcon
                                             onClick={(e) => handleTogglePin(e, combination.comboId)}
                                             className="!w-22 !h-22 -mt-2 cursor-pointer"
-                                            onMouseEnter={() => setHoveredStarComboId(combination.comboId)}
+                                            onMouseEnter={() =>
+                                              setHoveredStarComboId(combination.comboId)
+                                            }
                                             onMouseLeave={() => setHoveredStarComboId(null)}
                                           />
                                         )}
@@ -1017,7 +1059,9 @@ const MyPage = () => {
                                     )}
                                   </div>
                                   {comboNameError && (
-                                    <p className="pl-12 font-body-4-r text-warning">{comboNameError}</p>
+                                    <p className="pl-12 font-body-4-r text-warning">
+                                      {comboNameError}
+                                    </p>
                                   )}
                                 </div>
                               ) : (
@@ -1030,14 +1074,20 @@ const MyPage = () => {
                                     </p>
                                   </div>
                                   <div className="flex items-center gap-8">
-                                    <p className="font-body-1-sm text-black">{combination.comboName}</p>
+                                    <p className="font-body-1-sm text-black">
+                                      {combination.comboName}
+                                    </p>
                                     {combination.isPinned ? (
                                       <StarIcon
                                         onClick={(e) => handleTogglePin(e, combination.comboId)}
                                         className={`!w-22 !h-22 -mt-3 cursor-pointer transition-opacity ${
-                                          hoveredStarComboId === combination.comboId ? 'opacity-80' : ''
+                                          hoveredStarComboId === combination.comboId
+                                            ? 'opacity-80'
+                                            : ''
                                         }`}
-                                        onMouseEnter={() => setHoveredStarComboId(combination.comboId)}
+                                        onMouseEnter={() =>
+                                          setHoveredStarComboId(combination.comboId)
+                                        }
                                         onMouseLeave={() => setHoveredStarComboId(null)}
                                       />
                                     ) : (
@@ -1046,14 +1096,18 @@ const MyPage = () => {
                                           <StarHoverIcon
                                             onClick={(e) => handleTogglePin(e, combination.comboId)}
                                             className="!w-22 !h-22 -mt-3 cursor-pointer"
-                                            onMouseEnter={() => setHoveredStarComboId(combination.comboId)}
+                                            onMouseEnter={() =>
+                                              setHoveredStarComboId(combination.comboId)
+                                            }
                                             onMouseLeave={() => setHoveredStarComboId(null)}
                                           />
                                         ) : (
                                           <StarXIcon
                                             onClick={(e) => handleTogglePin(e, combination.comboId)}
                                             className="!w-22 !h-22 -mt-3 cursor-pointer"
-                                            onMouseEnter={() => setHoveredStarComboId(combination.comboId)}
+                                            onMouseEnter={() =>
+                                              setHoveredStarComboId(combination.comboId)
+                                            }
                                             onMouseLeave={() => setHoveredStarComboId(null)}
                                           />
                                         )}
@@ -1070,7 +1124,8 @@ const MyPage = () => {
                               {(() => {
                                 // 그라데이션 임계값 설정
                                 const gradientThreshold = columns === 4 ? 9 : 7;
-                                const shouldShowGradient = combination.devices.length >= gradientThreshold;
+                                const shouldShowGradient =
+                                  combination.devices.length >= gradientThreshold;
                                 const maxDisplay = columns === 4 ? 8 : 6;
                                 const displayedDevices = shouldShowGradient
                                   ? combination.devices.slice(0, maxDisplay)
@@ -1078,7 +1133,9 @@ const MyPage = () => {
 
                                 return (
                                   <>
-                                    <div className={`grid ${columns === 4 ? 'grid-cols-4' : 'grid-cols-3'} gap-x-28 gap-y-12`}>
+                                    <div
+                                      className={`grid ${columns === 4 ? 'grid-cols-4' : 'grid-cols-3'} gap-x-28 gap-y-12`}
+                                    >
                                       {displayedDevices.map((device) => (
                                         <div
                                           key={device.deviceId}
@@ -1089,8 +1146,12 @@ const MyPage = () => {
                                             <p className="font-body-3-sm text-black truncate w-120">
                                               {device.name}
                                             </p>
-                                            <p className="font-body-4-r text-gray-300">{device.brandName}</p>
-                                            <p className="font-body-3-r text-gray-300">{device.deviceType}</p>
+                                            <p className="font-body-4-r text-gray-300">
+                                              {device.brandName}
+                                            </p>
+                                            <p className="font-body-3-r text-gray-300">
+                                              {device.deviceType}
+                                            </p>
                                           </div>
                                         </div>
                                       ))}
@@ -1101,7 +1162,8 @@ const MyPage = () => {
                                       <div
                                         className="absolute right-0 bottom-0 w-244 h-80 rounded-card pointer-events-none"
                                         style={{
-                                          background: 'linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 70%)',
+                                          background:
+                                            'linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 70%)',
                                         }}
                                       />
                                     )}
@@ -1123,14 +1185,20 @@ const MyPage = () => {
                                   </p>
                                 </div>
                                 <div className="flex items-center gap-8">
-                                  <p className="font-body-1-sm text-black">{combination.comboName}</p>
+                                  <p className="font-body-1-sm text-black">
+                                    {combination.comboName}
+                                  </p>
                                   {combination.isPinned ? (
                                     <StarIcon
                                       onClick={(e) => handleTogglePin(e, combination.comboId)}
                                       className={`!w-22 !h-22 -mt-3 cursor-pointer transition-opacity ${
-                                        hoveredStarComboId === combination.comboId ? 'opacity-80' : ''
+                                        hoveredStarComboId === combination.comboId
+                                          ? 'opacity-80'
+                                          : ''
                                       }`}
-                                      onMouseEnter={() => setHoveredStarComboId(combination.comboId)}
+                                      onMouseEnter={() =>
+                                        setHoveredStarComboId(combination.comboId)
+                                      }
                                       onMouseLeave={() => setHoveredStarComboId(null)}
                                     />
                                   ) : (
@@ -1139,14 +1207,18 @@ const MyPage = () => {
                                         <StarHoverIcon
                                           onClick={(e) => handleTogglePin(e, combination.comboId)}
                                           className="!w-22 !h-22 -mt-3 cursor-pointer"
-                                          onMouseEnter={() => setHoveredStarComboId(combination.comboId)}
+                                          onMouseEnter={() =>
+                                            setHoveredStarComboId(combination.comboId)
+                                          }
                                           onMouseLeave={() => setHoveredStarComboId(null)}
                                         />
                                       ) : (
                                         <StarXIcon
                                           onClick={(e) => handleTogglePin(e, combination.comboId)}
                                           className="!w-22 !h-22 -mt-3 cursor-pointer"
-                                          onMouseEnter={() => setHoveredStarComboId(combination.comboId)}
+                                          onMouseEnter={() =>
+                                            setHoveredStarComboId(combination.comboId)
+                                          }
                                           onMouseLeave={() => setHoveredStarComboId(null)}
                                         />
                                       )}
@@ -1213,9 +1285,7 @@ const MyPage = () => {
               <RemoveIcon className="w-58 h-58" />
 
               {/* 텍스트 */}
-              <p className="font-body-2-r text-black mt-36">
-                선택한 기기들을 삭제하시겠습니까?
-              </p>
+              <p className="font-body-2-r text-black mt-36">선택한 기기들을 삭제하시겠습니까?</p>
 
               {/* 버튼 그룹 */}
               <div className="flex gap-20 mt-60">
@@ -1243,70 +1313,70 @@ const MyPage = () => {
       )}
 
       {/* 조합 삭제 확인 모달 */}
-      {showCombinationDeleteModal && deleteTargetComboId !== null && (() => {
-        const targetCombo = sortedCombos.find(c => c.comboId === deleteTargetComboId);
-        if (!targetCombo) return null;
-        return (
-          <>
-            {/* 배경 오버레이 */}
-            <div
-              className="fixed inset-0 bg-black/50 z-60"
-              onClick={() => {
-                setShowCombinationDeleteModal(false);
-                setDeleteTargetComboId(null);
-              }}
-            />
-            {/* 모달 */}
-            <div className="fixed inset-0 flex items-center justify-center z-70 pointer-events-none">
+      {showCombinationDeleteModal &&
+        deleteTargetComboId !== null &&
+        (() => {
+          const targetCombo = sortedCombos.find((c) => c.comboId === deleteTargetComboId);
+          if (!targetCombo) return null;
+          return (
+            <>
+              {/* 배경 오버레이 */}
               <div
-                className="bg-white rounded-card w-460 px-36 py-44 flex flex-col items-center pointer-events-auto"
-                onClick={(e) => e.stopPropagation()}
-              >
-                {/* 아이콘 */}
-                <RemoveIcon className="w-58 h-58" />
+                className="fixed inset-0 bg-black/50 z-60"
+                onClick={() => {
+                  setShowCombinationDeleteModal(false);
+                  setDeleteTargetComboId(null);
+                }}
+              />
+              {/* 모달 */}
+              <div className="fixed inset-0 flex items-center justify-center z-70 pointer-events-none">
+                <div
+                  className="bg-white rounded-card w-460 px-36 py-44 flex flex-col items-center pointer-events-auto"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {/* 아이콘 */}
+                  <RemoveIcon className="w-58 h-58" />
 
-                {/* 텍스트 */}
-                <p className="font-body-2-r text-black mt-36">
-                  '<span className="font-body-2-sm">{targetCombo.comboName}</span>'을 삭제하시겠습니까?
-                </p>
+                  {/* 텍스트 */}
+                  <p className="font-body-2-r text-black mt-36">
+                    '<span className="font-body-2-sm">{targetCombo.comboName}</span>'을
+                    삭제하시겠습니까?
+                  </p>
 
-                {/* 버튼 그룹 */}
-                <div className="flex gap-20 mt-60">
-                  <button
-                    onClick={handleDeleteCombination}
-                    disabled={isDeleting}
-                    className={`w-168 h-52 bg-red-500 hover:bg-red-400 rounded-button flex items-center justify-center transition-colors ${
-                      isDeleting ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
-                    }`}
-                  >
-                    <span className="font-body-2-sm text-white">
-                      {isDeleting ? '삭제 중...' : '삭제'}
-                    </span>
-                  </button>
-                  <button
-                    onClick={() => {
-                      setShowCombinationDeleteModal(false);
-                      setDeleteTargetComboId(null);
-                    }}
-                    className="w-168 h-52 bg-gray-100 hover:bg-gray-200 rounded-button flex items-center justify-center cursor-pointer transition-colors"
-                  >
-                    <span className="font-body-2-sm text-black">취소</span>
-                  </button>
+                  {/* 버튼 그룹 */}
+                  <div className="flex gap-20 mt-60">
+                    <button
+                      onClick={handleDeleteCombination}
+                      disabled={isDeleting}
+                      className={`w-168 h-52 bg-red-500 hover:bg-red-400 rounded-button flex items-center justify-center transition-colors ${
+                        isDeleting ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
+                      }`}
+                    >
+                      <span className="font-body-2-sm text-white">
+                        {isDeleting ? '삭제 중...' : '삭제'}
+                      </span>
+                    </button>
+                    <button
+                      onClick={() => {
+                        setShowCombinationDeleteModal(false);
+                        setDeleteTargetComboId(null);
+                      }}
+                      className="w-168 h-52 bg-gray-100 hover:bg-gray-200 rounded-button flex items-center justify-center cursor-pointer transition-colors"
+                    >
+                      <span className="font-body-2-sm text-black">취소</span>
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
-          </>
-        );
-      })()}
+            </>
+          );
+        })()}
 
       {/* 조합명 저장 확인 모달 */}
       {showSaveModal && (
         <>
           {/* 배경 오버레이 */}
-          <div
-            className="fixed inset-0 bg-black/50 z-60"
-            onClick={() => setShowSaveModal(false)}
-          />
+          <div className="fixed inset-0 bg-black/50 z-60" onClick={() => setShowSaveModal(false)} />
           {/* 모달 */}
           <div className="fixed inset-0 flex items-center justify-center z-70 pointer-events-none">
             <div
@@ -1317,9 +1387,7 @@ const MyPage = () => {
               <SaveIcon className="w-58 h-58 text-blue-600" />
 
               {/* 텍스트 */}
-              <p className="font-body-2-r text-black mt-36">
-                조합명을 저장하시겠습니까?
-              </p>
+              <p className="font-body-2-r text-black mt-36">조합명을 저장하시겠습니까?</p>
 
               {/* 버튼 그룹 */}
               <div className="flex gap-20 mt-60">
@@ -1349,16 +1417,18 @@ const MyPage = () => {
       {showDeleteSuccessModal && (
         <>
           {/* 배경 오버레이 */}
-          <div className={`fixed inset-0 bg-black/10 z-60 transition-opacity duration-200 ${isDeleteFadingOut ? 'opacity-0' : 'opacity-100'}`} />
+          <div
+            className={`fixed inset-0 bg-black/10 z-60 transition-opacity duration-200 ${isDeleteFadingOut ? 'opacity-0' : 'opacity-100'}`}
+          />
           {/* 팝업 */}
-          <div className={`fixed inset-0 flex items-center justify-center z-70 pointer-events-none transition-opacity duration-200 ${isDeleteFadingOut ? 'opacity-0' : 'opacity-100'}`}>
+          <div
+            className={`fixed inset-0 flex items-center justify-center z-70 pointer-events-none transition-opacity duration-200 ${isDeleteFadingOut ? 'opacity-0' : 'opacity-100'}`}
+          >
             <div className="bg-white rounded-card shadow-[0_0_10px_rgba(0,0,0,0.25)] w-300 h-300 flex flex-col items-center justify-center pointer-events-auto animate-fade-in">
               {/* 아이콘 */}
               <RemoveIcon className="w-100 h-100 text-warning" />
               {/* 텍스트 */}
-              <p className="font-heading-3 text-black mt-42">
-                삭제 완료
-              </p>
+              <p className="font-heading-3 text-black mt-42">삭제 완료</p>
             </div>
           </div>
         </>
@@ -1368,16 +1438,18 @@ const MyPage = () => {
       {showSaveSuccessModal && (
         <>
           {/* 배경 오버레이 */}
-          <div className={`fixed inset-0 bg-black/10 z-60 transition-opacity duration-200 ${isSaveFadingOut ? 'opacity-0' : 'opacity-100'}`} />
+          <div
+            className={`fixed inset-0 bg-black/10 z-60 transition-opacity duration-200 ${isSaveFadingOut ? 'opacity-0' : 'opacity-100'}`}
+          />
           {/* 팝업 */}
-          <div className={`fixed inset-0 flex items-center justify-center z-70 pointer-events-none transition-opacity duration-200 ${isSaveFadingOut ? 'opacity-0' : 'opacity-100'}`}>
+          <div
+            className={`fixed inset-0 flex items-center justify-center z-70 pointer-events-none transition-opacity duration-200 ${isSaveFadingOut ? 'opacity-0' : 'opacity-100'}`}
+          >
             <div className="bg-white rounded-card shadow-[0_0_10px_rgba(0,0,0,0.25)] w-300 h-300 flex flex-col items-center justify-center pointer-events-auto animate-fade-in">
               {/* 파란 체크 아이콘 */}
               <SaveIcon className="w-100 h-100 text-blue-600" />
               {/* 텍스트 */}
-              <p className="font-heading-3 text-blue-600 mt-42">
-                저장 완료!
-              </p>
+              <p className="font-heading-3 text-blue-600 mt-42">저장 완료!</p>
             </div>
           </div>
         </>

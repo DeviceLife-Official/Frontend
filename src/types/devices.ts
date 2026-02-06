@@ -3,6 +3,17 @@ import { type CombinationName, type CombinationStatus } from '@/constants/combin
 export type AuthStatus = 'logout' | 'login';
 export type ModalView = 'device' | 'combination' | 'combinationDetail';
 
+export interface Brand {
+  brandId: number;
+  brandName: string;
+}
+
+export interface GetBrandsResponse {
+  code: string;
+  message: string;
+  result: Brand[];
+}
+
 export type CombinationTagType = {
   name: CombinationName;
   status: CombinationStatus;

@@ -34,7 +34,7 @@ const RoundedLifestyleTag = (props: RoundedLifestyleTagProps) => {
         ${cursorClass}
       `}
     >
-      # {props.label}
+      {props.label}
     </div>
   );
 };
