@@ -6,11 +6,22 @@ type GoogleLoginButtonProps = {
   className?: string;
 };
 
+const GOOGLE_OAUTH_URL = 'https://api.devicelife.site/oauth2/authorization/google';
+
 const GoogleLoginButton = ({ onClick, className }: GoogleLoginButtonProps) => {
+  const handleClick = () => {
+    if (onClick) {
+      onClick();
+    } else {
+      // Google OAuth 인증 페이지로 이동
+      window.location.href = GOOGLE_OAUTH_URL;
+    }
+  };
+
   return (
     <button
       type="button"
-      onClick={onClick}
+      onClick={handleClick}
       className={clsx(
         'flex items-center gap-24',
         'py-8 pl-0 pr-8',
