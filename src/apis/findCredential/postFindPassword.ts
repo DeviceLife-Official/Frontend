@@ -1,4 +1,5 @@
 import { axiosInstance } from '@/apis/axios/axios';
+import { cookieAxiosInstance } from '@/apis/axios/cookieAxios';
 import type {
   SendMailRequest,
   SendMailResponse,
@@ -31,7 +32,7 @@ export const usePostSendMail = () => {
 export const postVerifyCode = async (
   payload: VerifyCodeRequest
 ): Promise<VerifyCodeResponse> => {
-  const { data } = await axiosInstance.post<VerifyCodeResponse>(
+  const { data } = await cookieAxiosInstance.post<VerifyCodeResponse>(
     '/api/find-credential/find-password/verify-code',
     payload
   );
@@ -49,7 +50,7 @@ export const usePostVerifyCode = () => {
 export const postResetPassword = async (
   payload: ResetPasswordRequest
 ): Promise<ResetPasswordResponse> => {
-  const { data } = await axiosInstance.post<ResetPasswordResponse>(
+  const { data } = await cookieAxiosInstance.post<ResetPasswordResponse>(
     '/api/find-credential/find-password/reset',
     payload
   );
