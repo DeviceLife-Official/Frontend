@@ -14,6 +14,6 @@ export const useGetRecentlyViewed = () => {
   return useQuery<RecentlyViewedDevice[]>({
     queryKey: [queryKey.RECENTLY_VIEWED],
     queryFn: getRecentlyViewed,
-    staleTime: 1000 * 60 * 5, // 5분간 캐시 유지
+    staleTime: 1000 * 30, // 30초간 캐시 유지
   });
 };
