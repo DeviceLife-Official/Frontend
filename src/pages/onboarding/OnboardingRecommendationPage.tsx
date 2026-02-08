@@ -4,7 +4,7 @@ import clsx from 'clsx';
 import PrimaryButton from '@/components/Button/PrimaryButton';
 import RecentlyViewedCard from '@/components/RecentlyViewed/RecentlyViewedCard';
 import LoadingSpinner from '@/components/LoadingSpinner';
-import type { RecentlyViewedDevice } from '@/types/recentlyViewed';
+import type { RecentlyViewedDevice } from '@/types/recentlyViewed/recentlyViewed';
 import type { LifestyleTagKey } from '@/types/lifestyle/lifestyle';
 import { useAuth } from '@/hooks/useAuth';
 import { useGroupedTags } from '@/hooks/useGroupedTags';
@@ -56,12 +56,16 @@ const OnboardingRecommendationPage = () => {
   const recommendedDevices: RecentlyViewedDevice[] = (lifestyleData?.result?.devices ?? [])
     .slice(0, 3)
     .map((device) => ({
-      id: device.deviceId,
+      deviceId: device.deviceId,
       name: device.displayName,
-      category: '',
+      modelCode: '',
+      brandName: '',
+      deviceType: '',
       price: device.price,
-      image: device.imageUrl,
-      viewedAt: Date.now(),
+      priceCurrency: device.currency,
+      priceKrw: device.price,
+      imageUrl: device.imageUrl,
+      viewedAt: new Date().toISOString(),
     }));
 
   // 내 조합에 담기 핸들러
@@ -117,16 +121,16 @@ const OnboardingRecommendationPage = () => {
               <LoadingSpinner />
             ) : recommendedDevices.length > 0 ? (
               recommendedDevices.map((device) => {
-                const isSelected = selectedDeviceId === device.id;
+                const isSelected = selectedDeviceId === device.deviceId;
                 return (
                   <RecentlyViewedCard
-                    key={device.id}
+                    key={device.deviceId}
                     device={device}
                     className={clsx(
                       'rounded-8 transition-all',
                       isSelected && 'border-shadow-blue'
                     )}
-                    onClick={() => selectDevice(device.id)}
+                    onClick={() => selectDevice(device.deviceId)}
                   />
                 );
               })
