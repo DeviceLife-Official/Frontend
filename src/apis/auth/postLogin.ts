@@ -1,9 +1,10 @@
-import { axiosInstance } from '@/apis/axios/axios';
+import { cookieAxiosInstance } from '@/apis/axios/cookieAxios';
 import type { LoginRequest, LoginResponse } from '@/types/auth/login';
 import { useMutation } from '@tanstack/react-query';
 
 export const postLogin = async (payload: LoginRequest): Promise<LoginResponse> => {
-  const { data } = await axiosInstance.post<LoginResponse>('/api/auth/login', payload);
+  // refreshToken은 httpOnly 쿠키로 자동 수신됨
+  const { data } = await cookieAxiosInstance.post<LoginResponse>('/api/auth/login', payload);
   return data;
 };
 

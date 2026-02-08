@@ -10,6 +10,7 @@ export type LoginRequest = {
 export type LoginResult = {
   userId: number;
   accessToken: string;
+  refreshToken: null; // httpOnly 쿠키로만 전송되므로 응답에서는 항상 null
 };
 
 // 로그인 응답 타입
