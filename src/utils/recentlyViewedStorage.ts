@@ -1,5 +1,5 @@
 import { RECENTLY_VIEWED_DEVICES, RECENTLY_VIEWED_MAX_COUNT } from '@/constants/storageKeys';
-import type { RecentlyViewedDevice } from '@/types/recentlyViewed';
+import type { RecentlyViewedDevice } from '@/types/recentlyViewed/recentlyViewed';
 
 // localStorage를 조작하는 유틸리티 함수
 // 나머지 파일에서는 localStorage를 직접 사용하지 않고 이 파일의 함수를 사용하도록 함
