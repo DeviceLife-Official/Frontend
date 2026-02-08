@@ -15,57 +15,58 @@ const PasswordEditPage = () => {
   const [oldPassword, setOldPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [isConfirmValidated, setIsConfirmValidated] = useState(false);
   const [oldPasswordServerError, setOldPasswordServerError] = useState<string>();
+  const [newPasswordServerError, setNewPasswordServerError] = useState<string>();
   const [confirmServerError, setConfirmServerError] = useState<string>();
+  const [confirmClientError, setConfirmClientError] = useState<string>();
   const newPasswordError = useMemo(() => validateNewPassword(newPassword), [newPassword]);
-
-  const confirmClientError = useMemo(() => {
-    if (!isConfirmValidated) return undefined;
-    return validatePasswordConfirm(newPassword, confirmPassword);
-  }, [isConfirmValidated, newPassword, confirmPassword]);
-
-  const hasAnyVisibleError = useMemo(() => {
-    const hasOld = !!oldPasswordServerError;
-    const hasConfirm = !!confirmServerError || !!confirmClientError;
-    const hasNew = !!newPasswordError;
-    return hasOld || hasNew || hasConfirm;
-  }, [oldPasswordServerError, confirmServerError, confirmClientError, newPasswordError]);
-
   const filled = useMemo(() => {
     return oldPassword.length > 0 && newPassword.length > 0 && confirmPassword.length > 0;
   }, [oldPassword, newPassword, confirmPassword]);
+  const hasAnyVisibleError = useMemo(() => {
+    const hasOld = !!oldPasswordServerError;
+    const hasNew = !!newPasswordError || !!newPasswordServerError;
+    const hasConfirm = !!confirmServerError || !!confirmClientError;
+    return hasOld || hasNew || hasConfirm;
+  }, [
+    oldPasswordServerError,
+    newPasswordError,
+    newPasswordServerError,
+    confirmServerError,
+    confirmClientError,
+  ]);
 
   const canSubmit = useMemo(() => {
     if (!filled) return false;
     if (newPasswordError) return false;
-    if (isConfirmValidated && (confirmClientError || confirmServerError)) return false;
     if (hasAnyVisibleError) return false;
     return true;
-  }, [
-    filled,
-    newPasswordError,
-    isConfirmValidated,
-    confirmClientError,
-    confirmServerError,
-    hasAnyVisibleError,
-  ]);
+  }, [filled, newPasswordError, hasAnyVisibleError]);
 
   const handleOldPasswordChange = (next: string) => {
     setOldPassword(next);
     if (oldPasswordServerError) setOldPasswordServerError(undefined);
   };
 
+  const handleNewPasswordChange = (next: string) => {
+    setNewPassword(next);
+    if (newPasswordServerError) setNewPasswordServerError(undefined);
+    if (confirmServerError) setConfirmServerError(undefined);
+    if (confirmClientError) setConfirmClientError(undefined);
+  };
+
   const handleConfirmChange = (next: string) => {
     setConfirmPassword(next);
     if (confirmServerError) setConfirmServerError(undefined);
+    if (confirmClientError) setConfirmClientError(undefined);
   };
 
   const handleSave = () => {
-    setIsConfirmValidated(true);
     setOldPasswordServerError(undefined);
+    setNewPasswordServerError(undefined);
     setConfirmServerError(undefined);
     const confirmErrNow = validatePasswordConfirm(newPassword, confirmPassword);
+    setConfirmClientError(confirmErrNow);
     if (newPasswordError || confirmErrNow) return;
 
     putEditPassword(
@@ -82,12 +83,17 @@ const PasswordEditPage = () => {
           const axiosError = error as AxiosError<any>;
           const code: string | undefined = axiosError.response?.data?.code;
           const message: string | undefined = axiosError.response?.data?.message;
+
           if (code === 'USER_4006') {
-            setOldPasswordServerError(message ?? '이전 비밀번호를 확인해주세요.');
+            setOldPasswordServerError(message);
             return;
           }
-          if (code === 'USER_4007' || code === 'USER_4008') {
-            setConfirmServerError(message ?? '비밀번호 확인을 다시 확인해주세요.');
+          if (code === 'USER_4007') {
+            setConfirmServerError(message);
+            return;
+          }
+          if (code === 'USER_4008') {
+            setNewPasswordServerError(message);
             return;
           }
         },
@@ -112,8 +118,8 @@ const PasswordEditPage = () => {
         />
         <NewPasswordInputSection
           value={newPassword}
-          onChange={setNewPassword}
-          errorMessage={newPasswordError}
+          onChange={handleNewPasswordChange}
+          errorMessage={newPasswordServerError ?? newPasswordError}
         />
         <PasswordConfirmInputSection
           value={confirmPassword}
