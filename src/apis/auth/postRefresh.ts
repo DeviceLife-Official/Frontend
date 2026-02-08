@@ -1,16 +1,12 @@
-import { refreshAxiosInstance } from '@/apis/axios/refreshAxios';
+import { cookieAxiosInstance } from '@/apis/axios/cookieAxios';
 import type { RefreshTokenResponse } from '@/types/auth/refresh';
 import { useMutation } from '@tanstack/react-query';
 
-export const postRefresh = async (refreshToken: string): Promise<RefreshTokenResponse> => {
-  const { data } = await refreshAxiosInstance.post<RefreshTokenResponse>(
+export const postRefresh = async (): Promise<RefreshTokenResponse> => {
+  // refreshToken은 httpOnly 쿠키로 자동 전송됨
+  const { data } = await cookieAxiosInstance.post<RefreshTokenResponse>(
     '/api/auth/refresh',
-    {},
-    {
-      headers: {
-        refreshToken,
-      },
-    }
+    {}
   );
   return data;
 };

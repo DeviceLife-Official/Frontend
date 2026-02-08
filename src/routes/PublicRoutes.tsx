@@ -19,6 +19,7 @@ import FindPasswordPage from '@/pages/auth/FindPasswordPage';
 import SignupPage from '@/pages/auth/SignupPage';
 import SignupAccountPage from '@/pages/auth/SignupAccountPage';
 import SignupProfilePage from '@/pages/auth/SignupProfilePage';
+import GoogleCallbackPage from '@/pages/auth/GoogleCallbackPage';
 
 import NotFoundPage from '@/pages/NotFoundPage';
 
@@ -41,6 +42,9 @@ export const PublicRoutes = {
 
     // 조합 생성
     { path: 'combination/create', element: <CombinationCreatePage /> },
+
+    // OAuth 콜백 (단독, 가드 없음)
+    { path: 'auth/callback/google', element: <GoogleCallbackPage /> },
 
     // auth (로그인/회원가입/찾기)
     {
