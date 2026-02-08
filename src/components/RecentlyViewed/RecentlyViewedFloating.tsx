@@ -1,6 +1,6 @@
 import { useRef, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useRecentlyViewed } from '@/hooks/useRecentlyViewed';
+import { useGetRecentlyViewed } from '@/apis/recentlyViewed/getRecentlyViewed';
 import RecentlyViewedCard from './RecentlyViewedCard';
 
 interface RecentlyViewedFloatingProps {
@@ -13,7 +13,7 @@ const RecentlyViewedFloating = ({
   sidebarContentRef,
 }: RecentlyViewedFloatingProps) => {
   const navigate = useNavigate();
-  const { devices } = useRecentlyViewed();
+  const { data: devices = [], isLoading } = useGetRecentlyViewed();
   const containerRef = useRef<HTMLDivElement>(null);
   const [isFloating, setIsFloating] = useState(false);
   const [leftPosition, setLeftPosition] = useState(0);
@@ -58,8 +58,8 @@ const RecentlyViewedFloating = ({
     };
   }, [sidebarContentRef]);
 
-  // 기기가 없으면 렌더링하지 않음
-  if (displayDevices.length === 0) return null;
+  // 로딩 중이거나 기기가 없으면 렌더링하지 않음
+  if (isLoading || displayDevices.length === 0) return null;
 
   const handleCardClick = (deviceId: number) => {
     navigate(`/devices?productId=${deviceId}`);

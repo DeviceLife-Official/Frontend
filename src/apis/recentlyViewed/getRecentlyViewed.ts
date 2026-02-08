@@ -12,7 +12,7 @@ export const getRecentlyViewed = async (): Promise<RecentlyViewedDevice[]> => {
 // 최근 본 기기 목록 조회 Query
 export const useGetRecentlyViewed = () => {
   return useQuery<RecentlyViewedDevice[]>({
-    queryKey: [queryKey.RECENTLY_VIEWED_DEVICES],
+    queryKey: [queryKey.RECENTLY_VIEWED],
     queryFn: getRecentlyViewed,
     staleTime: 1000 * 60 * 5, // 5분간 캐시 유지
   });
