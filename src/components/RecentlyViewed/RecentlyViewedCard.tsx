@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import type { RecentlyViewedDevice } from '@/types/recentlyViewed';
+import type { RecentlyViewedDevice } from '@/types/recentlyViewed/recentlyViewed';
 
 interface RecentlyViewedCardProps {
   device: RecentlyViewedDevice;
@@ -15,9 +15,9 @@ const RecentlyViewedCard = ({ device, onClick, className }: RecentlyViewedCardPr
     >
       {/* 이미지 - 149x149 */}
       <div className="w-149 h-149 bg-gray-200 overflow-hidden">
-        {device.image && (
+        {device.imageUrl && (
           <img
-            src={device.image}
+            src={device.imageUrl}
             alt={device.name}
             className="w-full h-full object-cover"
           />
@@ -30,16 +30,16 @@ const RecentlyViewedCard = ({ device, onClick, className }: RecentlyViewedCardPr
         <p className="font-body-2-r text-black leading-22 truncate group-hover:text-blue-600 transition-colors">{device.name}</p>
 
         {/* 카테고리 - 12px, SemiBold, Gray300 */}
-        <p className="font-caption-sm text-gray-300">{device.category}</p>
+        <p className="font-caption-sm text-gray-300">{device.deviceType}</p>
 
         {/* 가격 - 16px, SemiBold */}
         <p className="font-body-2-sm text-black mt-8">
-          {device.price != null
+          {device.priceKrw != null
             ? new Intl.NumberFormat('ko-KR', {
                 style: 'currency',
                 currency: 'KRW',
                 maximumFractionDigits: 0,
-              }).format(device.price)
+              }).format(device.priceKrw)
             : '-'}
         </p>
       </div>

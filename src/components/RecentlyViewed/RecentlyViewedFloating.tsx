@@ -90,9 +90,9 @@ const RecentlyViewedFloating = ({
       <div className="flex flex-col gap-28">
         {displayDevices.map((device) => (
           <RecentlyViewedCard
-            key={device.id}
+            key={device.deviceId}
             device={device}
-            onClick={() => handleCardClick(device.id)}
+            onClick={() => handleCardClick(device.deviceId)}
           />
         ))}
       </div>

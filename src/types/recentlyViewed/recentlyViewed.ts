@@ -1,15 +1,18 @@
 import type { CommonResponse } from '@/types/common';
 
-// 최근 본 기기 데이터 타입 (UI 표시용)
+// 최근 본 기기 데이터 타입 (API 응답 형식)
 export interface RecentlyViewedDevice {
-  id: number;
+  deviceId: number;
   name: string;
-  category: string;
+  modelCode: string;
+  brandName: string;
+  deviceType: string;
   price: number;
-  image: string | null;
-  viewedAt: number;
+  priceCurrency: string;
+  priceKrw: number;
+  imageUrl: string;
+  viewedAt: string; // ISO date string
 }
 
 // 최근 본 기기 목록 조회 응답 타입 (API 응답)
-// API 문서상 string[]이지만, 실제로는 기기 정보 객체 배열일 수 있음
 export type RecentlyViewedDevicesResponse = CommonResponse<RecentlyViewedDevice[]>;
