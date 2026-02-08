@@ -3,23 +3,19 @@
  *
  * [401 에러 처리 흐름]
  * 1. 401 에러 발생
- * 2. refreshToken 존재 확인
- *    - 없으면: 로그인 페이지로 리다이렉트
- *    - 있으면: 토큰 갱신 시도
+ * 2. 토큰 갱신 시도 (refreshToken은 httpOnly 쿠키로 자동 전송됨)
  * 3. 토큰 갱신 (refreshPromise)
- *    - 성공: 새 토큰으로 원래 요청 재시도
- *    - 실패: 로그인 페이지로 리다이렉트
+ *    - 성공: 새 accessToken으로 원래 요청 재시도
+ *    - 실패: 로그인 페이지로 리다이렉트 (refreshToken 만료 또는 없음)
  * 4. 동시 요청 처리: 여러 요청이 동시에 401을 받으면 refreshPromise를 공유하여 토큰 갱신은 1번만 수행
 */
 import type { InternalAxiosRequestConfig, AxiosInstance } from 'axios';
 import {
   getAccessToken,
-  getRefreshToken,
   setAuthTokens,
   clearAuthTokens,
 } from '@/utils/authStorage';
-import { refreshAxiosInstance } from '@/apis/axios/refreshAxios';
-import type { RefreshTokenResponse } from '@/types/auth/refresh';
+import { postRefresh } from '@/apis/auth/postRefresh';
 import { setAuthorizationHeader } from '@/utils/setAuthorizationHeader';
 import { ROUTES } from '@/constants/routes';
 
@@ -102,18 +98,7 @@ export const setupResponseInterceptor = (instance: AxiosInstance) => {
       // 재시도 플래그 설정 (무한루프 방지)
       originalRequest._retry = true;
 
-
-
-      // [2] refreshToken 확인
-      const refreshToken = getRefreshToken();
-
-      if (!refreshToken) {
-        redirectToLoginOnce();
-        return Promise.reject(error);
-      }
-
-
-      // [3] 이미 다른 요청이 토큰 갱신 중이면 그 결과를 기다림
+      // [2] 이미 다른 요청이 토큰 갱신 중이면 그 결과를 기다림
       if (refreshPromise) {
         try {
           const newToken = await refreshPromise;
@@ -126,34 +111,21 @@ export const setupResponseInterceptor = (instance: AxiosInstance) => {
       }
 
 
-      // [4] 토큰 갱신 Promise 생성 및 실행
-      //     - try: 토큰 갱신 API 호출 → 성공 시 새 토큰 반환
+      // [3] 토큰 갱신 Promise 생성 및 실행
+      //     - try: 토큰 갱신 API 호출 (refreshToken은 httpOnly 쿠키로 자동 전송) → 성공 시 새 accessToken 반환
       //     - catch: 실패 시 로그인 리다이렉트 → 에러 re-throw (외부 catch로 전파)
       //     - finally: 성공/실패 관계없이 refreshPromise 초기화
       refreshPromise = (async () => {
         try {
-          const { data } = await refreshAxiosInstance.post<RefreshTokenResponse>(
-            '/api/auth/refresh',
-            {},
-            {
-              headers: {
-                refreshToken,
-              },
-            }
-          );
+          const data = await postRefresh();
 
           if (!data?.result?.accessToken) {
             throw new Error('토큰 재발급 응답이 올바르지 않습니다.');
           }
 
-          const currentRefreshToken = getRefreshToken();
-          if (!currentRefreshToken) {
-            throw new Error('Refresh token이 저장소에서 사라졌습니다.');
-          }
-
+          // 새 accessToken 저장 (refreshToken은 httpOnly 쿠키로 서버에서 관리)
           setAuthTokens({
             accessToken: data.result.accessToken,
-            refreshToken: currentRefreshToken,
           });
 
           return data.result.accessToken;
@@ -165,7 +137,7 @@ export const setupResponseInterceptor = (instance: AxiosInstance) => {
         }
       })();
 
-      // [5] 토큰 갱신 결과에 따라 원래 요청 재시도 또는 에러 반환
+      // [4] 토큰 갱신 결과에 따라 원래 요청 재시도 또는 에러 반환
       //     - 성공: 새 토큰으로 원래 요청 재시도
       //     - 실패: [4]의 catch에서 이미 리다이렉트 처리됨, 여기서는 에러만 전달
       try {

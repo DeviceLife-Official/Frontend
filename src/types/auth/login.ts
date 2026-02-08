@@ -10,7 +10,6 @@ export type LoginRequest = {
 export type LoginResult = {
   userId: number;
   accessToken: string;
-  refreshToken: string;
 };
 
 // 로그인 응답 타입
