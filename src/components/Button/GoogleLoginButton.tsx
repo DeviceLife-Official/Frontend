@@ -1,12 +1,11 @@
 import GoogleLogo from '@/assets/logos/google_noborder.svg?react';
 import clsx from 'clsx';
+import { OAUTH } from '@/constants/auth';
 
 type GoogleLoginButtonProps = {
   onClick?: () => void;
   className?: string;
 };
-
-const GOOGLE_OAUTH_URL = 'https://api.devicelife.site/oauth2/authorization/google';
 
 const GoogleLoginButton = ({ onClick, className }: GoogleLoginButtonProps) => {
   const handleClick = () => {
@@ -14,7 +13,7 @@ const GoogleLoginButton = ({ onClick, className }: GoogleLoginButtonProps) => {
       onClick();
     } else {
       // Google OAuth 인증 페이지로 이동
-      window.location.href = GOOGLE_OAUTH_URL;
+      window.location.href = OAUTH.google;
     }
   };
 
