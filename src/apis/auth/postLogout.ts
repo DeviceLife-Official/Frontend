@@ -1,19 +1,12 @@
-import { axiosInstance } from '@/apis/axios/axios';
+import { cookieAxiosInstance } from '@/apis/axios/cookieAxios';
 import type { LogoutResponse } from '@/types/auth/logout';
 import { useMutation } from '@tanstack/react-query';
-import { getRefreshToken } from '@/utils/authStorage';
 
 export const postLogout = async (): Promise<LogoutResponse> => {
-  const refreshToken = getRefreshToken();
-
-  const { data } = await axiosInstance.post<LogoutResponse>(
+  // refreshToken은 httpOnly 쿠키로 자동 전송됨
+  const { data } = await cookieAxiosInstance.post<LogoutResponse>(
     '/api/auth/logout',
-    {},
-    {
-      headers: {
-        refreshToken,
-      },
-    }
+    {}
   );
   return data;
 };

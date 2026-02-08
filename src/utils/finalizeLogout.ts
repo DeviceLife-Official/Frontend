@@ -1,4 +1,4 @@
-import { clearAuthTokens } from '@/utils/authStorage';
+import { clearAccessToken } from '@/utils/authStorage';
 import type { QueryClient } from '@tanstack/react-query';
 import { queryKey } from '@/constants/queryKey';
 import { clearRecentlyViewedDevices } from '@/utils/recentlyViewedStorage';
@@ -13,7 +13,7 @@ import { clearRecentlyViewedDevices } from '@/utils/recentlyViewedStorage';
 
 export const finalizeLogout = (queryClient: QueryClient): void => {
   // 1. 토큰 제거
-  clearAuthTokens();
+  clearAccessToken();
 
   // 2. 유저별 데이터 캐시 삭제
   queryClient.removeQueries({ queryKey: [queryKey.COMBOS] });

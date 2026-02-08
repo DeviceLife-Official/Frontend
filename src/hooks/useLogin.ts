@@ -22,7 +22,6 @@ export const useLogin = () => {
 
     await finalizeLogin(
       res.result.accessToken,
-      res.result.refreshToken,
       queryClient
     );
   };

@@ -1,5 +1,6 @@
 import GoogleLogo from '@/assets/logos/google_noborder.svg?react';
 import clsx from 'clsx';
+import { OAUTH } from '@/constants/auth';
 
 type GoogleLoginButtonProps = {
   onClick?: () => void;
@@ -7,10 +8,19 @@ type GoogleLoginButtonProps = {
 };
 
 const GoogleLoginButton = ({ onClick, className }: GoogleLoginButtonProps) => {
+  const handleClick = () => {
+    if (onClick) {
+      onClick();
+    } else {
+      // Google OAuth 인증 페이지로 이동
+      window.location.href = OAUTH.google;
+    }
+  };
+
   return (
     <button
       type="button"
-      onClick={onClick}
+      onClick={handleClick}
       className={clsx(
         'flex items-center gap-24',
         'py-8 pl-0 pr-8',

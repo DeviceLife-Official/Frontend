@@ -1,5 +1,5 @@
 import { useGetUserProfile } from '@/apis/mypage/getUserProfile';
-import { hasAuthTokens } from '@/utils/authStorage';
+import { hasAccessToken } from '@/utils/authStorage';
 import type { UserProfileResult } from '@/types/mypage/user';
 
 // UserProfile 타입 별칭 (UserProfileResult와 동일)
@@ -19,7 +19,7 @@ export type UserProfile = UserProfileResult;
  */
 
 export const useAuth = () => {
-  const hasToken = hasAuthTokens();
+  const hasToken = hasAccessToken();
   const { data: user, isLoading, refetch } = useGetUserProfile();
 
   // 인증 관련 초기 로딩 상태

@@ -16,6 +16,9 @@ export const ROUTES = {
       account: '/auth/signup/account',
       profile: '/auth/signup/profile',
     },
+    callback: {
+      google: '/auth/callback/google',
+    },
   },
 
   // onboarding

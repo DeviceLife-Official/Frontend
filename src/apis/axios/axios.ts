@@ -7,7 +7,7 @@ const baseURL = import.meta.env.VITE_SERVER_API_URL;
 
 export const axiosInstance = axios.create({
   baseURL,
-  withCredentials: true, // 쿠키/세션 자동 포함
+  withCredentials: false, // 기본적으로 쿠키 미포함 (쿠키 필요한 API는 cookieAxiosInstance 사용)
 });
 
 // 요청 인터셉터 설정
