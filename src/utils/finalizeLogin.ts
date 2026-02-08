@@ -1,4 +1,4 @@
-import { setAuthTokens } from '@/utils/authStorage';
+import { setAccessToken } from '@/utils/authStorage';
 import { getUserProfile } from '@/apis/mypage/getUserProfile';
 import { queryKey } from '@/constants/queryKey';
 import type { QueryClient } from '@tanstack/react-query';
@@ -17,7 +17,7 @@ export const finalizeLogin = async (
   queryClient: QueryClient
 ): Promise<void> => {
   // 1. 토큰 저장 (refreshToken은 httpOnly 쿠키로 관리)
-  setAuthTokens({ accessToken });
+  setAccessToken(accessToken);
 
   // 2. 유저 정보 조회 및 캐시 저장
   const userProfile = await getUserProfile();

@@ -4,13 +4,8 @@ import type { UserProfileResult } from '@/types/mypage/user';
 // localStorage를 조작하는 유틸리티 함수
 // 나머지 파일에서는 localStorage를 직접 사용하지 않고 이 파일의 함수를 사용하도록 함
 
-// 토큰 저장 타입
-type AuthTokens = {
-  accessToken: string;
-};
-
 // 액세스 토큰 저장 (refreshToken은 httpOnly 쿠키로 관리)
-export const setAuthTokens = ({ accessToken }: AuthTokens): void => {
+export const setAccessToken = (accessToken: string): void => {
   localStorage.setItem(ACCESS_TOKEN, accessToken);
 };
 
@@ -19,13 +14,13 @@ export const getAccessToken = (): string | null => {
   return localStorage.getItem(ACCESS_TOKEN);
 };
 
-// 모든 인증 토큰 삭제 (refreshToken은 서버에서 쿠키 삭제)
-export const clearAuthTokens = (): void => {
+// 액세스 토큰 삭제 (refreshToken은 서버에서 쿠키 삭제)
+export const clearAccessToken = (): void => {
   localStorage.removeItem(ACCESS_TOKEN);
 };
 
-// 토큰 존재 여부 체크 (accessToken만 확인, refreshToken은 httpOnly 쿠키)
-export const hasAuthTokens = (): boolean => {
+// 액세스 토큰 존재 여부 체크 (refreshToken은 httpOnly 쿠키)
+export const hasAccessToken = (): boolean => {
   const accessToken = getAccessToken();
   return !!accessToken;
 };

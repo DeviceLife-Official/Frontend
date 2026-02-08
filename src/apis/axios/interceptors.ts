@@ -12,8 +12,8 @@
 import type { InternalAxiosRequestConfig, AxiosInstance } from 'axios';
 import {
   getAccessToken,
-  setAuthTokens,
-  clearAuthTokens,
+  setAccessToken,
+  clearAccessToken,
 } from '@/utils/authStorage';
 import { postRefresh } from '@/apis/auth/postRefresh';
 import { setAuthorizationHeader } from '@/utils/setAuthorizationHeader';
@@ -38,7 +38,7 @@ const redirectToLoginOnce = () => {
   if (isRedirectingToLogin) return;
 
   isRedirectingToLogin = true;
-  clearAuthTokens();
+  clearAccessToken();
   window.location.href = ROUTES.auth.login;
 };
 
@@ -124,9 +124,7 @@ export const setupResponseInterceptor = (instance: AxiosInstance) => {
           }
 
           // 새 accessToken 저장 (refreshToken은 httpOnly 쿠키로 서버에서 관리)
-          setAuthTokens({
-            accessToken: data.result.accessToken,
-          });
+          setAccessToken(data.result.accessToken);
 
           return data.result.accessToken;
         } catch (refreshError) {

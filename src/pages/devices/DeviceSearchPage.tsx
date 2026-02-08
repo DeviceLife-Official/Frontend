@@ -30,7 +30,7 @@ import { useGetCombo } from '@/apis/combo/getComboId';
 import { usePostComboDevice } from '@/apis/combo/postComboDevices';
 import { useGetUserProfile } from '@/apis/mypage/getUserProfile';
 import { useGetBrands } from '@/apis/devices/getBrands';
-import { hasAuthTokens, hasCompletedOnboarding } from '@/utils/authStorage';
+import { hasAccessToken, hasCompletedOnboarding } from '@/utils/authStorage';
 
 // 카테고리 ID를 API deviceType으로 변환
 const getCategoryDeviceType = (categoryId: number | null): string | undefined => {
@@ -54,7 +54,7 @@ const DeviceSearchPage = () => {
   const navigate = useNavigate();
 
   // 로그인 상태 확인
-  const isLoggedIn = hasAuthTokens();
+  const isLoggedIn = hasAccessToken();
 
   // 사용자 프로필 조회 (로그인 시에만 자동 실행)
   const { data: userProfile, isLoading: isProfileLoading } = useGetUserProfile();
