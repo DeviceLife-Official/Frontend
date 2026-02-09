@@ -31,21 +31,26 @@ import { usePostComboPin } from '@/apis/combo/postComboPin';
 import { useDeleteComboDevice } from '@/apis/combo/deleteComboDevice';
 import type { ComboListItem } from '@/types/combo/combo';
 import { useAuth } from '@/hooks/useAuth';
+import type { Grade } from '@/constants/evaluation/grade';
 
 // 조합 평가 Mock 데이터
-const MOCK_EVALUATION = {
+const MOCK_EVALUATION: {
+  connectivity: { rating: Grade; description: string; tags: string[] };
+  convenience: { rating: Grade; description: string; tags: string[] };
+  lifestyle: { rating: Grade; description: string; tags: string[] };
+} = {
   connectivity: {
-    rating: '최상',
+    rating: '최적',
     description: 'Apple 기기 간의 연동성이 완벽합니다. AirDrop, Handoff, Universal Control 등의 기능을 자유롭게 사용할 수 있습니다.',
     tags: ['AirDrop', 'Handoff', 'Universal Control', 'iCloud 동기화'],
   },
   convenience: {
-    rating: '최상',
+    rating: '최적',
     description: '모든 기기가 USB-C 포트를 사용합니다. 하나의 충전기와 케이블로 모든 기기를 충전할 수 있습니다.',
     tags: ['USB-C', 'N개 기기 해당'],
   },
   lifestyle: {
-    rating: '최상',
+    rating: '최적',
     description: '모든 기기가 USB-C 포트를 사용합니다. 하나의 충전기와 케이블로 모든 기기를 충전할 수 있습니다.',
     tags: ['#Game'],
   },

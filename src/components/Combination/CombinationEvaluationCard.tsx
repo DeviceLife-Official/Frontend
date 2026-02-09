@@ -1,44 +1,22 @@
+import type { CombinationName, CombinationStatus } from '@/constants/combination';
+import {
+  COMBINATION_NAME_STYLE_MAP,
+  COMBINATION_STATUS_STYLE_MAP,
+} from '@/constants/combination';
+import type { Grade } from '@/constants/evaluation/grade';
+
 interface CombinationEvaluationCardProps {
-  category: string;
-  grade: string;
+  category: CombinationName;
+  grade: Grade;
   description: string;
   tags: string[];
 }
 
-// 카테고리별 태그 색상 고정값
-const CATEGORY_TAG_COLORS: Record<
-  string,
-  { bgColor: string; textColor: string }
-> = {
-  연동성: {
-    bgColor: 'bg-blue-200',
-    textColor: 'text-blue-700',
-  },
-  편의성: {
-    bgColor: 'bg-[#bdf8e1]',
-    textColor: 'text-[#00719f]',
-  },
-  라이프스타일: {
-    bgColor: 'bg-[#fee8c3]',
-    textColor: 'text-[#fb7104]',
-  },
-};
-
-// 등급 텍스트 색상 매핑
-const getGradeTextColorClass = (grade: string): string => {
-  switch (grade) {
-    case '최적':
-      return 'text-optimal';
-    case '양호':
-      return 'text-good';
-    case '보통':
-      return 'text-normal';
-    case '미흡':
-      return 'text-poor';
-    case '-':
-    default:
-      return 'text-optimal';
-  }
+// 등급 텍스트 색상 클래스 추출 (COMBINATION_STATUS_STYLE_MAP에서 색상만 추출)
+const getGradeTextColorClass = (grade: Grade): string => {
+  const statusStyle = COMBINATION_STATUS_STYLE_MAP[grade as CombinationStatus];
+  // 'font-caption-sm text-optimal' 형태에서 색상 부분만 추출
+  return statusStyle.split(' ').find((cls) => cls.startsWith('text-')) ?? 'text-optimal';
 };
 
 const CombinationEvaluationCard = ({
@@ -48,10 +26,7 @@ const CombinationEvaluationCard = ({
   tags,
 }: CombinationEvaluationCardProps) => {
   const gradeTextColorClass = getGradeTextColorClass(grade);
-  const tagColors = CATEGORY_TAG_COLORS[category] ?? {
-    bgColor: 'bg-gray-200',
-    textColor: 'text-gray-700',
-  };
+  const tagStyleClass = COMBINATION_NAME_STYLE_MAP[category];
 
   return (
     <div className="bg-white rounded-card px-42 py-30 flex flex-col gap-30">
@@ -64,7 +39,7 @@ const CombinationEvaluationCard = ({
         {tags.map((tag) => (
           <span
             key={tag}
-            className={`${tagColors.bgColor} ${tagColors.textColor} font-body-2-sm px-12 py-8 rounded-full`}
+            className={`${tagStyleClass} font-body-2-sm px-12 py-8 rounded-full`}
           >
             {tag}
           </span>
