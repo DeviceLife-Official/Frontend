@@ -6,6 +6,7 @@ import SecondaryButton from '@/components/Button/SecondaryButton';
 import SortDropdown from '@/components/Filter/SortDropdown';
 import RoundedLifestyleTag from '@/components/Lifestyle/RoundedLifestyleTag';
 import RecentlyViewedFloating from '@/components/RecentlyViewed/RecentlyViewedFloating';
+import CombinationEvaluationCard from '@/components/Combination/CombinationEvaluationCard';
 import SettingIcon from '@/assets/icons/setting.svg?react';
 import SupportIcon from '@/assets/icons/support.svg?react';
 import SettingMoreIcon from '@/assets/icons/settingmore.svg?react';
@@ -921,74 +922,24 @@ const MyPage = () => {
                           </div>
 
                           <div className="flex flex-col gap-20">
-                            {/* 연동성 */}
-                            <div className="bg-white rounded-card px-42 py-30 flex flex-col gap-30">
-                              <div className="flex items-center gap-16">
-                                <p className="font-heading-4 text-black">연동성:</p>
-                                <p className="font-heading-4 text-blue-600">
-                                  {MOCK_EVALUATION.connectivity.rating}
-                                </p>
-                              </div>
-                              <p className="font-body-3-r text-black leading-28">
-                                {MOCK_EVALUATION.connectivity.description}
-                              </p>
-                              <div className="flex gap-8 -ml-4">
-                                {MOCK_EVALUATION.connectivity.tags.map((tag) => (
-                                  <span
-                                    key={tag}
-                                    className="bg-blue-200 text-blue-700 font-body-2-sm px-12 py-8 rounded-full"
-                                  >
-                                    {tag}
-                                  </span>
-                                ))}
-                              </div>
-                            </div>
-
-                            {/* 편의성 */}
-                            <div className="bg-white rounded-card px-42 py-30 flex flex-col gap-30">
-                              <div className="flex items-center gap-16">
-                                <p className="font-heading-4 text-black">편의성:</p>
-                                <p className="font-heading-4 text-blue-600">
-                                  {MOCK_EVALUATION.convenience.rating}
-                                </p>
-                              </div>
-                              <p className="font-body-3-r text-black leading-28">
-                                {MOCK_EVALUATION.convenience.description}
-                              </p>
-                              <div className="flex gap-8 -ml-4">
-                                {MOCK_EVALUATION.convenience.tags.map((tag) => (
-                                  <span
-                                    key={tag}
-                                    className="bg-[#bdf8e1] text-[#00719f] font-body-2-sm px-12 py-8 rounded-full"
-                                  >
-                                    {tag}
-                                  </span>
-                                ))}
-                              </div>
-                            </div>
-
-                            {/* 라이프스타일 */}
-                            <div className="bg-white rounded-card px-42 py-30 flex flex-col gap-30">
-                              <div className="flex items-center gap-16">
-                                <p className="font-heading-4 text-black">라이프스타일:</p>
-                                <p className="font-heading-4 text-blue-600">
-                                  {MOCK_EVALUATION.lifestyle.rating}
-                                </p>
-                              </div>
-                              <p className="font-body-3-r text-black leading-28">
-                                {MOCK_EVALUATION.lifestyle.description}
-                              </p>
-                              <div className="flex gap-8 -ml-4">
-                                {MOCK_EVALUATION.lifestyle.tags.map((tag) => (
-                                  <span
-                                    key={tag}
-                                    className="bg-[#fee8c3] text-[#fb7104] font-body-2-sm px-12 py-8 rounded-full"
-                                  >
-                                    {tag}
-                                  </span>
-                                ))}
-                              </div>
-                            </div>
+                            <CombinationEvaluationCard
+                              category="연동성"
+                              grade={MOCK_EVALUATION.connectivity.rating}
+                              description={MOCK_EVALUATION.connectivity.description}
+                              tags={MOCK_EVALUATION.connectivity.tags}
+                            />
+                            <CombinationEvaluationCard
+                              category="편의성"
+                              grade={MOCK_EVALUATION.convenience.rating}
+                              description={MOCK_EVALUATION.convenience.description}
+                              tags={MOCK_EVALUATION.convenience.tags}
+                            />
+                            <CombinationEvaluationCard
+                              category="라이프스타일"
+                              grade={MOCK_EVALUATION.lifestyle.rating}
+                              description={MOCK_EVALUATION.lifestyle.description}
+                              tags={MOCK_EVALUATION.lifestyle.tags}
+                            />
                           </div>
                         </div>
                       </div>
