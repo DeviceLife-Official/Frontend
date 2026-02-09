@@ -55,6 +55,7 @@ const ProfileEditPage = () => {
       {
         onSuccess: async () => {
           await refetchUserProfile();
+          navigate('/my');
         },
       }
     );
