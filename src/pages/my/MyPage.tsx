@@ -29,32 +29,12 @@ import { usePutCombo } from '@/apis/combo/putCombos';
 import { useDeleteCombo } from '@/apis/combo/deleteCombo';
 import { usePostComboPin } from '@/apis/combo/postComboPin';
 import { useDeleteComboDevice } from '@/apis/combo/deleteComboDevice';
+import { useComboEvaluation } from '@/apis/combo/getComboEvaluation';
 import type { ComboListItem } from '@/types/combo/combo';
 import { useAuth } from '@/hooks/useAuth';
-import type { Grade } from '@/constants/evaluation/grade';
-
-// 조합 평가 Mock 데이터
-const MOCK_EVALUATION: {
-  connectivity: { rating: Grade; description: string; tags: string[] };
-  convenience: { rating: Grade; description: string; tags: string[] };
-  lifestyle: { rating: Grade; description: string; tags: string[] };
-} = {
-  connectivity: {
-    rating: '최적',
-    description: 'Apple 기기 간의 연동성이 완벽합니다. AirDrop, Handoff, Universal Control 등의 기능을 자유롭게 사용할 수 있습니다.',
-    tags: ['AirDrop', 'Handoff', 'Universal Control', 'iCloud 동기화'],
-  },
-  convenience: {
-    rating: '최적',
-    description: '모든 기기가 USB-C 포트를 사용합니다. 하나의 충전기와 케이블로 모든 기기를 충전할 수 있습니다.',
-    tags: ['USB-C', 'N개 기기 해당'],
-  },
-  lifestyle: {
-    rating: '최적',
-    description: '모든 기기가 USB-C 포트를 사용합니다. 하나의 충전기와 케이블로 모든 기기를 충전할 수 있습니다.',
-    tags: ['#Game'],
-  },
-};
+import { mapEvaluationToUI } from '@/utils/mapEvaluationToUI';
+import type { LifestyleKey } from '@/constants/evaluation/lifestyle';
+import type { CombinationName } from '@/constants/combination';
 
 const MYPAGE_SORT_OPTIONS = [
   { value: 'latest', label: '최근생성순' },
@@ -106,6 +86,20 @@ const MyPage = () => {
   const { mutate: togglePin } = usePostComboPin();
   const { mutate: deleteDevice, isPending: isDeletingDevice } = useDeleteComboDevice();
   const { user: userProfile, isAuthLoading } = useAuth();
+  const { data: evaluation } = useComboEvaluation(detailViewComboId ?? undefined);
+
+  // 유저 라이프스타일 태그 → LifestyleKey 변환 ("# Office" → "Office")
+  const lifestyleKey = useMemo<LifestyleKey | undefined>(() => {
+    const raw = userProfile?.lifestyleList?.[0];
+    if (!raw) return undefined;
+    return raw.replace(/^#\s*/, '') as LifestyleKey;
+  }, [userProfile]);
+
+  // 평가 데이터 → UI 카드 props 변환
+  const evaluationCards = useMemo(() => {
+    if (!evaluation) return null;
+    return mapEvaluationToUI(evaluation, lifestyleKey);
+  }, [evaluation, lifestyleKey]);
 
   // 정렬된 조합 목록
   const sortedCombos = useMemo(() => {
@@ -927,24 +921,24 @@ const MyPage = () => {
                           </div>
 
                           <div className="flex flex-col gap-20">
-                            <CombinationEvaluationCard
-                              category="연동성"
-                              grade={MOCK_EVALUATION.connectivity.rating}
-                              description={MOCK_EVALUATION.connectivity.description}
-                              tags={MOCK_EVALUATION.connectivity.tags}
-                            />
-                            <CombinationEvaluationCard
-                              category="편의성"
-                              grade={MOCK_EVALUATION.convenience.rating}
-                              description={MOCK_EVALUATION.convenience.description}
-                              tags={MOCK_EVALUATION.convenience.tags}
-                            />
-                            <CombinationEvaluationCard
-                              category="라이프스타일"
-                              grade={MOCK_EVALUATION.lifestyle.rating}
-                              description={MOCK_EVALUATION.lifestyle.description}
-                              tags={MOCK_EVALUATION.lifestyle.tags}
-                            />
+                            {evaluationCards ? (
+                              evaluationCards.map((card) => (
+                                <CombinationEvaluationCard
+                                  key={card.category}
+                                  category={card.category as CombinationName}
+                                  grade={card.grade}
+                                  description={card.text}
+                                  tags={card.tags}
+                                />
+                              ))
+                            ) : (
+                              // 평가 데이터 없음 (아직 계산 전 또는 에러)
+                              <div className="bg-white rounded-card px-42 py-30 flex items-center justify-center">
+                                <p className="font-body-3-r text-gray-400">
+                                  조합 평가 정보가 아직 준비되지 않았습니다.
+                                </p>
+                              </div>
+                            )}
                           </div>
                         </div>
                       </div>
