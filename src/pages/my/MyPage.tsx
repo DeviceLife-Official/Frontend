@@ -86,7 +86,7 @@ const MyPage = () => {
   const { mutate: togglePin } = usePostComboPin();
   const { mutate: deleteDevice, isPending: isDeletingDevice } = useDeleteComboDevice();
   const { user: userProfile, isAuthLoading } = useAuth();
-  const { data: evaluation } = useComboEvaluation(detailViewComboId ?? undefined);
+  const { data: evaluation, isLoading: isEvaluationLoading } = useComboEvaluation(detailViewComboId ?? undefined);
 
   // 유저 라이프스타일 태그 → LifestyleKey 변환 ("# Office" → "Office")
   const lifestyleKey = useMemo<LifestyleKey | undefined>(() => {
@@ -909,38 +909,40 @@ const MyPage = () => {
                           </div>
                         </div>
 
-                        {/* 구분선 */}
-                        <div className="mx-44 border-t border-gray-300" />
+                        {/* 구분선 + 조합 평가 정보 (로딩 중에는 숨김) */}
+                        {!isEvaluationLoading && (
+                          <>
+                            <div className="mx-44 border-t border-gray-300" />
 
-                        {/* 조합 평가 정보 */}
-                        <div className="px-56 py-56">
-                          <div className="flex items-center justify-end gap-16 mb-32">
-                            <p className="font-body-2-r text-gray-400 underline">
-                              조합평가 전문보기
-                            </p>
-                          </div>
-
-                          <div className="flex flex-col gap-20">
-                            {evaluationCards ? (
-                              evaluationCards.map((card) => (
-                                <CombinationEvaluationCard
-                                  key={card.category}
-                                  category={card.category as CombinationName}
-                                  grade={card.grade}
-                                  description={card.text}
-                                  tags={card.tags}
-                                />
-                              ))
-                            ) : (
-                              // 평가 데이터 없음 (아직 계산 전 또는 에러)
-                              <div className="bg-white rounded-card px-42 py-30 flex items-center justify-center">
-                                <p className="font-body-3-r text-gray-400">
-                                  조합 평가 정보가 아직 준비되지 않았습니다.
+                            <div className="px-56 py-56">
+                              <div className="flex items-center justify-end gap-16 mb-32">
+                                <p className="font-body-2-r text-gray-400 underline">
+                                  조합평가 전문보기
                                 </p>
                               </div>
-                            )}
-                          </div>
-                        </div>
+
+                              <div className="flex flex-col gap-20">
+                                {evaluationCards ? (
+                                  evaluationCards.map((card) => (
+                                    <CombinationEvaluationCard
+                                      key={card.category}
+                                      category={card.category as CombinationName}
+                                      grade={card.grade}
+                                      description={card.text}
+                                      tags={card.tags}
+                                    />
+                                  ))
+                                ) : (
+                                  <div className="bg-white rounded-card px-42 py-30 flex items-center justify-center">
+                                    <p className="font-body-3-r text-gray-400">
+                                      조합 평가 정보가 아직 준비되지 않았습니다.
+                                    </p>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          </>
+                        )}
                       </div>
                     ) : (
                       /* 일반 모드 */
