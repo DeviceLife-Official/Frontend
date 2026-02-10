@@ -30,6 +30,14 @@ const ProfileEditPage = () => {
   const [nickname, setNickname] = useState(initialNickname);
   const [lifestyles, setLifestyles] = useState<LifestyleDisplayTag[]>(initialLifestyles);
 
+  const payload = useMemo(() => {
+    return {
+      username: nickname !== initialNickname ? nickname : null,
+      email: null,
+      lifestyleList: lifestyles.join(',') !== initialLifestyles.join(',') ? lifestyles : null,
+    };
+  }, [nickname, lifestyles, initialNickname, initialLifestyles]);
+
   useEffect(() => {
     if (!user) return;
     setNickname(user.username ?? '000');
@@ -44,22 +52,14 @@ const ProfileEditPage = () => {
     return false;
   }, [nickname, lifestyles, initialNickname, initialLifestyles]);
 
-
-  const handleSave = () => {
-    patchProfile(
-      {
-        username: nickname,
-        email: initialEmail,
-        lifestyleList: lifestyles,
-      },
-      {
-        onSuccess: async () => {
-          await refetchUserProfile();
-          navigate('/my');
-        },
-      }
-    );
-  };
+ const handleSave = () => {
+   patchProfile(payload, {
+     onSuccess: async () => {
+       await refetchUserProfile();
+       navigate('/my');
+     },
+   });
+ };
 
   if (isAuthLoading) return <LoadingSpinner />;
 
