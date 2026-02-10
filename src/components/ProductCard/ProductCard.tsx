@@ -18,13 +18,15 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
       <div className="flex flex-col gap-16">
         {/* Name & Category */}
         <div className="flex flex-col gap-4">
-          <p className="font-heading-4 text-black group-hover:text-blue-600 transition-colors">{product.name}</p>
+          <p className="font-heading-4 text-black group-hover:text-blue-600 transition-colors">
+            {product.name.length > 24 ? `${product.name.slice(0, 24)}...` : product.name}
+          </p>
           <p className="font-body-2-sm text-gray-300">{product.category}</p>
         </div>
 
         {/* Price */}
         <p className="font-body-1-sm text-gray-500">
-          {product.price.toLocaleString()}
+          {(product.price ?? 0).toLocaleString()}
         </p>
 
         {/* Color Chips */}

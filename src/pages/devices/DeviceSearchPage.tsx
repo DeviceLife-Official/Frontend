@@ -22,9 +22,10 @@ import {
   PRICE_OPTIONS,
   SCROLL_CONSTANTS,
 } from '@/constants/devices';
-import { MOCK_PRODUCTS } from '@/constants/mockData';
 import { ROUTES } from '@/constants/routes';
-import { type ModalView } from '@/types/devices';
+import { type ModalView, type SearchDevice } from '@/types/devices';
+import { useSearchDevices } from '@/apis/devices/searchDevices';
+import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
 import { useGetCombos } from '@/apis/combo/getCombos';
 import { useGetCombo } from '@/apis/combo/getComboId';
 import { usePostComboDevice } from '@/apis/combo/postComboDevices';
@@ -47,6 +48,27 @@ const getCategoryDeviceType = (categoryId: number | null): string | undefined =>
   };
   return mapping[categoryId];
 };
+
+// sortOption을 API sortType으로 변환
+const getSortType = (sortOption: string) => {
+  const mapping: Record<string, 'LATEST' | 'NAME_ASC' | 'PRICE_ASC' | 'PRICE_DESC'> = {
+    'latest': 'LATEST',
+    'alphabetical': 'NAME_ASC',
+    'price-low': 'PRICE_ASC',
+    'price-high': 'PRICE_DESC',
+  };
+  return mapping[sortOption] ?? 'LATEST';
+};
+
+// SearchDevice를 Product 형식으로 변환
+const mapSearchDeviceToProduct = (device: SearchDevice) => ({
+  id: device.deviceId,
+  name: `${device.brandName ?? ''} ${device.name ?? ''}`.trim(),
+  category: device.deviceType ?? '',
+  price: device.price ?? 0,
+  image: device.imageUrl ?? null,
+  colors: [] as string[],
+});
 
 const DeviceSearchPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -97,6 +119,44 @@ const DeviceSearchPage = () => {
     }));
   }, [brandsData]);
 
+  // 기기 검색 API 파라미터 구성
+  const apiSearchParams = useMemo(() => {
+    const deviceType = getCategoryDeviceType(selectedCategory);
+    return {
+      keyword: searchQuery || undefined,
+      size: 24,
+      sortType: getSortType(sortOption),
+      deviceTypes: deviceType ? [deviceType] : undefined,
+      brandIds: selectedBrand ? [Number(selectedBrand)] : undefined,
+    };
+  }, [searchQuery, selectedCategory, sortOption, selectedBrand]);
+
+  // 기기 검색 API 호출
+  const {
+    data: searchData,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isLoading: isSearchLoading,
+    isError: isSearchError,
+  } = useSearchDevices(apiSearchParams);
+
+  // 전체 기기 목록 (모든 페이지 결합)
+  const allDevices = useMemo(() =>
+    searchData?.pages.flatMap(page => page.devices) ?? [],
+    [searchData]
+  );
+
+  // 무한 스크롤 트리거
+  const { targetRef, isIntersecting } = useIntersectionObserver({ rootMargin: '100px' });
+
+  // 스크롤 감지 시 다음 페이지 로드
+  useEffect(() => {
+    if (isIntersecting && hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
+    }
+  }, [isIntersecting, hasNextPage, isFetchingNextPage, fetchNextPage]);
+
   // 페이지 마운트 시 상단으로 스크롤
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -108,9 +168,10 @@ const DeviceSearchPage = () => {
   }, [selectedCategory]);
 
   /* 선택된 제품 찾기 */
-  const selectedProduct = selectedProductId
-    ? MOCK_PRODUCTS.find(p => p.id === Number(selectedProductId))
+  const selectedDevice = selectedProductId
+    ? allDevices.find(d => d.deviceId === Number(selectedProductId))
     : null;
+  const selectedProduct = selectedDevice ? mapSearchDeviceToProduct(selectedDevice) : null;
 
   /* 모달 닫기 */
   const handleCloseModal = () => {
@@ -372,7 +433,7 @@ const DeviceSearchPage = () => {
             <div className="flex items-center justify-between pt-80">
             {/* Left side - Result count */}
             <div className="flex items-center gap-2">
-              <p className="font-body-1-sm text-black">40</p>
+              <p className="font-body-1-sm text-black">{allDevices.length}</p>
               <p className="font-body-1-r text-black">개 결과</p>
             </div>
 
@@ -387,18 +448,42 @@ const DeviceSearchPage = () => {
 
         {/* Product Grid */}
         <div ref={productGridRef} className="mx-auto px-120 2xl:px-160">
-          <div className="grid grid-cols-3 2xl:grid-cols-4 gap-x-28 gap-y-164">
-            {MOCK_PRODUCTS.map((product) => (
-              <ProductCard
-                key={product.id}
-                product={product}
-                onClick={() => {
-                  searchParams.set('productId', product.id.toString());
-                  setSearchParams(searchParams);
-                }}
-              />
-            ))}
-          </div>
+          {isSearchLoading ? (
+            <div className="flex justify-center items-center py-100">
+              <p className="font-body-1-r text-gray-400">로딩 중...</p>
+            </div>
+          ) : isSearchError ? (
+            <div className="flex justify-center items-center py-100">
+              <p className="font-body-1-r text-red-500">검색 결과를 불러오는데 실패했습니다.</p>
+            </div>
+          ) : allDevices.length === 0 ? (
+            <div className="flex justify-center items-center py-100">
+              <p className="font-body-1-r text-gray-400">검색 결과가 없습니다.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-3 2xl:grid-cols-4 gap-x-28 gap-y-164">
+              {allDevices.map((device) => (
+                <ProductCard
+                  key={device.deviceId}
+                  product={mapSearchDeviceToProduct(device)}
+                  onClick={() => {
+                    searchParams.set('productId', device.deviceId.toString());
+                    setSearchParams(searchParams);
+                  }}
+                />
+              ))}
+            </div>
+          )}
+
+          {/* 무한 스크롤 트리거 */}
+          <div ref={targetRef} className="h-20" />
+
+          {/* 로딩 인디케이터 */}
+          {isFetchingNextPage && (
+            <div className="flex justify-center py-40">
+              <p className="font-body-1-r text-gray-400">더 불러오는 중...</p>
+            </div>
+          )}
         </div>
 
         {/* Top Button - 3행이 보일 때만 표시 */}
@@ -457,7 +542,7 @@ const DeviceSearchPage = () => {
                         <p className="font-heading-1 text-blue-600">{selectedProduct.name}</p>
                         <div className="flex items-center gap-8 font-heading-2 text-black">
                           <p>₩</p>
-                          <p>{selectedProduct.price.toLocaleString()}</p>
+                          <p>{(selectedProduct.price ?? 0).toLocaleString()}</p>
                         </div>
                       </div>
                     </div>
@@ -482,7 +567,7 @@ const DeviceSearchPage = () => {
                           </div>
                           <div className="flex items-center gap-24">
                             <p className="font-body-2-r text-gray-400 w-80">브랜드</p>
-                            <p className="font-body-2-r text-black">Apple</p>
+                            <p className="font-body-2-r text-black">{selectedDevice?.brandName ?? '-'}</p>
                           </div>
                           <div className="flex items-center gap-24">
                             <p className="font-body-2-r text-gray-400 w-80">색상</p>
@@ -491,7 +576,7 @@ const DeviceSearchPage = () => {
                           <div className="flex items-center gap-24">
                             <p className="font-body-2-r text-gray-400 w-80">가격</p>
                             <div className="flex items-center gap-4 font-body-2-r text-black">
-                              <p>{selectedProduct.price.toLocaleString()}</p>
+                              <p>{(selectedProduct.price ?? 0).toLocaleString()}</p>
                               <p>원</p>
                             </div>
                           </div>
