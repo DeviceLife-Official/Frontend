@@ -45,7 +45,9 @@ export const mapEvaluationToUI = (
     {
       category: '라이프스타일',
       grade: lifestyleGrade,
-      tags: lifestyleData?.tags ?? ['-'],
+      tags: lifestyleTagKey
+        ? [`#${lifestyleTagKey}`, ...(lifestyleData?.tags ?? [])]
+        : ['-'],
       text: lifestyleData?.text ?? '-',
     },
   ];
