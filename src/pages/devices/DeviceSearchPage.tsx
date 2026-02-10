@@ -222,10 +222,10 @@ const DeviceSearchPage = () => {
           setShowSaveCompleteModal(false);
           setIsFadingOut(false);
           handleCloseModal();
-        }, 200); // 0.2초
+        }, 200);
 
         return () => clearTimeout(closeTimer);
-      }, 800); // 0.8초
+      }, 800);
 
       return () => clearTimeout(holdTimer);
     }
