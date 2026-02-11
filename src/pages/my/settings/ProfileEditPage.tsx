@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { usePatchEditProfile } from '@/apis/mypage/patchEditProfile';
@@ -25,11 +25,23 @@ const ProfileEditPage = () => {
 
   const initialNickname = user?.username ?? '000';
   const initialEmail = user?.email ?? 'example@devicelife.com';
-  const initialLifestyles = serverLifestyle; 
+  const initialLifestyles = serverLifestyle;
   const authProvider = user?.authProvider ?? 'GENERAL';
   const [nickname, setNickname] = useState(initialNickname);
   const [lifestyles, setLifestyles] = useState<LifestyleDisplayTag[]>(initialLifestyles);
   const normalizeLifestyleList = (arr: LifestyleDisplayTag[]) => [...arr].sort().join(',');
+
+  const handleNicknameChange = (v: string) => {
+    isEditingRef.current = true;
+    setNickname(v);
+  };
+
+  const handleLifestylesChange = (v: LifestyleDisplayTag[]) => {
+    isEditingRef.current = true;
+    setLifestyles(v);
+  };
+
+  const isEditingRef = useRef(false);
 
   const payload = useMemo(() => {
     const isLifestyleChanged =
@@ -42,9 +54,9 @@ const ProfileEditPage = () => {
     };
   }, [nickname, lifestyles, initialNickname, initialLifestyles]);
 
-
   useEffect(() => {
     if (!user) return;
+    if (isEditingRef.current) return;
     setNickname(user.username ?? '000');
     setLifestyles(serverLifestyle);
   }, [user, serverLifestyle]);
@@ -58,16 +70,15 @@ const ProfileEditPage = () => {
     return cur !== init;
   }, [nickname, lifestyles, initialNickname, initialLifestyles]);
 
-
- const handleSave = () => {
-   patchProfile(payload, {
-     onSuccess: async () => {
-       await refetchUserProfile();
-       navigate('/my');
-     },
-   });
+  const handleSave = () => {
+    patchProfile(payload, {
+      onSuccess: async () => {
+        isEditingRef.current = false;
+        await refetchUserProfile();
+        navigate('/my');
+      },
+    });
   };
-  
 
   if (isAuthLoading) return <LoadingSpinner />;
 
@@ -78,10 +89,14 @@ const ProfileEditPage = () => {
         <p className="font-heading-2 text-black">프로필 수정</p>
       </div>
       <div className="flex flex-col gap-20 w-560">
-        <NicknameEditSection value={nickname} onChange={setNickname} errorMessage={nicknameError} />
+        <NicknameEditSection
+          value={nickname}
+          onChange={handleNicknameChange}
+          errorMessage={nicknameError}
+        />
         <EmailSection value={initialEmail} />
         {(authProvider === 'GENERAL' || authProvider === 'HYBRID') && <PasswordSettingSection />}
-        <LifestyleSelectSection value={lifestyles} onChange={setLifestyles} />
+        <LifestyleSelectSection value={lifestyles} onChange={handleLifestylesChange} />
       </div>
       <div className="flex justify-center">
         <PrimaryButton
