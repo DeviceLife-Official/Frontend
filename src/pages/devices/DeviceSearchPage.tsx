@@ -358,7 +358,7 @@ const DeviceSearchPage = () => {
   };
 
   return (
-    <div className={`min-h-screen bg-white relative ${isAtBottom ? 'bg-effect-fade-bottom' : ''}`}>
+    <div className={`min-h-screen bg-white relative max-w-[100vw] overflow-x-hidden ${isAtBottom ? 'bg-effect-fade-bottom' : ''}`}>
       <GNB />
 
       {/* Main Content */}
