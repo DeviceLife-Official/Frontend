@@ -582,10 +582,12 @@ const DeviceSearchPage = () => {
                             <p className="font-body-2-r text-gray-400 w-80">카테고리</p>
                             <p className="font-body-2-r text-black">{selectedProduct.category}</p>
                           </div>
-                          <div className="flex items-center gap-24">
-                            <p className="font-body-2-r text-gray-400 w-80">브랜드</p>
-                            <p className="font-body-2-r text-black">{selectedDevice?.brandName ?? '-'}</p>
-                          </div>
+                          {selectedDevice?.brandName && (
+                            <div className="flex items-center gap-24">
+                              <p className="font-body-2-r text-gray-400 w-80">브랜드</p>
+                              <p className="font-body-2-r text-black">{selectedDevice.brandName}</p>
+                            </div>
+                          )}
                           <div className="flex items-center gap-24">
                             <p className="font-body-2-r text-gray-400 w-80">가격</p>
                             <div className="flex items-center gap-4 font-body-2-r text-black">
@@ -593,22 +595,22 @@ const DeviceSearchPage = () => {
                               <p>원</p>
                             </div>
                           </div>
-                          <div className="flex items-center gap-24">
-                            <p className="font-body-2-r text-gray-400 w-80">충전방식</p>
-                            <p className="font-body-2-r text-black">
-                              {selectedDevice?.specifications?.chargingPort
-                                ? String(selectedDevice.specifications.chargingPort).replace('_', '-')
-                                : '-'}
-                            </p>
-                          </div>
-                          <div className="flex items-center gap-24">
-                            <p className="font-body-2-r text-gray-400 w-80">출시일</p>
-                            <p className="font-body-2-r text-black">
-                              {selectedDevice?.releaseDate
-                                ? new Date(selectedDevice.releaseDate).toLocaleDateString('ko-KR', { year: 'numeric', month: 'long' })
-                                : '-'}
-                            </p>
-                          </div>
+                          {selectedDevice?.specifications?.chargingPort && (
+                            <div className="flex items-center gap-24">
+                              <p className="font-body-2-r text-gray-400 w-80">충전방식</p>
+                              <p className="font-body-2-r text-black">
+                                {String(selectedDevice.specifications.chargingPort).replace('_', '-')}
+                              </p>
+                            </div>
+                          )}
+                          {selectedDevice?.releaseDate && (
+                            <div className="flex items-center gap-24">
+                              <p className="font-body-2-r text-gray-400 w-80">출시일</p>
+                              <p className="font-body-2-r text-black">
+                                {new Date(selectedDevice.releaseDate).toLocaleDateString('ko-KR', { year: 'numeric', month: 'long' })}
+                              </p>
+                            </div>
+                          )}
                         </div>
 
                       </div>
