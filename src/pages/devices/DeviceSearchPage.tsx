@@ -611,11 +611,6 @@ const DeviceSearchPage = () => {
                           </div>
                         </div>
 
-                        {/* Hashtags */}
-                        <div className="flex items-center gap-16">
-                          <ProductLife label="office" />
-                          <ProductLife label="portability" />
-                        </div>
                       </div>
                     </div>
 
