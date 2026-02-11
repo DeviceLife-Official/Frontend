@@ -11,4 +11,5 @@ export const queryKey = {
   LIFESTYLE_DEVICE: 'lifestyle_device',
   BRANDS: 'brands',
   RECENTLY_VIEWED: 'recently_viewed',
+  DEVICE_SEARCH: 'device_search',
 } as const;

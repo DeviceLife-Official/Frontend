@@ -12,19 +12,29 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
       onClick={onClick}
     >
       {/* Image - 정사각형 */}
-      <div className="w-full aspect-square bg-gray-200 mb-20" />
+      <div className="w-full aspect-square bg-gray-200 mb-20 overflow-hidden relative">
+        {product.image ? (
+          <img
+            src={product.image}
+            alt={product.name}
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+        ) : null}
+      </div>
 
       {/* Content */}
       <div className="flex flex-col gap-16">
         {/* Name & Category */}
         <div className="flex flex-col gap-4">
-          <p className="font-heading-4 text-black group-hover:text-blue-600 transition-colors">{product.name}</p>
+          <p className="font-heading-4 text-black group-hover:text-blue-600 transition-colors">
+            {product.name.length > 19 ? `${product.name.slice(0, 19)}...` : product.name}
+          </p>
           <p className="font-body-2-sm text-gray-300">{product.category}</p>
         </div>
 
         {/* Price */}
         <p className="font-body-1-sm text-gray-500">
-          {product.price.toLocaleString()}
+          {(product.price ?? 0).toLocaleString()}
         </p>
 
         {/* Color Chips */}
