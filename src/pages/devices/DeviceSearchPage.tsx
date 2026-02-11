@@ -491,7 +491,7 @@ const DeviceSearchPage = () => {
           {/* 로딩 인디케이터 */}
           {isFetchingNextPage && (
             <div className="flex justify-center py-40">
-              <LoadingSpinner />
+              <p className="font-body-1-r text-gray-400">더 불러오는 중...</p>
             </div>
           )}
         </div>
@@ -580,10 +580,6 @@ const DeviceSearchPage = () => {
                             <p className="font-body-2-r text-black">{selectedDevice?.brandName ?? '-'}</p>
                           </div>
                           <div className="flex items-center gap-24">
-                            <p className="font-body-2-r text-gray-400 w-80">색상</p>
-                            <p className="font-body-2-r text-black">내추럴 티타늄</p>
-                          </div>
-                          <div className="flex items-center gap-24">
                             <p className="font-body-2-r text-gray-400 w-80">가격</p>
                             <div className="flex items-center gap-4 font-body-2-r text-black">
                               <p>{(selectedProduct.price ?? 0).toLocaleString()}</p>
@@ -592,11 +588,19 @@ const DeviceSearchPage = () => {
                           </div>
                           <div className="flex items-center gap-24">
                             <p className="font-body-2-r text-gray-400 w-80">충전방식</p>
-                            <p className="font-body-2-r text-black">USB-C</p>
+                            <p className="font-body-2-r text-black">
+                              {selectedDevice?.specifications?.chargingPort
+                                ? String(selectedDevice.specifications.chargingPort).replace('_', '-')
+                                : '-'}
+                            </p>
                           </div>
                           <div className="flex items-center gap-24">
                             <p className="font-body-2-r text-gray-400 w-80">출시일</p>
-                            <p className="font-body-2-r text-black">2023년 9월</p>
+                            <p className="font-body-2-r text-black">
+                              {selectedDevice?.releaseDate
+                                ? new Date(selectedDevice.releaseDate).toLocaleDateString('ko-KR', { year: 'numeric', month: 'long' })
+                                : '-'}
+                            </p>
                           </div>
                         </div>
 
