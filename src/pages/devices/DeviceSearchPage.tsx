@@ -77,7 +77,7 @@ const DeviceSearchPage = () => {
               return (
                 <button
                   key={category.id}
-                  onClick={() => search.setSelectedCategory(category.id)}
+                  onClick={() => search.setSelectedCategory(search.selectedCategory === category.id ? null : category.id)}
                   className={`flex flex-col items-center gap-12 cursor-pointer transition-colors ${
                     category.id === 8 ? 'w-80' : 'w-110'
                   } ${
