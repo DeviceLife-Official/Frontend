@@ -29,14 +29,19 @@ const ProfileEditPage = () => {
   const authProvider = user?.authProvider ?? 'GENERAL';
   const [nickname, setNickname] = useState(initialNickname);
   const [lifestyles, setLifestyles] = useState<LifestyleDisplayTag[]>(initialLifestyles);
+  const normalizeLifestyleList = (arr: LifestyleDisplayTag[]) => [...arr].sort().join(',');
 
   const payload = useMemo(() => {
+    const isLifestyleChanged =
+      normalizeLifestyleList(lifestyles) !== normalizeLifestyleList(initialLifestyles);
+
     return {
       username: nickname !== initialNickname ? nickname : null,
       email: null,
-      lifestyleList: lifestyles.join(',') !== initialLifestyles.join(',') ? lifestyles : null,
+      lifestyleList: isLifestyleChanged ? lifestyles : null,
     };
   }, [nickname, lifestyles, initialNickname, initialLifestyles]);
+
 
   useEffect(() => {
     if (!user) return;
@@ -48,9 +53,11 @@ const ProfileEditPage = () => {
   const isLifestyleValid = lifestyles.length === 1;
   const isDirty = useMemo(() => {
     if (nickname !== initialNickname) return true;
-    if (lifestyles.join(',') !== initialLifestyles.join(',')) return true;
-    return false;
+    const cur = normalizeLifestyleList(lifestyles);
+    const init = normalizeLifestyleList(initialLifestyles);
+    return cur !== init;
   }, [nickname, lifestyles, initialNickname, initialLifestyles]);
+
 
  const handleSave = () => {
    patchProfile(payload, {
@@ -59,7 +66,8 @@ const ProfileEditPage = () => {
        navigate('/my');
      },
    });
- };
+  };
+  
 
   if (isAuthLoading) return <LoadingSpinner />;
 
