@@ -4,7 +4,6 @@ import GNB from '@/components/Home/GNB';
 import ProductCard from '@/components/ProductCard/ProductCard';
 import PrimaryButton from '@/components/Button/PrimaryButton';
 import CombinationDeviceCard from '@/components/Combination/CombinationDeviceCard';
-import ProductLife from '@/components/ProductCard/ProductLife';
 import FilterDropdown from '@/components/Filter/FilterDropdown';
 import SortDropdown from '@/components/Filter/SortDropdown';
 import LoadingSpinner from '@/components/LoadingSpinner';
@@ -595,22 +594,22 @@ const DeviceSearchPage = () => {
                               <p>원</p>
                             </div>
                           </div>
-                          {selectedDevice?.specifications?.screenInch && (
+                          {selectedDevice?.specifications?.screenInch ? (
                             <div className="flex items-center gap-24">
                               <p className="font-body-2-r text-gray-400 w-80">인치</p>
                               <p className="font-body-2-r text-black">
-                                {selectedDevice.specifications.screenInch}
+                                {String(selectedDevice.specifications.screenInch)}
                               </p>
                             </div>
-                          )}
-                          {selectedDevice?.specifications?.chargingPort && (
+                          ) : null}
+                          {selectedDevice?.specifications?.chargingPort ? (
                             <div className="flex items-center gap-24">
                               <p className="font-body-2-r text-gray-400 w-80">충전방식</p>
                               <p className="font-body-2-r text-black">
                                 {String(selectedDevice.specifications.chargingPort).replace('_', '-')}
                               </p>
                             </div>
-                          )}
+                          ) : null}
                           {selectedDevice?.releaseDate && (
                             <div className="flex items-center gap-24">
                               <p className="font-body-2-r text-gray-400 w-80">출시일</p>
