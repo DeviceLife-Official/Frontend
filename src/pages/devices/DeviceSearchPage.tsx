@@ -31,7 +31,6 @@ import { useGetCombo } from '@/apis/combo/getComboId';
 import { usePostComboDevice } from '@/apis/combo/postComboDevices';
 import { useAuth } from '@/hooks/useAuth';
 import { useGetBrands } from '@/apis/devices/getBrands';
-import { hasCompletedOnboarding } from '@/utils/authStorage';
 
 // 카테고리 ID를 API deviceType으로 변환
 const getCategoryDeviceType = (categoryId: number | null): string | undefined => {
@@ -86,10 +85,10 @@ const DeviceSearchPage = () => {
   const navigate = useNavigate();
 
   // 인증 상태 (RootLayout에서 트리거, 여기서는 구독)
-  const { isLoggedIn, user, isAuthLoading } = useAuth();
+  const { isLoggedIn, isAuthLoading, hasCompletedOnboarding } = useAuth();
 
-  // 온보딩 완료 여부 확인 (로딩 중에는 false로 기본 처리)
-  const hasOnboarding = isAuthLoading ? false : hasCompletedOnboarding(user ?? undefined);
+  // 온보딩 완료 여부 (로딩 중에는 false로 기본 처리)
+  const hasOnboarding = isAuthLoading ? false : hasCompletedOnboarding;
 
   const [modalView, setModalView] = useState<ModalView>('device');
 

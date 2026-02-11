@@ -16,6 +16,7 @@ export type UserProfile = UserProfileResult;
  - isLoggedIn: 로그인 여부 (토큰 + user가 모두 있을 때만 true)
  - user: 유저 객체 (없으면 null)
  - isAuthLoading: 인증 로딩 상태 (토큰은 있는데 me를 아직 못 받아온 상태)
+ - hasCompletedOnboarding: 온보딩 완료 여부 (API의 isOnboardingCompleted 사용)
  */
 
 export const useAuth = () => {
@@ -32,11 +33,15 @@ export const useAuth = () => {
   // 토큰이 있고 userProfile이 있을 때만 로그인 상태
   const isLoggedIn = hasToken && !!user;
 
+  // 온보딩 완료 여부 (API의 isOnboardingCompleted 사용)
+  const hasCompletedOnboarding = !!user?.isOnboardingCompleted;
+
   return {
     isLoggedIn,
     user: user ?? null,
     isAuthLoading,
     hasToken,
+    hasCompletedOnboarding,
     refetchUserProfile: refetch,
   };
 };

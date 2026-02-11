@@ -1,5 +1,4 @@
 import { ACCESS_TOKEN, AUTH_STORAGE } from '@/constants/tokenKey';
-import type { UserProfileResult } from '@/types/mypage/user';
 
 // 저장소 타입: local(영속) | session(세션)
 export type AuthStorageType = 'local' | 'session';
@@ -62,12 +61,4 @@ export const clearAccessToken = (): void => {
 export const hasAccessToken = (): boolean => {
   const accessToken = getAccessToken();
   return !!accessToken;
-};
-
-// 온보딩 완료 여부 확인 함수
-// lifestyleList가 비어있지 않으면 온보딩 완료로 판단
-export const hasCompletedOnboarding = (
-  userProfile: UserProfileResult | undefined
-): boolean => {
-  return !!(userProfile?.lifestyleList && userProfile.lifestyleList.length > 0);
 };

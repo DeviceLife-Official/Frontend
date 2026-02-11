@@ -9,13 +9,13 @@ import { ROUTES } from '@/constants/routes';
  - 온보딩 완료 시 홈으로 리다이렉트
 */
 export const OnboardingOnlyGuard = () => {
-  const { user, isAuthLoading } = useAuth();
+  const { isAuthLoading, hasCompletedOnboarding } = useAuth();
 
   if (isAuthLoading) {
     return <LoadingSpinner />;
   }
 
-  if (user?.isOnboardingCompleted) {
+  if (hasCompletedOnboarding) {
     alert('온보딩이 이미 완료되었습니다.');
     return <Navigate to={ROUTES.home} replace />;
   }

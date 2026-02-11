@@ -9,13 +9,13 @@ import { ROUTES } from '@/constants/routes';
  - 온보딩 미완료 시 온보딩 페이지로 리다이렉트
 */
 export const OnboardingCompletedGuard = () => {
-  const { user, isAuthLoading } = useAuth();
+  const { isAuthLoading, hasCompletedOnboarding } = useAuth();
 
   if (isAuthLoading) {
     return <LoadingSpinner />;
   }
 
-  if (!user?.isOnboardingCompleted) {
+  if (!hasCompletedOnboarding) {
     alert('온보딩을 완료한 후 이용해주세요.');
     return <Navigate to={ROUTES.onboarding.lifestyle} replace />;
   }
