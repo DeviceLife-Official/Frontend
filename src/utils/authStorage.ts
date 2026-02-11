@@ -23,21 +23,26 @@ const getTokenStorage = (): Storage => {
 
 /*
 액세스 토큰 저장 함수
+ * Cross-Contamination 방지: 토큰은 한 군데에만 존재. 반대편 저장소 토큰은 반드시 삭제.
  * @param accessToken - 액세스 토큰
- * @param keepLogin 
+ * @param keepLogin
  * - true: localStorage(영속), false: sessionStorage(세션), undefined: 기존 저장소 유지(토큰 갱신 시)
  */
 export const setAccessToken = (accessToken: string, keepLogin?: boolean): void => {
   if (keepLogin === true) {
     localStorage.setItem(ACCESS_TOKEN, accessToken);
     localStorage.setItem(AUTH_STORAGE, 'local');
+    sessionStorage.removeItem(ACCESS_TOKEN);
   } else if (keepLogin === false) {
     sessionStorage.setItem(ACCESS_TOKEN, accessToken);
     localStorage.setItem(AUTH_STORAGE, 'session');
+    localStorage.removeItem(ACCESS_TOKEN);
   } else {
-    // 토큰 갱신 시: 기존 저장소에 덮어쓰기
+    // 토큰 갱신 시: 기존 저장소에 덮어쓰기 + 반대편 삭제
     const storage = getTokenStorage();
     storage.setItem(ACCESS_TOKEN, accessToken);
+    const oppositeStorage = storage === localStorage ? sessionStorage : localStorage;
+    oppositeStorage.removeItem(ACCESS_TOKEN);
   }
 };
 
