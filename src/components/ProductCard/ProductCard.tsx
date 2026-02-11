@@ -12,7 +12,15 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
       onClick={onClick}
     >
       {/* Image - 정사각형 */}
-      <div className="w-full aspect-square bg-gray-200 mb-20" />
+      <div className="w-full aspect-square bg-gray-200 mb-20 overflow-hidden relative">
+        {product.image ? (
+          <img
+            src={product.image}
+            alt={product.name}
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+        ) : null}
+      </div>
 
       {/* Content */}
       <div className="flex flex-col gap-16">
