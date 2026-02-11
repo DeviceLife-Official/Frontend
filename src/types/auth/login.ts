@@ -4,6 +4,7 @@ import type { CommonResponse } from '@/types/common';
 export type LoginRequest = {
   email: string;
   password: string;
+  keepLogin?: boolean;
 };
 
 // 로그인 응답 result 타입
