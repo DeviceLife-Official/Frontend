@@ -61,14 +61,24 @@ const getSortType = (sortOption: string) => {
 };
 
 // SearchDevice를 Product 형식으로 변환
-const mapSearchDeviceToProduct = (device: SearchDevice) => ({
-  id: device.deviceId,
-  name: `${device.brandName ?? ''} ${device.name ?? ''}`.trim(),
-  category: device.deviceType ?? '',
-  price: device.price ?? 0,
-  image: device.imageUrl ?? null,
-  colors: [] as string[],
-});
+const mapSearchDeviceToProduct = (device: SearchDevice) => {
+  const brandName = device.brandName ?? '';
+  const deviceName = device.name ?? '';
+
+  // device.name이 이미 brandName으로 시작하면 중복 방지
+  const fullName = deviceName.startsWith(brandName)
+    ? deviceName
+    : `${brandName} ${deviceName}`.trim();
+
+  return {
+    id: device.deviceId,
+    name: fullName,
+    category: device.deviceType ?? '',
+    price: device.price ?? 0,
+    image: device.imageUrl ?? null,
+    colors: [] as string[],
+  };
+};
 
 const DeviceSearchPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
