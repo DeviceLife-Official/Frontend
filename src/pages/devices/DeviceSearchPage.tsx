@@ -595,6 +595,14 @@ const DeviceSearchPage = () => {
                               <p>원</p>
                             </div>
                           </div>
+                          {selectedDevice?.specifications?.screenInch && (
+                            <div className="flex items-center gap-24">
+                              <p className="font-body-2-r text-gray-400 w-80">인치</p>
+                              <p className="font-body-2-r text-black">
+                                {selectedDevice.specifications.screenInch}
+                              </p>
+                            </div>
+                          )}
                           {selectedDevice?.specifications?.chargingPort && (
                             <div className="flex items-center gap-24">
                               <p className="font-body-2-r text-gray-400 w-80">충전방식</p>
