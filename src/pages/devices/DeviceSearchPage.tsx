@@ -448,11 +448,12 @@ const DeviceSearchPage = () => {
 
         {/* Product Grid */}
         <div ref={productGridRef} className="mx-auto px-120 2xl:px-160">
-          {isSearchLoading ? (
+          {/* 초기 로딩: 데이터가 없고 로딩 중일 때만 로딩 메시지 표시 */}
+          {isSearchLoading && allDevices.length === 0 ? (
             <div className="flex justify-center items-center py-100">
               <p className="font-body-1-r text-gray-400">로딩 중...</p>
             </div>
-          ) : isSearchError ? (
+          ) : isSearchError && allDevices.length === 0 ? (
             <div className="flex justify-center items-center py-100">
               <p className="font-body-1-r text-red-500">검색 결과를 불러오는데 실패했습니다.</p>
             </div>
