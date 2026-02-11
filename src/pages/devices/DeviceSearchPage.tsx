@@ -7,6 +7,7 @@ import CombinationDeviceCard from '@/components/Combination/CombinationDeviceCar
 import ProductLife from '@/components/ProductCard/ProductLife';
 import FilterDropdown from '@/components/Filter/FilterDropdown';
 import SortDropdown from '@/components/Filter/SortDropdown';
+import LoadingSpinner from '@/components/LoadingSpinner';
 import SearchIcon from '@/assets/icons/search.svg?react';
 import FilterIcon from '@/assets/icons/filter.svg?react';
 import TopIcon from '@/assets/icons/top.svg?react';
@@ -458,11 +459,9 @@ const DeviceSearchPage = () => {
 
         {/* Product Grid */}
         <div ref={productGridRef} className="mx-auto px-120 2xl:px-160">
-          {/* 초기 로딩: 데이터가 없고 로딩 중일 때만 로딩 메시지 표시 */}
+          {/* 초기 로딩: 데이터가 없고 로딩 중일 때만 로딩 스피너 표시 */}
           {isSearchLoading && allDevices.length === 0 ? (
-            <div className="flex justify-center items-center py-100">
-              <p className="font-body-1-r text-gray-400">로딩 중...</p>
-            </div>
+            <LoadingSpinner />
           ) : isSearchError && allDevices.length === 0 ? (
             <div className="flex justify-center items-center py-100">
               <p className="font-body-1-r text-red-500">검색 결과를 불러오는데 실패했습니다.</p>
@@ -492,7 +491,7 @@ const DeviceSearchPage = () => {
           {/* 로딩 인디케이터 */}
           {isFetchingNextPage && (
             <div className="flex justify-center py-40">
-              <p className="font-body-1-r text-gray-400">더 불러오는 중...</p>
+              <LoadingSpinner />
             </div>
           )}
         </div>
