@@ -25,8 +25,8 @@ const GoogleCallbackPage = () => {
         const accessToken = refreshResponse?.result?.accessToken;
         if (!accessToken) throw new Error('액세스 토큰을 받지 못했습니다.');
 
-        // 2) accessToken 저장 + 유저 캐시 세팅 (OAuth는 체크박스 없음 → keepLogin: false)
-        await finalizeLogin(accessToken, queryClient, false);
+        // 2) accessToken 저장 + 유저 캐시 세팅 (OAuth는 로그인 상태 유지로 처리 -> local 저장)
+        await finalizeLogin(accessToken, queryClient, true);
 
         // 3) 캐시에서 유저 꺼내서 분기
         const user = queryClient.getQueryData<UserProfileResult>([
