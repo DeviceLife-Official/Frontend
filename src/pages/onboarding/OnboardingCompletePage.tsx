@@ -2,21 +2,21 @@ import { useEffect, useState } from 'react';
 import { useNavigate, Navigate } from 'react-router-dom';
 import OnboardingLines from '@/assets/icons/onboarding_lines.svg?react';
 import LoadingSpinner from '@/components/LoadingSpinner';
-import { useGetUserProfile } from '@/apis/mypage/getUserProfile';
+import { useAuth } from '@/hooks/useAuth';
 import { usePostOnboardingComplete } from '@/apis/onboarding/postComplete';
 import { ROUTES } from '@/constants/routes';
 
 const OnboardingCompletePage = () => {
   const navigate = useNavigate();
-  const { data: userProfile, isLoading: isProfileLoading } = useGetUserProfile();
+  const { user, isAuthLoading } = useAuth();
   const { mutateAsync: completeOnboarding } = usePostOnboardingComplete();
   const [isCompleted, setIsCompleted] = useState(false);
-  const userName = userProfile?.username ?? '';
+  const userName = user?.username ?? '';
 
-  // 검증 조건(온보딩 과정 스킵하고 바로 들어오는 유저 대비비)
-  const isAlreadyCompleted = userProfile?.isOnboardingCompleted;
-  const hasNoLifestyleTags = !userProfile?.lifestyleList?.length;
-  const shouldSkipApiCall = isProfileLoading || isAlreadyCompleted || hasNoLifestyleTags;
+  // 검증 조건(온보딩 과정 스킵하고 바로 들어오는 유저 대비)
+  const isAlreadyCompleted = user?.isOnboardingCompleted;
+  const hasNoLifestyleTags = !user?.lifestyleList?.length;
+  const shouldSkipApiCall = isAuthLoading || isAlreadyCompleted || hasNoLifestyleTags;
 
   // 페이지 진입 시 온보딩 완료 API 호출 (검증 통과 시에만)
   useEffect(() => {
@@ -46,7 +46,7 @@ const OnboardingCompletePage = () => {
   }, [isCompleted, navigate]);
 
   // 프로필 로딩 중이면 로딩 스피너 표시
-  if (isProfileLoading) {
+  if (isAuthLoading) {
     return <LoadingSpinner />;
   }
 

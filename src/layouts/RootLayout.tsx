@@ -3,7 +3,7 @@ import { Outlet } from 'react-router-dom';
 import { useGetUserProfile } from '@/apis/mypage/getUserProfile';
 
 const RootLayout = () => {
-  // 토큰이 있을 때만 유저 정보 자동 조회
+  // 레이아웃에서 유저 프로필 조회 트리거 (나머지 컴포넌트는 useAuth로 구독)
   useGetUserProfile();
 
   return (

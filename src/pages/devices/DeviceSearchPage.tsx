@@ -29,9 +29,9 @@ import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
 import { useGetCombos } from '@/apis/combo/getCombos';
 import { useGetCombo } from '@/apis/combo/getComboId';
 import { usePostComboDevice } from '@/apis/combo/postComboDevices';
-import { useGetUserProfile } from '@/apis/mypage/getUserProfile';
+import { useAuth } from '@/hooks/useAuth';
 import { useGetBrands } from '@/apis/devices/getBrands';
-import { hasAccessToken, hasCompletedOnboarding } from '@/utils/authStorage';
+import { hasCompletedOnboarding } from '@/utils/authStorage';
 
 // 카테고리 ID를 API deviceType으로 변환
 const getCategoryDeviceType = (categoryId: number | null): string | undefined => {
@@ -85,14 +85,11 @@ const DeviceSearchPage = () => {
   const selectedProductId = searchParams.get('productId');
   const navigate = useNavigate();
 
-  // 로그인 상태 확인
-  const isLoggedIn = hasAccessToken();
-
-  // 사용자 프로필 조회 (로그인 시에만 자동 실행)
-  const { data: userProfile, isLoading: isProfileLoading } = useGetUserProfile();
+  // 인증 상태 (RootLayout에서 트리거, 여기서는 구독)
+  const { isLoggedIn, user, isAuthLoading } = useAuth();
 
   // 온보딩 완료 여부 확인 (로딩 중에는 false로 기본 처리)
-  const hasOnboarding = isProfileLoading ? false : hasCompletedOnboarding(userProfile);
+  const hasOnboarding = isAuthLoading ? false : hasCompletedOnboarding(user ?? undefined);
 
   const [modalView, setModalView] = useState<ModalView>('device');
 
@@ -628,7 +625,7 @@ const DeviceSearchPage = () => {
                       <PrimaryButton
                         text={addToCombinationConfig.text}
                         onClick={addToCombinationConfig.handler}
-                        disabled={isProfileLoading}
+                        disabled={isAuthLoading}
                         className="w-full bg-blue-500 hover:bg-blue-400 transition-colors"
                       />
                     </div>

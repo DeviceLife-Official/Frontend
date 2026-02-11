@@ -11,14 +11,14 @@ import {
 } from '@/schemas/authSchema';
 import { ROUTES } from '@/constants/routes';
 import { usePostCreateCombination } from '@/apis/combo/postCreateCombination';
-import { useGetUserProfile } from '@/apis/mypage/getUserProfile';
+import { useAuth } from '@/hooks/useAuth';
 
 const OnboardingCombinationPage = () => {
   const [step, setStep] = useState(1);
   const [combinationName, setCombinationName] = useState('');
   const navigate = useNavigate();
   const { mutateAsync: createCombo, isPending } = usePostCreateCombination();
-  const { data: userProfile, isLoading: isProfileLoading } = useGetUserProfile();
+  const { user, isAuthLoading } = useAuth();
 
   const {
     register,
@@ -30,12 +30,12 @@ const OnboardingCombinationPage = () => {
   });
 
   // 프로필 초기 로딩 중이면 로딩 스피너 표시
-  if (isProfileLoading) {
+  if (isAuthLoading) {
     return <LoadingSpinner />;
   }
 
   // 라이프스타일 태그가 없으면 라이프스타일 선택 페이지로 리다이렉트
-  if (!userProfile?.lifestyleList?.length) {
+  if (!user?.lifestyleList?.length) {
     return <Navigate to={ROUTES.onboarding.lifestyle} replace />;
   }
 

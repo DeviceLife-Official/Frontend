@@ -6,7 +6,7 @@ import type { UserProfileResult } from '@/types/mypage/user';
 export type UserProfile = UserProfileResult;
 
 /*
-인증 상태를 관리하는 훅
+인증 상태를 관리하는 훅 (RootLayout에서 트리거한 user profile 쿼리 구독)
 
 로그인 여부 판단 로직:
  - 토큰이 있고 userProfile이 있을 때만 → 로그인 상태
