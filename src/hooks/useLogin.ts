@@ -23,7 +23,7 @@ export const useLogin = () => {
     await finalizeLogin(
       res.result.accessToken,
       queryClient,
-      credentials.keepLogin,
+      credentials.keepLogin ?? false,
     );
   };
 
