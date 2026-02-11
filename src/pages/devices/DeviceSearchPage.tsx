@@ -561,6 +561,13 @@ const DeviceSearchPage = () => {
                     <div className="flex items-start gap-56">
                       {/* Image */}
                       <div className="w-400 h-400 bg-gray-200 relative">
+                        {selectedProduct.image ? (
+                          <img
+                            src={selectedProduct.image}
+                            alt={selectedProduct.name}
+                            className="absolute inset-0 w-full h-full object-contain"
+                          />
+                        ) : null}
                       </div>
 
                       {/* Right Section - Specs */}
