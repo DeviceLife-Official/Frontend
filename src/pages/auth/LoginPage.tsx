@@ -53,6 +53,7 @@ const LoginPage = () => {
       await loginAndFinalize({
         email: data.email,
         password: data.password,
+        keepLogin,
       });
 
       // 로그인 성공 시 라우팅

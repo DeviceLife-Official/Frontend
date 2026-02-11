@@ -6,6 +6,7 @@ import SecondaryButton from '@/components/Button/SecondaryButton';
 import SortDropdown from '@/components/Filter/SortDropdown';
 import RoundedLifestyleTag from '@/components/Lifestyle/RoundedLifestyleTag';
 import RecentlyViewedFloating from '@/components/RecentlyViewed/RecentlyViewedFloating';
+import CombinationEvaluationCard from '@/components/Combination/CombinationEvaluationCard';
 import SettingIcon from '@/assets/icons/setting.svg?react';
 import SupportIcon from '@/assets/icons/support.svg?react';
 import SettingMoreIcon from '@/assets/icons/settingmore.svg?react';
@@ -28,27 +29,12 @@ import { usePutCombo } from '@/apis/combo/putCombos';
 import { useDeleteCombo } from '@/apis/combo/deleteCombo';
 import { usePostComboPin } from '@/apis/combo/postComboPin';
 import { useDeleteComboDevice } from '@/apis/combo/deleteComboDevice';
+import { useComboEvaluation } from '@/apis/combo/getComboEvaluation';
 import type { ComboListItem } from '@/types/combo/combo';
 import { useAuth } from '@/hooks/useAuth';
-
-// 조합 평가 Mock 데이터
-const MOCK_EVALUATION = {
-  connectivity: {
-    rating: '최상',
-    description: 'Apple 기기 간의 연동성이 완벽합니다. AirDrop, Handoff, Universal Control 등의 기능을 자유롭게 사용할 수 있습니다.',
-    tags: ['AirDrop', 'Handoff', 'Universal Control', 'iCloud 동기화'],
-  },
-  convenience: {
-    rating: '최상',
-    description: '모든 기기가 USB-C 포트를 사용합니다. 하나의 충전기와 케이블로 모든 기기를 충전할 수 있습니다.',
-    tags: ['USB-C', 'N개 기기 해당'],
-  },
-  lifestyle: {
-    rating: '최상',
-    description: '모든 기기가 USB-C 포트를 사용합니다. 하나의 충전기와 케이블로 모든 기기를 충전할 수 있습니다.',
-    tags: ['#Game'],
-  },
-};
+import { mapEvaluationToUI } from '@/utils/mapEvaluationToUI';
+import type { LifestyleKey } from '@/constants/evaluation/lifestyle';
+import type { CombinationName } from '@/constants/combination';
 
 const MYPAGE_SORT_OPTIONS = [
   { value: 'latest', label: '최근생성순' },
@@ -100,6 +86,20 @@ const MyPage = () => {
   const { mutate: togglePin } = usePostComboPin();
   const { mutate: deleteDevice, isPending: isDeletingDevice } = useDeleteComboDevice();
   const { user: userProfile, isAuthLoading } = useAuth();
+  const { data: evaluation, isLoading: isEvaluationLoading } = useComboEvaluation(detailViewComboId ?? undefined);
+
+  // 유저 라이프스타일 태그 → LifestyleKey 변환 ("# Office" → "Office")
+  const lifestyleKey = useMemo<LifestyleKey | undefined>(() => {
+    const raw = userProfile?.lifestyleList?.[0];
+    if (!raw) return undefined;
+    return raw.replace(/^#\s*/, '') as LifestyleKey;
+  }, [userProfile]);
+
+  // 평가 데이터 → UI 카드 props 변환
+  const evaluationCards = useMemo(() => {
+    if (!evaluation) return null;
+    return mapEvaluationToUI(evaluation, lifestyleKey);
+  }, [evaluation, lifestyleKey]);
 
   // 정렬된 조합 목록
   const sortedCombos = useMemo(() => {
@@ -909,88 +909,40 @@ const MyPage = () => {
                           </div>
                         </div>
 
-                        {/* 구분선 */}
-                        <div className="mx-44 border-t border-gray-300" />
+                        {/* 구분선 + 조합 평가 정보 (로딩 중에는 숨김) */}
+                        {!isEvaluationLoading && (
+                          <>
+                            <div className="mx-44 border-t border-gray-300" />
 
-                        {/* 조합 평가 정보 */}
-                        <div className="px-56 py-56">
-                          <div className="flex items-center justify-end gap-16 mb-32">
-                            <p className="font-body-2-r text-gray-400 underline">
-                              조합평가 전문보기
-                            </p>
-                          </div>
-
-                          <div className="flex flex-col gap-20">
-                            {/* 연동성 */}
-                            <div className="bg-white rounded-card px-42 py-30 flex flex-col gap-30">
-                              <div className="flex items-center gap-16">
-                                <p className="font-heading-4 text-black">연동성:</p>
-                                <p className="font-heading-4 text-blue-600">
-                                  {MOCK_EVALUATION.connectivity.rating}
+                            <div className="px-56 py-56">
+                              <div className="flex items-center justify-end gap-16 mb-32">
+                                <p className="font-body-2-r text-gray-400 underline">
+                                  조합평가 전문보기
                                 </p>
                               </div>
-                              <p className="font-body-3-r text-black leading-28">
-                                {MOCK_EVALUATION.connectivity.description}
-                              </p>
-                              <div className="flex gap-8 -ml-4">
-                                {MOCK_EVALUATION.connectivity.tags.map((tag) => (
-                                  <span
-                                    key={tag}
-                                    className="bg-blue-200 text-blue-700 font-body-2-sm px-12 py-8 rounded-full"
-                                  >
-                                    {tag}
-                                  </span>
-                                ))}
-                              </div>
-                            </div>
 
-                            {/* 편의성 */}
-                            <div className="bg-white rounded-card px-42 py-30 flex flex-col gap-30">
-                              <div className="flex items-center gap-16">
-                                <p className="font-heading-4 text-black">편의성:</p>
-                                <p className="font-heading-4 text-blue-600">
-                                  {MOCK_EVALUATION.convenience.rating}
-                                </p>
-                              </div>
-                              <p className="font-body-3-r text-black leading-28">
-                                {MOCK_EVALUATION.convenience.description}
-                              </p>
-                              <div className="flex gap-8 -ml-4">
-                                {MOCK_EVALUATION.convenience.tags.map((tag) => (
-                                  <span
-                                    key={tag}
-                                    className="bg-[#bdf8e1] text-[#00719f] font-body-2-sm px-12 py-8 rounded-full"
-                                  >
-                                    {tag}
-                                  </span>
-                                ))}
+                              <div className="flex flex-col gap-20">
+                                {evaluationCards ? (
+                                  evaluationCards.map((card) => (
+                                    <CombinationEvaluationCard
+                                      key={card.category}
+                                      category={card.category as CombinationName}
+                                      grade={card.grade}
+                                      description={card.text}
+                                      tags={card.tags}
+                                    />
+                                  ))
+                                ) : (
+                                  <div className="bg-white rounded-card px-42 py-30 flex items-center justify-center">
+                                    <p className="font-body-3-r text-gray-400">
+                                      조합 평가 정보가 아직 준비되지 않았습니다.
+                                    </p>
+                                  </div>
+                                )}
                               </div>
                             </div>
-
-                            {/* 라이프스타일 */}
-                            <div className="bg-white rounded-card px-42 py-30 flex flex-col gap-30">
-                              <div className="flex items-center gap-16">
-                                <p className="font-heading-4 text-black">라이프스타일:</p>
-                                <p className="font-heading-4 text-blue-600">
-                                  {MOCK_EVALUATION.lifestyle.rating}
-                                </p>
-                              </div>
-                              <p className="font-body-3-r text-black leading-28">
-                                {MOCK_EVALUATION.lifestyle.description}
-                              </p>
-                              <div className="flex gap-8 -ml-4">
-                                {MOCK_EVALUATION.lifestyle.tags.map((tag) => (
-                                  <span
-                                    key={tag}
-                                    className="bg-[#fee8c3] text-[#fb7104] font-body-2-sm px-12 py-8 rounded-full"
-                                  >
-                                    {tag}
-                                  </span>
-                                ))}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
+                          </>
+                        )}
                       </div>
                     ) : (
                       /* 일반 모드 */

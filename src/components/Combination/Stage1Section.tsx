@@ -9,7 +9,7 @@ const Stage1Section = () => {
           <p className="font-body-4-sm text-black text-center">
             나만의 기기 조합을 만들어보세요! <br /> 조합명을 입력하고, 조합 생성하기 버튼을 누르면
             <br />
-            나만의 조합이 생성돼요!
+            나만의 조합이 생성됩니다.
           </p>
         </div>
         <Stage1 className="w-236 h-60" />
