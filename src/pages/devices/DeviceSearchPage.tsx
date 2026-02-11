@@ -52,9 +52,7 @@ const DeviceSearchPage = () => {
     <div className={`min-h-screen bg-white relative max-w-[100vw] overflow-x-hidden ${scroll.isAtBottom ? 'bg-effect-fade-bottom' : ''}`}>
       <GNB />
 
-      {/* Main Content */}
-      {/* <div className="pt-108"> */}
-        {/* Search Bar */}
+      {/* Search Bar */}
         <div className="flex justify-center pt-80">
           <div className="w-600 h-72 bg-blue-100 rounded-button px-12 py-20 flex items-center gap-12">
             <SearchIcon className="w-28 h-28 flex-shrink-0 text-black" />
@@ -131,7 +129,7 @@ const DeviceSearchPage = () => {
             </div>
           </div>
 
-            <div className="flex items-center justify-between pt-80">
+          <div className="flex items-center justify-between pt-80">
             {/* Left side - Result count */}
             <div className="flex items-center gap-2">
               <p className="font-body-1-sm text-black">{search.allDevices.length}</p>
@@ -199,8 +197,6 @@ const DeviceSearchPage = () => {
 
         {/* Bottom Spacing */}
         <div className="h-268" />
-      {/* </div> */}
-
       {/* Device Detail Modal */}
       {selectedProduct && !combo.showSaveCompleteModal && (
         <>
