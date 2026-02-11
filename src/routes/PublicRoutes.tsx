@@ -75,18 +75,6 @@ export const PublicRoutes = {
       ],
     },
 
-    // 푸터 페이지들
-    // {
-    //   path: 'support',
-    //   children: [
-    //     { path: 'customer-center', element: <CustomerCenterPage /> },
-    //     { path: 'faq', element: <FaqPage /> },
-    //     { path: 'notices', element: <NoticesPage /> },
-    //     { path: 'terms', element: <TermsPage /> },
-    //     { path: 'privacy-policy', element: <PrivacyPolicyPage /> },
-    //   ],
-    // },
-
     // 전체 미매칭 fallback
     { path: '*', element: <NotFoundPage /> },
   ],
