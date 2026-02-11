@@ -35,6 +35,7 @@
 
   /* sub2 (tag status color) */
   --color-optimal: #0069f0; /* 최적 */
+  --color-good: #6f46a4; /* 양호 */
   --color-normal: #009f96; /* 보통 */
   --color-poor: #e6284b; /* 미흡 */
 

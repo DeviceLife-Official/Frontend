@@ -1,5 +1,5 @@
 export const COMBINATION_NAMES = ['연동성', '편의성', '라이프스타일'] as const;
-export const COMBINATION_STATUSES = ['최적', '보통', '미흡', '-'] as const;
+export const COMBINATION_STATUSES = ['최적', '양호', '보통', '미흡', '-'] as const;
 
 export type CombinationName = (typeof COMBINATION_NAMES)[number];
 export type CombinationStatus = (typeof COMBINATION_STATUSES)[number];
@@ -12,6 +12,7 @@ export const COMBINATION_NAME_STYLE_MAP: Record<CombinationName, string> = {
 
 export const COMBINATION_STATUS_STYLE_MAP: Record<CombinationStatus, string> = {
   최적: 'font-caption-sm text-optimal',
+  양호: 'font-caption-sm text-good',
   보통: 'font-caption-sm text-normal',
   미흡: 'font-caption-sm text-poor',
   '-': 'font-caption-sm text-optimal',

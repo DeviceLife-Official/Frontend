@@ -111,7 +111,7 @@ const OnboardingRecommendationPage = () => {
             )}
             {/* 서브 타이틀 */}
             <p className="font-body-2-r text-blue-600 text-center w-full">
-              버튼을 눌러 방금 생성한 내 조합에 바로 담을 수 있어요!
+              버튼을 눌러 방금 생성한 내 조합에 바로 담을 수 있습니다.
             </p>
           </div>
 
