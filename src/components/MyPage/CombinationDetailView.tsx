@@ -44,6 +44,7 @@ interface CombinationDetailViewProps {
   onSelectAll: (deviceIds: number[]) => void;
   onSelectDevice: (deviceId: number) => void;
   onTrashClick: () => void;
+  onSaveScrollBeforeNavigate: () => void;
 }
 
 const CombinationDetailView = ({
@@ -61,6 +62,7 @@ const CombinationDetailView = ({
   onSelectAll,
   onSelectDevice,
   onTrashClick,
+  onSaveScrollBeforeNavigate,
 }: CombinationDetailViewProps) => {
   const navigate = useNavigate();
   const [hoveredStarComboId, setHoveredStarComboId] = useState<number | null>(null);
@@ -194,6 +196,7 @@ const CombinationDetailView = ({
           <button
             onClick={(e) => {
               e.stopPropagation();
+              onSaveScrollBeforeNavigate();
               navigate('/devices');
             }}
             className="cursor-pointer hover:opacity-80"

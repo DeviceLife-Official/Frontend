@@ -134,6 +134,7 @@ const EmptyCombinationCard = ({
         <button
           onClick={(e) => {
             e.stopPropagation();
+            sessionStorage.setItem('mypage-scroll', window.scrollY.toString());
             navigate('/devices');
           }}
           className="cursor-pointer hover:opacity-80"

@@ -86,6 +86,19 @@ const MyPage = () => {
     return () => mediaQuery.removeEventListener('change', handleChange);
   }, []);
 
+  // 페이지 마운트 시 sessionStorage에서 스크롤 위치 복원
+  useEffect(() => {
+    const savedScroll = sessionStorage.getItem('mypage-scroll');
+    if (savedScroll) {
+      const scrollPosition = parseInt(savedScroll, 10);
+      // 약간의 지연을 두어 DOM이 완전히 렌더링된 후 스크롤
+      setTimeout(() => {
+        window.scrollTo(0, scrollPosition);
+      }, 0);
+      sessionStorage.removeItem('mypage-scroll');
+    }
+  }, []);
+
   // 드롭다운 외부 클릭 시 닫기
   const handleClickOutside = useCallback(() => setOpenMenuIndex(null), []);
   useClickOutside(menuRef, handleClickOutside);
@@ -208,6 +221,11 @@ const MyPage = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
 
+  // 자세히보기에서 + 버튼 클릭 시: 이미 저장된 스크롤 위치를 sessionStorage에 저장
+  const handleSaveScrollBeforeNavigate = useCallback(() => {
+    sessionStorage.setItem('mypage-scroll', savedScrollPosition.toString());
+  }, [savedScrollPosition]);
+
   return (
     <div className={`min-h-screen bg-white relative ${isAtBottom ? 'bg-effect-fade-bottom' : ''}`}>
       <GNB />
@@ -270,6 +288,7 @@ const MyPage = () => {
             handleBackToNormal={handleBackToNormal}
             handleTogglePin={handleTogglePin}
             handleTrashClick={handleTrashClick}
+            handleSaveScrollBeforeNavigate={handleSaveScrollBeforeNavigate}
           />
 
           {/* Top Button */}
