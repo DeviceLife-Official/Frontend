@@ -30,6 +30,7 @@ import { useDeviceSelection } from '@/hooks/useDeviceSelection';
 import { useCombinationSort } from '@/hooks/useCombinationSort';
 import { useCombinationEdit } from '@/hooks/useCombinationEdit';
 import { useClickOutside } from '@/hooks/useClickOutside';
+import { useModalScrollLock } from '@/hooks/useModalScrollLock';
 import { mapEvaluationToUI } from '@/utils/mapEvaluationToUI';
 import { MYPAGE_SORT_OPTIONS } from '@/constants/combination';
 import type { LifestyleKey } from '@/constants/evaluation/lifestyle';
@@ -115,48 +116,13 @@ const MyPage = () => {
   useClickOutside(menuRef, () => setOpenMenuIndex(null));
 
   // 모달 열릴 때 배경 스크롤 방지
-  useEffect(() => {
-    const isAnyModalOpen =
-      modals.showDeleteModal ||
-      modals.showCombinationDeleteModal ||
-      modals.showSaveModal ||
-      modals.showDeleteSuccessModal ||
-      modals.showSaveSuccessModal;
-
-    if (isAnyModalOpen) {
-      const scrollY = window.scrollY;
-      document.body.style.position = 'fixed';
-      document.body.style.top = `-${scrollY}px`;
-      document.body.style.width = '100%';
-      document.body.style.overflow = 'hidden';
-    } else {
-      const scrollY = document.body.style.top;
-      document.body.style.position = '';
-      document.body.style.top = '';
-      document.body.style.width = '';
-      document.body.style.overflow = '';
-      if (scrollY) {
-        window.scrollTo(0, parseInt(scrollY || '0') * -1);
-      }
-    }
-
-    return () => {
-      const scrollY = document.body.style.top;
-      document.body.style.position = '';
-      document.body.style.top = '';
-      document.body.style.width = '';
-      document.body.style.overflow = '';
-      if (scrollY) {
-        window.scrollTo(0, parseInt(scrollY || '0') * -1);
-      }
-    };
-  }, [
-    modals.showDeleteModal,
-    modals.showCombinationDeleteModal,
-    modals.showSaveModal,
-    modals.showDeleteSuccessModal,
-    modals.showSaveSuccessModal,
-  ]);
+  const isAnyModalOpen =
+    modals.showDeleteModal ||
+    modals.showCombinationDeleteModal ||
+    modals.showSaveModal ||
+    modals.showDeleteSuccessModal ||
+    modals.showSaveSuccessModal;
+  useModalScrollLock(isAnyModalOpen);
 
   // 자세히보기 클릭 핸들러
   const handleDetailView = (comboId: number) => {
