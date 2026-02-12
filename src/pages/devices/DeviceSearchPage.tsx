@@ -54,8 +54,9 @@ const DeviceSearchPage = () => {
     },
   });
 
-  /* 모달 열림 상태 확인 및 스크롤 잠금 (회색 배경이 보일 때와 동일한 조건) */
-  const isModalOpen = (!!selectedProduct && !combo.showSaveCompleteModal) || combo.showSaveCompleteModal;
+  /* 모달 열림 상태 확인 및 스크롤 잠금
+   * 기기 상세 모달 또는 저장 완료 모달이 열려있을 때 스크롤 잠금 */
+  const isModalOpen = !!selectedProduct || combo.showSaveCompleteModal;
 
   /* 모달 열림 상태에 따른 스크롤 lock/unlock */
   useLayoutEffect(() => {
