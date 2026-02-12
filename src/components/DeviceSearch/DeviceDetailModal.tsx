@@ -52,7 +52,7 @@ const DeviceDetailModal = ({
           <div className="w-400">
             {/* Name & Price */}
             <div className="flex flex-col gap-12">
-              <p className="font-heading-1 text-blue-600">{product.name}</p>
+              <p id="device-modal-title" className="font-heading-1 text-blue-600">{product.name}</p>
               <div className="flex items-center gap-8 font-heading-2 text-black">
                 <p>₩</p>
                 <p>{(product.price ?? 0).toLocaleString()}</p>

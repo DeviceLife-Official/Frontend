@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import type { Product } from '@/types/product';
 
 interface ProductCardProps {
@@ -5,7 +6,7 @@ interface ProductCardProps {
   onClick?: () => void;
 }
 
-const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
+const ProductCard: React.FC<ProductCardProps> = memo(({ product, onClick }) => {
   return (
     <div
       className="px-40 py-32 cursor-pointer group"
@@ -50,6 +51,8 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
       </div>
     </div>
   );
-};
+});
+
+ProductCard.displayName = 'ProductCard';
 
 export default ProductCard;

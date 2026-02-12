@@ -1,4 +1,4 @@
-import { useRef, useLayoutEffect } from 'react';
+import { useRef, useLayoutEffect, useCallback, useMemo, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import GNB from '@/components/Home/GNB';
 import ProductCard from '@/components/ProductCard/ProductCard';
@@ -33,6 +33,28 @@ const DeviceSearchPage = () => {
   const productGridRef = useRef<HTMLDivElement>(null);
   const scroll = useScrollState(productGridRef);
 
+  /* 카테고리 클릭 핸들러 */
+  const handleCategoryClick = useCallback((categoryId: number) => {
+    search.setSelectedCategory(
+      search.selectedCategory === categoryId ? null : categoryId
+    );
+  }, [search.selectedCategory, search.setSelectedCategory]);
+
+  /* 제품 클릭 핸들러 */
+  const handleProductClick = useCallback((deviceId: number) => {
+    searchParams.set('productId', deviceId.toString());
+    setSearchParams(searchParams);
+  }, [searchParams, setSearchParams]);
+
+  /* 변환된 제품 리스트 (useMemo로 캐싱) */
+  const products = useMemo(
+    () => search.allDevices.map(device => ({
+      product: mapSearchDeviceToProduct(device),
+      deviceId: device.deviceId,
+    })),
+    [search.allDevices]
+  );
+
   /* 선택된 제품 찾기 */
   const selectedDevice = selectedProductId
     ? search.allDevices.find(d => d.deviceId === Number(selectedProductId))
@@ -54,29 +76,36 @@ const DeviceSearchPage = () => {
     },
   });
 
-  /* 모달 열림 상태 확인 및 스크롤 잠금 (회색 배경이 보일 때와 동일한 조건) */
-  const isModalOpen = (!!selectedProduct && !combo.showSaveCompleteModal) || combo.showSaveCompleteModal;
+  /* 모달 열림 상태 확인 및 스크롤 잠금
+   * 기기 상세 모달 또는 저장 완료 모달이 열려있을 때 스크롤 잠금 */
+  const isModalOpen = !!selectedProduct || combo.showSaveCompleteModal;
 
-  /* selectedProductId가 null이 될 때 명시적으로 스크롤 unlock */
-  useLayoutEffect(() => {
-    if (selectedProductId === null) {
-      document.documentElement.style.overflow = '';
-      document.body.style.overflow = '';
-    }
-  }, [selectedProductId]);
-
-  /* 모달 열림 상태에 따른 스크롤 lock */
+  /* 모달 열림 상태에 따른 스크롤 lock/unlock */
   useLayoutEffect(() => {
     if (isModalOpen) {
       document.documentElement.style.overflow = 'hidden';
       document.body.style.overflow = 'hidden';
-
-      return () => {
-        document.documentElement.style.overflow = '';
-        document.body.style.overflow = '';
-      };
+    } else {
+      document.documentElement.style.overflow = '';
+      document.body.style.overflow = '';
     }
   }, [isModalOpen]);
+
+  /* ESC 키로 모달 닫기 */
+  useEffect(() => {
+    const handleEscapeKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && isModalOpen) {
+        combo.handleCloseModal();
+      }
+    };
+
+    if (isModalOpen) {
+      document.addEventListener('keydown', handleEscapeKey);
+      return () => {
+        document.removeEventListener('keydown', handleEscapeKey);
+      };
+    }
+  }, [isModalOpen, combo]);
 
   return (
     <div className={`min-h-screen bg-white relative max-w-[100vw] overflow-x-hidden ${scroll.isAtBottom ? 'bg-effect-fade-bottom' : ''}`}>
@@ -89,6 +118,7 @@ const DeviceSearchPage = () => {
             <input
               type="text"
               placeholder="기기명으로 검색"
+              aria-label="기기명으로 검색"
               value={search.searchQuery}
               onChange={(e) => search.setSearchQuery(e.target.value)}
               className="flex-1 bg-transparent font-body-1-r text-gray-500 outline-none placeholder:text-gray-500"
@@ -105,7 +135,7 @@ const DeviceSearchPage = () => {
               return (
                 <button
                   key={category.id}
-                  onClick={() => search.setSelectedCategory(search.selectedCategory === category.id ? null : category.id)}
+                  onClick={() => handleCategoryClick(category.id)}
                   className={`flex flex-col items-center gap-12 cursor-pointer transition-colors ${
                     category.id === 8 ? 'w-80' : 'w-110'
                   } ${
@@ -133,7 +163,10 @@ const DeviceSearchPage = () => {
           {/* Filters */}
           <div className="flex items-center gap-0">
             {/* Filter Icon */}
-            <button className="w-48 h-48 flex items-center justify-center">
+            <button
+              className="w-48 h-48 flex items-center justify-center"
+              aria-label="필터 옵션 표시"
+            >
               <FilterIcon className={`w-48 h-48 ${search.selectedPrice.length > 0 || search.selectedBrand !== null ? 'text-blue-600' : 'text-black'}`} />
             </button>
 
@@ -190,14 +223,11 @@ const DeviceSearchPage = () => {
             </div>
           ) : (
             <div className="grid grid-cols-3 2xl:grid-cols-4 gap-x-28 gap-y-164">
-              {search.allDevices.map((device) => (
+              {products.map(({ product, deviceId }) => (
                 <ProductCard
-                  key={device.deviceId}
-                  product={mapSearchDeviceToProduct(device)}
-                  onClick={() => {
-                    searchParams.set('productId', device.deviceId.toString());
-                    setSearchParams(searchParams);
-                  }}
+                  key={deviceId}
+                  product={product}
+                  onClick={() => handleProductClick(deviceId)}
                 />
               ))}
             </div>
@@ -234,10 +264,22 @@ const DeviceSearchPage = () => {
           <div
             className="fixed inset-0 bg-black/50 z-60"
             onClick={combo.handleCloseModal}
+            role="presentation"
+            aria-hidden="true"
           />
 
           {/* Modal */}
-          <div className="fixed inset-0 flex justify-center items-center z-72 pointer-events-none">
+          <div
+            className="fixed inset-0 flex justify-center items-center z-72 pointer-events-none"
+            role="dialog"
+            aria-modal="true"
+            {...(combo.modalView === 'device'
+              ? { 'aria-labelledby': 'device-modal-title' }
+              : combo.modalView === 'combination'
+              ? { 'aria-label': '조합 선택' }
+              : { 'aria-label': `${combo.selectedCombination?.comboName || '조합'} 상세` }
+            )}
+          >
             {combo.modalView === 'device' && (
               <DeviceDetailModal
                 product={selectedProduct}
