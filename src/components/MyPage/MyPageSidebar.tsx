@@ -1,4 +1,4 @@
-import { type RefObject } from 'react';
+import { type RefObject, memo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import RoundedLifestyleTag from '@/components/Lifestyle/RoundedLifestyleTag';
 import RecentlyViewedFloating from '@/components/RecentlyViewed/RecentlyViewedFloating';
@@ -85,4 +85,4 @@ const MyPageSidebar = ({ userProfile, isAuthLoading, sidebarContentRef }: MyPage
   );
 };
 
-export default MyPageSidebar;
+export default memo(MyPageSidebar);

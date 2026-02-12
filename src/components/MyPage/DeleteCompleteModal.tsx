@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import RemoveIcon from '@/assets/icons/remove.svg?react';
 
 interface DeleteCompleteModalProps {
@@ -28,4 +29,4 @@ const DeleteCompleteModal = ({ isFadingOut }: DeleteCompleteModalProps) => {
   );
 };
 
-export default DeleteCompleteModal;
+export default memo(DeleteCompleteModal);

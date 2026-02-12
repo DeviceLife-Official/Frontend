@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import RemoveIcon from '@/assets/icons/remove.svg?react';
 
 interface DeviceDeleteModalProps {
@@ -50,4 +51,4 @@ const DeviceDeleteModal = ({ isDeleting, onConfirm, onCancel }: DeviceDeleteModa
   );
 };
 
-export default DeviceDeleteModal;
+export default memo(DeviceDeleteModal);

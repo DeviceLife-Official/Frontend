@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, memo } from 'react';
 
 interface CombinationMenuProps {
   hasDevices: boolean;
@@ -65,4 +65,4 @@ const CombinationMenu = ({ hasDevices, onDelete, onRename, onDetail }: Combinati
   );
 };
 
-export default CombinationMenu;
+export default memo(CombinationMenu);

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, memo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import StarIcon from '@/assets/icons/star.svg?react';
 import StarXIcon from '@/assets/icons/starx.svg?react';
@@ -86,4 +86,4 @@ const EmptyCombinationCard = ({
   );
 };
 
-export default EmptyCombinationCard;
+export default memo(EmptyCombinationCard);

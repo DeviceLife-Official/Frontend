@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, memo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import BackIcon from '@/assets/icons/back.svg?react';
 import StarIcon from '@/assets/icons/star.svg?react';
@@ -241,4 +241,4 @@ const CombinationDetailView = ({
   );
 };
 
-export default CombinationDetailView;
+export default memo(CombinationDetailView);

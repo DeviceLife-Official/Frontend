@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, memo } from 'react';
 import StarIcon from '@/assets/icons/star.svg?react';
 import StarXIcon from '@/assets/icons/starx.svg?react';
 import StarHoverIcon from '@/assets/icons/starhover.svg?react';
@@ -168,4 +168,4 @@ const CombinationCard = ({
   );
 };
 
-export default CombinationCard;
+export default memo(CombinationCard);

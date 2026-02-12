@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import RemoveIcon from '@/assets/icons/remove.svg?react';
 
 interface CombinationDeleteModalProps {
@@ -58,4 +59,4 @@ const CombinationDeleteModal = ({
   );
 };
 
-export default CombinationDeleteModal;
+export default memo(CombinationDeleteModal);

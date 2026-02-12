@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import SaveIcon from '@/assets/icons/save.svg?react';
 
 interface SaveNameModalProps {
@@ -49,4 +50,4 @@ const SaveNameModal = ({ isSaving, onConfirm, onCancel }: SaveNameModalProps) =>
   );
 };
 
-export default SaveNameModal;
+export default memo(SaveNameModal);
