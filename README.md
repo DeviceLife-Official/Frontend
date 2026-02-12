@@ -2,6 +2,7 @@
 > 최적의 기기조합 웹 서비스
 > UMC 9th Project - Client Repository
 
+
 ## 📖 프로젝트 소개 (Project Overview)
 이 저장소는 최적의 기기 조합 추천 서비스 'Device Life'의 웹 클라이언트 코드를 관리합니다. 사용자가 수많은 스마트 기기 사이에서 자신에게 맞는 최적의 조합을 찾을 수 있도록, 직관적인 탐색 경험과 로직 기반의 실시간 평가 피드백을 제공하는 완성도 높은 UI/UX 구현에 집중합니다.
 
@@ -36,6 +37,7 @@
 | **DevOps** | ![Git](https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=git&logoColor=white) ![GitHub](https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white) ![Vercel](https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white) | Git/GitHub로 버전 관리 및 협업을 진행하고, Vercel로 배포 자동화 및 CI/CD 과정을 간소화했습니다. |
 | **Package Manager** | ![npm](https://img.shields.io/badge/npm-CB3837?style=for-the-badge&logo=npm&logoColor=white) | 표준 패키지 매니저(npm)를 사용하여 의존성 설치 및 관리를 수행했습니다. |
 | **Validation** | ![Zod](https://img.shields.io/badge/Zod-3E67B1?style=for-the-badge&logo=zod&logoColor=white) | Zod로 API 응답 및 폼 입력 값을 스키마 기반으로 검증해 런타임 오류를 줄이고 타입 안정성을 강화했습니다. |
+| **Collaboration** | ![Notion](https://img.shields.io/badge/Notion-000000?style=for-the-badge&logo=notion&logoColor=white) ![Figma](https://img.shields.io/badge/Figma-F24E1E?style=for-the-badge&logo=figma&logoColor=white) ![Discord](https://img.shields.io/badge/Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white) | Notion을 통한 문서화와 프로젝트 자료 관리, Figma 기반 디자인 협업, Discord를 활용한 실시간 커뮤니케이션으로 팀 협업 효율을 높였습니다. |
 
 
 ---
@@ -71,4 +73,9 @@
  
 ---
 
-## 📰 아티클 모음
+## 📰 아티클 모음 (Articles)
+
+| 이름      | 아티클 제목                                                                                                                                                                                                               |
+| --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 🍒 박유민 | [상태 기반 인터랙션 구현기](https://velog.io/@waldls/Frontend-%EC%83%81%ED%83%9C-%EA%B8%B0%EB%B0%98-%EC%9D%B8%ED%84%B0%EB%9E%99%EC%85%98-%EA%B5%AC%ED%98%84%EA%B8%B0)                                                                                                                                                                   |
+| 🍀 이선우 | [Device Life Auth 시스템 구현 회고](https://www.notion.so/Device-Life-Auth-305564e055eb8007a616fde7ddb853d7?source=copy_link)                                                                                                                                                          |
