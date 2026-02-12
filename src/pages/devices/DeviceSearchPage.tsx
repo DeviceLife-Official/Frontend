@@ -102,6 +102,7 @@ const DeviceSearchPage = () => {
             <input
               type="text"
               placeholder="기기명으로 검색"
+              aria-label="기기명으로 검색"
               value={search.searchQuery}
               onChange={(e) => search.setSearchQuery(e.target.value)}
               className="flex-1 bg-transparent font-body-1-r text-gray-500 outline-none placeholder:text-gray-500"
