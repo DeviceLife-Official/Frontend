@@ -57,24 +57,14 @@ const DeviceSearchPage = () => {
   /* 모달 열림 상태 확인 및 스크롤 잠금 (회색 배경이 보일 때와 동일한 조건) */
   const isModalOpen = (!!selectedProduct && !combo.showSaveCompleteModal) || combo.showSaveCompleteModal;
 
-  /* selectedProductId가 null이 될 때 명시적으로 스크롤 unlock */
-  useLayoutEffect(() => {
-    if (selectedProductId === null) {
-      document.documentElement.style.overflow = '';
-      document.body.style.overflow = '';
-    }
-  }, [selectedProductId]);
-
-  /* 모달 열림 상태에 따른 스크롤 lock */
+  /* 모달 열림 상태에 따른 스크롤 lock/unlock */
   useLayoutEffect(() => {
     if (isModalOpen) {
       document.documentElement.style.overflow = 'hidden';
       document.body.style.overflow = 'hidden';
-
-      return () => {
-        document.documentElement.style.overflow = '';
-        document.body.style.overflow = '';
-      };
+    } else {
+      document.documentElement.style.overflow = '';
+      document.body.style.overflow = '';
     }
   }, [isModalOpen]);
 
