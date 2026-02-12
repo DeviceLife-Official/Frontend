@@ -1,4 +1,4 @@
-import type { Product } from '@/constants/mockData';
+import type { Product } from '@/types/product';
 
 interface ProductCardProps {
   product: Product;

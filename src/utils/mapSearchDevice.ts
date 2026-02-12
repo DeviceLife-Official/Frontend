@@ -1,5 +1,5 @@
 import type { SearchDevice } from '@/types/devices';
-import type { Product } from '@/constants/mockData';
+import type { Product } from '@/types/product';
 
 // SearchDevice를 Product 형식으로 변환
 export const mapSearchDeviceToProduct = (device: SearchDevice): Product => {
