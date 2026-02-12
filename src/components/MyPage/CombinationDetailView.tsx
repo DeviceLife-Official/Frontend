@@ -19,6 +19,7 @@ interface Device {
   name: string;
   brandName?: string;
   deviceType?: string;
+  imageUrl?: string;
 }
 
 interface EvaluationCard {
@@ -151,7 +152,14 @@ const CombinationDetailView = ({
               onClick={() => window.open(`/devices?productId=${device.deviceId}`, '_blank')}
               className={`bg-white rounded-card shadow-[0_0_4px_rgba(0,0,0,0.1)] p-12 w-244 flex items-center gap-12 border cursor-pointer hover:shadow-[0_0_7px_#57a0ff] transition-shadow ${selectedDevices.includes(device.deviceId) ? 'border-blue-600' : 'border-transparent'}`}
             >
-              <div className="w-64 h-64 bg-gray-200 flex-shrink-0 relative group/image">
+              <div className="w-64 h-64 bg-gray-200 flex-shrink-0 relative group/image overflow-hidden">
+                {device.imageUrl && (
+                  <img
+                    src={device.imageUrl}
+                    alt={device.name}
+                    className="absolute inset-0 w-full h-full object-cover"
+                  />
+                )}
                 {/* 호버 오버레이 */}
                 <div className="absolute inset-0 bg-black/50 opacity-0 group-hover/image:opacity-100 transition-opacity flex items-center justify-center">
                   <span className="bg-white px-8 py-4 rounded-tag font-caption-r text-black">
