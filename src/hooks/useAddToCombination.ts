@@ -74,8 +74,10 @@ export const useAddToCombination = ({
     'LAPTOP': ['LAPTOP', '노트북'],
     'TABLET': ['TABLET', '태블릿'],
     'CHARGER': ['CHARGER', '충전기'],
-    'EARBUDS': ['EARBUDS', '이어버드'],
-    'WATCH': ['WATCH', '워치', '시계'],
+    'AUDIO': ['AUDIO', 'EARBUDS', '이어버드', '이어폰', '헤드폰', '이어폰/헤드폰'],
+    'SMARTWATCH': ['SMARTWATCH', 'WATCH', '워치', '시계', '스마트워치'],
+    'KEYBOARD': ['KEYBOARD', '키보드'],
+    'MOUSE': ['MOUSE', '마우스'],
   };
 
   const isSameDeviceType = (type1: string, type2: string): boolean => {
