@@ -12,7 +12,12 @@ interface EmptyCombinationCardProps {
   createdAt: string;
   isPinned: boolean;
   index: number;
+  isEditing: boolean;
+  editingName: string;
+  nameError: string | null;
   onTogglePin: (e: React.MouseEvent, comboId: number) => void;
+  onNameChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onNameBlur: (name: string) => void;
 }
 
 const EmptyCombinationCard = ({
@@ -21,7 +26,12 @@ const EmptyCombinationCard = ({
   createdAt,
   isPinned,
   index,
+  isEditing,
+  editingName,
+  nameError,
   onTogglePin,
+  onNameChange,
+  onNameBlur,
 }: EmptyCombinationCardProps) => {
   const navigate = useNavigate();
   const [hoveredStarComboId, setHoveredStarComboId] = useState<number | null>(null);
@@ -30,44 +40,93 @@ const EmptyCombinationCard = ({
     <div className="px-36 pt-24 pb-36">
       {/* 조합 정보 (생성일 포함) */}
       <div className="flex flex-col gap-24 pl-20 py-24">
-        {/* 조합 번호 + 생성일 + 조합명 */}
-        <div className="flex flex-col gap-8">
-          <div className="flex items-center gap-16">
-            <p className="font-body-4-r text-gray-400">조합{index + 1}</p>
-            <p className="font-body-4-r text-gray-400">생성일: {formatDate(createdAt)}</p>
-          </div>
-          <div className="flex items-center gap-8">
-            <p className="font-body-1-sm text-black">{comboName}</p>
-            {isPinned ? (
-              <StarIcon
-                onClick={(e) => onTogglePin(e, comboId)}
-                className={`!w-22 !h-22 -mt-3 cursor-pointer transition-opacity ${
-                  hoveredStarComboId === comboId ? 'opacity-80' : ''
+        {isEditing ? (
+          /* 수정 모드: 인풋박스 + 별 아이콘 + 에러 메시지 */
+          <div className="flex flex-col gap-8">
+            <div className="flex items-center gap-8 min-h-48">
+              <input
+                type="text"
+                value={editingName}
+                onChange={onNameChange}
+                onClick={(e) => e.stopPropagation()}
+                onBlur={() => onNameBlur(editingName)}
+                maxLength={20}
+                className={`h-52 px-12 rounded-button font-body-1-sm text-gray-300 focus:outline-none ${
+                  nameError ? 'border-2 border-warning' : 'border border-blue-600'
                 }`}
-                onMouseEnter={() => setHoveredStarComboId(comboId)}
-                onMouseLeave={() => setHoveredStarComboId(null)}
+                autoFocus
               />
-            ) : (
-              <>
-                {hoveredStarComboId === comboId ? (
-                  <StarHoverIcon
-                    onClick={(e) => onTogglePin(e, comboId)}
-                    className="!w-22 !h-22 -mt-3 cursor-pointer"
-                    onMouseEnter={() => setHoveredStarComboId(comboId)}
-                    onMouseLeave={() => setHoveredStarComboId(null)}
-                  />
-                ) : (
-                  <StarXIcon
-                    onClick={(e) => onTogglePin(e, comboId)}
-                    className="!w-22 !h-22 -mt-3 cursor-pointer"
-                    onMouseEnter={() => setHoveredStarComboId(comboId)}
-                    onMouseLeave={() => setHoveredStarComboId(null)}
-                  />
-                )}
-              </>
-            )}
+              {isPinned ? (
+                <StarIcon
+                  onClick={(e) => onTogglePin(e, comboId)}
+                  className={`!w-22 !h-22 -mt-2 cursor-pointer transition-opacity ${
+                    hoveredStarComboId === comboId ? 'opacity-80' : ''
+                  }`}
+                  onMouseEnter={() => setHoveredStarComboId(comboId)}
+                  onMouseLeave={() => setHoveredStarComboId(null)}
+                />
+              ) : (
+                <>
+                  {hoveredStarComboId === comboId ? (
+                    <StarHoverIcon
+                      onClick={(e) => onTogglePin(e, comboId)}
+                      className="!w-22 !h-22 -mt-2 cursor-pointer"
+                      onMouseEnter={() => setHoveredStarComboId(comboId)}
+                      onMouseLeave={() => setHoveredStarComboId(null)}
+                    />
+                  ) : (
+                    <StarXIcon
+                      onClick={(e) => onTogglePin(e, comboId)}
+                      className="!w-22 !h-22 -mt-2 cursor-pointer"
+                      onMouseEnter={() => setHoveredStarComboId(comboId)}
+                      onMouseLeave={() => setHoveredStarComboId(null)}
+                    />
+                  )}
+                </>
+              )}
+            </div>
+            {nameError && <p className="pl-12 font-body-4-r text-warning">{nameError}</p>}
           </div>
-        </div>
+        ) : (
+          /* 일반 모드: 조합 번호 + 생성일 + 조합명 */
+          <div className="flex flex-col gap-8">
+            <div className="flex items-center gap-16">
+              <p className="font-body-4-r text-gray-400">조합{index + 1}</p>
+              <p className="font-body-4-r text-gray-400">생성일: {formatDate(createdAt)}</p>
+            </div>
+            <div className="flex items-center gap-8">
+              <p className="font-body-1-sm text-black">{comboName}</p>
+              {isPinned ? (
+                <StarIcon
+                  onClick={(e) => onTogglePin(e, comboId)}
+                  className={`!w-22 !h-22 -mt-3 cursor-pointer transition-opacity ${
+                    hoveredStarComboId === comboId ? 'opacity-80' : ''
+                  }`}
+                  onMouseEnter={() => setHoveredStarComboId(comboId)}
+                  onMouseLeave={() => setHoveredStarComboId(null)}
+                />
+              ) : (
+                <>
+                  {hoveredStarComboId === comboId ? (
+                    <StarHoverIcon
+                      onClick={(e) => onTogglePin(e, comboId)}
+                      className="!w-22 !h-22 -mt-3 cursor-pointer"
+                      onMouseEnter={() => setHoveredStarComboId(comboId)}
+                      onMouseLeave={() => setHoveredStarComboId(null)}
+                    />
+                  ) : (
+                    <StarXIcon
+                      onClick={(e) => onTogglePin(e, comboId)}
+                      className="!w-22 !h-22 -mt-3 cursor-pointer"
+                      onMouseEnter={() => setHoveredStarComboId(comboId)}
+                      onMouseLeave={() => setHoveredStarComboId(null)}
+                    />
+                  )}
+                </>
+              )}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* 빈 조합: 기기 추가 버튼 */}
