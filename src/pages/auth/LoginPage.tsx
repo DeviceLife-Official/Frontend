@@ -6,10 +6,11 @@ import PrimaryInput from '@/components/Input/PrimaryInput';
 import PrimaryButton from '@/components/Button/PrimaryButton';
 import Checkbox from '@/assets/icons/checkbox.svg?react';
 import CheckboxOn from '@/assets/icons/checkbox_on.svg?react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, Navigate } from 'react-router-dom';
 import { ROUTES } from '@/constants/routes';
 import GoogleLoginButton from '@/components/Button/GoogleLoginButton';
 import { useLogin } from '@/hooks/useLogin';
+import { useAuth } from '@/hooks/useAuth';
 
 // 라우터 state 타입 (아이디 찾기에서 넘어올 때)
 type LoginPageState = {
@@ -19,6 +20,7 @@ type LoginPageState = {
 const LoginPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { isLoggedIn } = useAuth();
   const [keepLogin, setKeepLogin] = useState(false);
   const [isCapsLockOn, setIsCapsLockOn] = useState(false);
   const [loginError, setLoginError] = useState<string>('');
@@ -44,6 +46,11 @@ const LoginPage = () => {
 
   // 로그인 훅
   const { loginAndFinalize, isPending } = useLogin();
+
+  // 로그인된 상태에서 로그인 페이지 접근 시 홈으로 리다이렉트
+  if (isLoggedIn) {
+    return <Navigate to={ROUTES.home} replace />;
+  }
 
   // 로그인 제출 핸들러
   const onSubmit = async (data: LoginFormData) => {
