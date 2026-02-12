@@ -137,8 +137,8 @@ const MyPage = () => {
       setTimeout(() => {
         modals.openDeleteSuccessModal();
       }, 300);
-    } catch (error) {
-      console.error('기기 삭제 중 오류 발생:', error);
+    } catch {
+      // 기기 삭제 실패 시 조용히 처리
     }
   };
 
@@ -165,9 +165,6 @@ const MyPage = () => {
         setTimeout(() => {
           modals.openDeleteSuccessModal();
         }, 300);
-      },
-      onError: (error) => {
-        console.error('조합 삭제 실패:', error);
       },
     });
   };
@@ -200,9 +197,6 @@ const MyPage = () => {
           setTimeout(() => {
             modals.openSaveSuccessModal();
           }, 300);
-        },
-        onError: (error) => {
-          console.error('조합명 수정 실패:', error);
         },
       }
     );
