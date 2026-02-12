@@ -10,11 +10,13 @@ import { useAuth } from '@/hooks/useAuth';
 
 interface UseAddToCombinationParams {
   selectedProductId: string | null;
+  selectedDeviceType?: string | null;
   onCloseModal: () => void;
 }
 
 export const useAddToCombination = ({
   selectedProductId,
+  selectedDeviceType,
   onCloseModal,
 }: UseAddToCombinationParams) => {
   const navigate = useNavigate();
@@ -57,11 +59,7 @@ export const useAddToCombination = ({
 
   // 에러 핸들러 (공통)
   const handleComboError = (error: any) => {
-    console.error('기기 추가 실패 상세 정보:', error.response?.data || error.message);
-    if (error.response?.data) {
-      console.log('Error Code:', error.response.data.errorCode || error.response.data.code);
-      console.log('Error Message:', error.response.data.message);
-    }
+    // 에러 처리 로직 필요시 추가
   };
 
   /* 내 조합에 담기 */
@@ -168,10 +166,18 @@ export const useAddToCombination = ({
   /* 선택된 조합의 기기 리스트 (API에서 조회) */
   const combinationDevices = comboDetail?.devices || [];
 
-  /* 선택된 조합에 이미 담긴 기기인지 확인 */
-  const isAlreadyInSelectedCombination = selectedCombinationId && selectedProductId
-    ? combinationDevices.some(device => device.deviceId === Number(selectedProductId))
-    : false;
+  /* 선택된 조합에 이미 같은 카테고리 기기가 있는지 확인 */
+  const isAlreadyInSelectedCombination = (() => {
+    if (!selectedCombinationId || !selectedDeviceType) {
+      return false;
+    }
+
+    const result = combinationDevices.some(device => {
+      return device.deviceType === selectedDeviceType;
+    });
+
+    return result;
+  })();
 
   return {
     modalView,
