@@ -90,11 +90,10 @@ const SignupAccountPage = () => {
       return;
     }
 
-    // zustand에 계정 정보 + 중복확인 여부 저장 (API 호출 시 한 번에 사용)
+    // zustand에 계정 정보 저장 (API 호출 시 한 번에 사용)
     setAccount({
       email: data.email,
       password: data.password,
-      isEmailVerified: true,
     });
     // 프로필 페이지로 이동
     navigate(ROUTES.auth.signup.profile);

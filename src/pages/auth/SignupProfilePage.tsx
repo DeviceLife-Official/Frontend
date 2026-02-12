@@ -16,7 +16,7 @@ import { useAuth } from '@/hooks/useAuth';
 const SignupProfilePage = () => {
   const navigate = useNavigate();
   const [hasSubmitted, setHasSubmitted] = useState(false);
-  const { account, resetSignup } = useSignupStore();
+  const { account, isEmailVerified, resetSignup } = useSignupStore();
   const { mutateAsync: signup } = usePostJoin();
   const { loginAndFinalize } = useLogin();
   const { isLoggedIn } = useAuth();
@@ -27,7 +27,7 @@ const SignupProfilePage = () => {
   }
 
   // 이메일, 비밀번호, 중복확인이 모두 완료되었는지 확인
-  const isAccountComplete = account.email && account.password && account.isEmailVerified;
+  const isAccountComplete = account.email && account.password && isEmailVerified;
 
   // 하나라도 빠지면 계정 페이지로 리다이렉트
   if (!isAccountComplete) {
