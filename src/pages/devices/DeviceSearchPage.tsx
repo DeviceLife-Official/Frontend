@@ -49,18 +49,25 @@ const DeviceSearchPage = () => {
     : null;
   const selectedProduct = selectedDevice ? mapSearchDeviceToProduct(selectedDevice) : null;
 
-  /* 모달 열림 상태 확인 및 스크롤 잠금 */
-  const isModalOpen = !!selectedProduct || combo.showSaveCompleteModal;
+  /* 모달 열림 상태 확인 및 스크롤 잠금 (회색 배경이 보일 때와 동일한 조건) */
+  const isModalOpen = (!!selectedProduct && !combo.showSaveCompleteModal) || combo.showSaveCompleteModal;
 
   useEffect(() => {
     if (isModalOpen) {
-      document.documentElement.style.overflowY = 'hidden';
+      const scrollBarWidth = window.innerWidth - document.documentElement.clientWidth;
+      document.documentElement.style.overflow = 'hidden';
+      document.body.style.overflow = 'hidden';
+      document.body.style.paddingRight = `${scrollBarWidth}px`;
     } else {
-      document.documentElement.style.overflowY = '';
+      document.documentElement.style.overflow = '';
+      document.body.style.overflow = '';
+      document.body.style.paddingRight = '';
     }
 
     return () => {
-      document.documentElement.style.overflowY = '';
+      document.documentElement.style.overflow = '';
+      document.body.style.overflow = '';
+      document.body.style.paddingRight = '';
     };
   }, [isModalOpen]);
 

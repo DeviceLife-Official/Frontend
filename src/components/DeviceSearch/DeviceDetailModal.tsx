@@ -2,6 +2,8 @@ import type { Product } from '@/types/product';
 import type { SearchDevice } from '@/types/devices';
 import PrimaryButton from '@/components/Button/PrimaryButton';
 import XIcon from '@/assets/icons/X.svg?react';
+import RoundedLifestyleTag from '@/components/Lifestyle/RoundedLifestyleTag';
+import { getDeviceLifestyleTags } from '@/utils/tag/deviceLifestyleTags';
 
 interface DeviceDetailModalProps {
   product: Product;
@@ -18,6 +20,8 @@ const DeviceDetailModal = ({
   isProfileLoading,
   onClose,
 }: DeviceDetailModalProps) => {
+  const rawTags = getDeviceLifestyleTags(device);
+
   return (
     <div className="flex flex-col items-end gap-20 pointer-events-auto">
       {/* Close Button - 카드 바깥 */}
@@ -66,9 +70,9 @@ const DeviceDetailModal = ({
             </div>
 
             {/* Right Section - Specs */}
-            <div className="w-303 flex flex-col gap-40">
+            <div className="w-303 flex flex-col pl-16">
               {/* Product Info Table */}
-              <div className="flex flex-col gap-20 pl-16">
+              <div className="flex flex-col gap-20 mb-40">
                 <div className="flex items-center gap-24">
                   <p className="font-body-2-r text-gray-400 w-80 flex-shrink-0">모델명</p>
                   <p className="font-body-2-r text-black line-clamp-1">{product.name}</p>
@@ -116,6 +120,14 @@ const DeviceDetailModal = ({
                 )}
               </div>
 
+              {/* Lifestyle Tags */}
+              {rawTags.length > 0 && (
+                <div className="flex flex-wrap gap-12">
+                  {rawTags.map((tag) => (
+                    <RoundedLifestyleTag key={tag} label={`# ${tag}`} />
+                  ))}
+                </div>
+              )}
             </div>
           </div>
 
