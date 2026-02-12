@@ -146,7 +146,10 @@ const DeviceSearchPage = () => {
           {/* Filters */}
           <div className="flex items-center gap-0">
             {/* Filter Icon */}
-            <button className="w-48 h-48 flex items-center justify-center">
+            <button
+              className="w-48 h-48 flex items-center justify-center"
+              aria-label="필터 옵션 표시"
+            >
               <FilterIcon className={`w-48 h-48 ${search.selectedPrice.length > 0 || search.selectedBrand !== null ? 'text-blue-600' : 'text-black'}`} />
             </button>
 
