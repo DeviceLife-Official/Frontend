@@ -20,7 +20,7 @@ type LoginPageState = {
 const LoginPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { isLoggedIn } = useAuth();
+  const { isLoggedIn, hasCompletedOnboarding } = useAuth();
   const [keepLogin, setKeepLogin] = useState(false);
   const [isCapsLockOn, setIsCapsLockOn] = useState(false);
   const [loginError, setLoginError] = useState<string>('');
@@ -47,9 +47,12 @@ const LoginPage = () => {
   // 로그인 훅
   const { loginAndFinalize, isPending } = useLogin();
 
-  // 로그인된 상태에서 로그인 페이지 접근 시 홈으로 리다이렉트
+  // 로그인된 상태에서 로그인 페이지 접근 시 리다이렉트
   if (isLoggedIn) {
-    return <Navigate to={ROUTES.home} replace />;
+    const destination = hasCompletedOnboarding
+      ? ROUTES.home
+      : ROUTES.onboarding.lifestyle;
+    return <Navigate to={destination} replace />;
   }
 
   // 로그인 제출 핸들러
@@ -62,9 +65,7 @@ const LoginPage = () => {
         password: data.password,
         keepLogin,
       });
-
-      // 로그인 성공 시 라우팅
-      navigate(ROUTES.home, { replace: true });
+      // 캐시 업데이트 → 리렌더링 → isLoggedIn 가드가 자동으로 라우팅 처리
     } catch (error) {
       // 로그인 실패 시 에러 메시지 표시
       setLoginError('아이디 또는 비밀번호를 확인해주세요.');
