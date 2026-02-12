@@ -8,7 +8,11 @@ import { getDeviceLifestyleTags } from '@/utils/tag/deviceLifestyleTags';
 interface DeviceDetailModalProps {
   product: Product;
   device: SearchDevice;
-  addToCombinationConfig: { text: string; handler: () => void };
+  addToCombinationConfig: {
+    text: string;
+    handler: () => void;
+    disabled?: boolean;
+  };
   isProfileLoading: boolean;
   onClose: () => void;
 }
@@ -136,8 +140,12 @@ const DeviceDetailModal = ({
             <PrimaryButton
               text={addToCombinationConfig.text}
               onClick={addToCombinationConfig.handler}
-              disabled={isProfileLoading}
-              className="w-full bg-blue-500 hover:bg-blue-400 transition-colors"
+              disabled={isProfileLoading || addToCombinationConfig.disabled}
+              className={`w-full ${
+                (isProfileLoading || addToCombinationConfig.disabled)
+                  ? ''
+                  : 'bg-blue-500 hover:bg-blue-400'
+              } transition-colors`}
             />
           </div>
         </div>

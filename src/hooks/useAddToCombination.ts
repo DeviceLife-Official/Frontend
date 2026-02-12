@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { type ModalView } from '@/types/devices';
+import { type ComboDevice } from '@/types/combo/combo';
 import { ROUTES } from '@/constants/routes';
 import { useGetCombos } from '@/apis/combo/getCombos';
 import { useGetCombo } from '@/apis/combo/getComboId';
@@ -14,6 +15,17 @@ interface UseAddToCombinationParams {
   selectedDeviceType?: string | null;
   selectedDeviceName?: string | null;
   onCloseModal: () => void;
+}
+
+interface AddToCombinationConfig {
+  text: string;
+  handler: () => void;
+  disabled?: boolean;
+}
+
+interface DuplicateCheckResult {
+  isBlocked: boolean;
+  reason: 'model' | 'category' | null;
 }
 
 export const useAddToCombination = ({
@@ -37,6 +49,10 @@ export const useAddToCombination = ({
   const { mutate: addDeviceToCombo, isPending: isAddingDevice } = usePostComboDevice();
   const { mutate: recordRecentlyViewed } = usePostRecentlyViewed();
 
+  // 조합이 1개일 때 해당 조합의 상세 정보 조회
+  const singleComboId = combos.length === 1 ? combos[0].comboId : null;
+  const { data: singleComboDetail } = useGetCombo(singleComboId);
+
   const [selectedCombinationId, setSelectedCombinationId] = useState<number | null>(null);
   const [showAllDevices, setShowAllDevices] = useState(false);
   const [showSaveCompleteModal, setShowSaveCompleteModal] = useState(false);
@@ -52,6 +68,57 @@ export const useAddToCombination = ({
   // 선택된 조합의 상세 정보 조회
   const { data: comboDetail } = useGetCombo(selectedCombinationId);
 
+  /* 중복 체크 유틸리티 */
+  const DEVICE_TYPE_MAP: Record<string, string[]> = {
+    'SMARTPHONE': ['SMARTPHONE', 'PHONE', '스마트폰', '폰'],
+    'LAPTOP': ['LAPTOP', '노트북'],
+    'TABLET': ['TABLET', '태블릿'],
+    'CHARGER': ['CHARGER', '충전기'],
+    'EARBUDS': ['EARBUDS', '이어버드'],
+    'WATCH': ['WATCH', '워치', '시계'],
+  };
+
+  const isSameDeviceType = (type1: string, type2: string): boolean => {
+    if (type1 === type2) return true;
+
+    for (const types of Object.values(DEVICE_TYPE_MAP)) {
+      if (types.includes(type1) && types.includes(type2)) {
+        return true;
+      }
+    }
+
+    return false;
+  };
+
+  const checkDeviceDuplicate = (
+    existingDevices: ComboDevice[],
+    targetDeviceType: string,
+    targetDeviceName: string
+  ): DuplicateCheckResult => {
+    if (!targetDeviceType || !targetDeviceName) {
+      return { isBlocked: false, reason: null };
+    }
+
+    const targetBaseName = getBaseModelName(targetDeviceName);
+
+    // 우선순위 1: 같은 모델
+    for (const device of existingDevices) {
+      const deviceBaseName = getBaseModelName(device.name);
+      if (deviceBaseName === targetBaseName) {
+        return { isBlocked: true, reason: 'model' };
+      }
+    }
+
+    // 우선순위 2: 같은 카테고리
+    for (const device of existingDevices) {
+      if (isSameDeviceType(device.deviceType, targetDeviceType)) {
+        return { isBlocked: true, reason: 'category' };
+      }
+    }
+
+    return { isBlocked: false, reason: null };
+  };
+
   /* 모달 닫기 */
   const handleCloseModal = () => {
     onCloseModal();
@@ -64,6 +131,19 @@ export const useAddToCombination = ({
   const handleComboError = (_error: any) => {
     // 에러 처리 로직 필요시 추가
   };
+
+  /* 단일 조합일 때 중복 체크 */
+  const singleComboDuplicateCheck = (() => {
+    if (combos.length !== 1 || !singleComboDetail) {
+      return { isBlocked: false, reason: null };
+    }
+
+    return checkDeviceDuplicate(
+      singleComboDetail.devices,
+      selectedDeviceType ?? '',
+      selectedDeviceName ?? ''
+    );
+  })();
 
   /* 내 조합에 담기 */
   const handleAddToCombination = () => {
@@ -87,7 +167,7 @@ export const useAddToCombination = ({
   };
 
   /* 버튼 텍스트 및 핸들러 결정 */
-  const getAddToCombinationConfig = () => {
+  const getAddToCombinationConfig = (): AddToCombinationConfig => {
     // Case 1: 로그아웃 상태
     if (!isLoggedIn) {
       return {
@@ -95,6 +175,7 @@ export const useAddToCombination = ({
         handler: () => {
           navigate(ROUTES.auth.login);
         },
+        disabled: false,
       };
     }
 
@@ -105,13 +186,34 @@ export const useAddToCombination = ({
         handler: () => {
           navigate(ROUTES.onboarding.lifestyle);
         },
+        disabled: false,
       };
     }
 
-    // Case 3: 로그인 + 온보딩 완료
+    // Case 3: 로그인 + 온보딩 완료 + 조합 1개
+    if (combos.length === 1) {
+      const isBlocked = singleComboDuplicateCheck.isBlocked;
+      const reason = singleComboDuplicateCheck.reason;
+
+      let text = '내 조합에 담기';
+      if (isBlocked && reason === 'model') {
+        text = '이미 담은 기기입니다';
+      } else if (isBlocked && reason === 'category') {
+        text = '이미 담은 타입입니다';
+      }
+
+      return {
+        text,
+        handler: handleAddToCombination,
+        disabled: isBlocked,
+      };
+    }
+
+    // Case 4: 로그인 + 온보딩 완료 + 조합 2개 이상
     return {
       text: '내 조합에 담기',
       handler: handleAddToCombination,
+      disabled: false,
     };
   };
 
@@ -175,52 +277,11 @@ export const useAddToCombination = ({
       return { isBlocked: false, reason: null };
     }
 
-    // deviceType 매핑 (영어 ↔ 한글)
-    const deviceTypeMap: Record<string, string[]> = {
-      'SMARTPHONE': ['SMARTPHONE', 'PHONE', '스마트폰', '폰'],
-      'LAPTOP': ['LAPTOP', '노트북'],
-      'TABLET': ['TABLET', '태블릿'],
-      'CHARGER': ['CHARGER', '충전기'],
-      'EARBUDS': ['EARBUDS', '이어버드'],
-      'WATCH': ['WATCH', '워치', '시계'],
-    };
-
-    // 같은 카테고리인지 확인하는 함수
-    const isSameDeviceType = (type1: string, type2: string): boolean => {
-      // 정확히 일치
-      if (type1 === type2) return true;
-
-      // 매핑 테이블에서 확인
-      for (const types of Object.values(deviceTypeMap)) {
-        if (types.includes(type1) && types.includes(type2)) {
-          return true;
-        }
-      }
-
-      return false;
-    };
-
-    const selectedBaseName = getBaseModelName(selectedDeviceName);
-
-    // 우선순위: 같은 모델 > 같은 카테고리
-    for (const device of combinationDevices) {
-      const deviceBaseName = getBaseModelName(device.name);
-      const isSameModel = deviceBaseName === selectedBaseName;
-
-      if (isSameModel) {
-        return { isBlocked: true, reason: 'model' as const };
-      }
-    }
-
-    for (const device of combinationDevices) {
-      const isSameCategory = isSameDeviceType(device.deviceType, selectedDeviceType);
-
-      if (isSameCategory) {
-        return { isBlocked: true, reason: 'category' as const };
-      }
-    }
-
-    return { isBlocked: false, reason: null };
+    return checkDeviceDuplicate(
+      combinationDevices,
+      selectedDeviceType,
+      selectedDeviceName
+    );
   })();
 
   const isAlreadyInSelectedCombination = duplicateCheck.isBlocked;
