@@ -27,13 +27,7 @@ const DeviceSummaryCard = ({ device }: Props) => {
           {device?.releaseDate ?? '-'}
         </p>
         <p className="font-caption-r text-gray-300 w-108 whitespace-nowrap">
-          {device?.price != null
-            ? new Intl.NumberFormat('ko-KR', {
-                style: 'currency',
-                currency: 'KRW',
-                maximumFractionDigits: 0,
-              }).format(device.price)
-            : '-'}
+          {device?.price != null ? `₩ ${device.price.toLocaleString()}` : '-'}
         </p>
       </div>
     </div>
