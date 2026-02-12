@@ -20,7 +20,7 @@ const DeviceDetailModal = ({
   isProfileLoading,
   onClose,
 }: DeviceDetailModalProps) => {
-  const rawTags = getDeviceLifestyleTags(device);
+  const rawTags: string[] = getDeviceLifestyleTags(device);
 
   return (
     <div className="flex flex-col items-end gap-20 pointer-events-auto">
@@ -123,7 +123,7 @@ const DeviceDetailModal = ({
               {/* Lifestyle Tags */}
               {rawTags.length > 0 && (
                 <div className="flex flex-wrap gap-12">
-                  {rawTags.map((tag) => (
+                  {rawTags.map((tag: string) => (
                     <RoundedLifestyleTag key={tag} label={`# ${tag}`} />
                   ))}
                 </div>
