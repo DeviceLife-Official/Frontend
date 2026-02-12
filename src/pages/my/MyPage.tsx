@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useMemo } from 'react';
+import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import GNB from '@/components/Home/GNB';
 import PrimaryButton from '@/components/Button/PrimaryButton';
@@ -99,23 +99,23 @@ const MyPage = () => {
   useModalScrollLock(isAnyModalOpen);
 
   // 자세히보기 클릭 핸들러
-  const handleDetailView = (comboId: number) => {
+  const handleDetailView = useCallback((comboId: number) => {
     setSavedScrollPosition(window.scrollY);
     setDetailViewComboId(comboId);
     setOpenMenuIndex(null);
     deviceSelection.clearSelection();
     window.scrollTo(0, 0);
-  };
+  }, [deviceSelection]);
 
   // 뒤로가기 핸들러
-  const handleBackToNormal = () => {
+  const handleBackToNormal = useCallback(() => {
     setDetailViewComboId(null);
     deviceSelection.clearSelection();
     window.scrollTo(0, savedScrollPosition);
-  };
+  }, [deviceSelection, savedScrollPosition]);
 
   // 선택된 기기 삭제 핸들러
-  const handleDeleteDevices = async () => {
+  const handleDeleteDevices = useCallback(async () => {
     if (!detailViewComboId || deviceSelection.selectedDevices.length === 0) return;
 
     try {
@@ -140,17 +140,17 @@ const MyPage = () => {
     } catch {
       // 기기 삭제 실패 시 조용히 처리
     }
-  };
+  }, [detailViewComboId, deviceSelection, deleteDevice, modals]);
 
   // 휴지통 클릭 핸들러
-  const handleTrashClick = () => {
+  const handleTrashClick = useCallback(() => {
     if (deviceSelection.selectedDevices.length > 0) {
       modals.openDeleteModal();
     }
-  };
+  }, [deviceSelection.selectedDevices.length, modals]);
 
   // 조합 삭제 핸들러
-  const handleDeleteCombination = () => {
+  const handleDeleteCombination = useCallback(() => {
     if (modals.deleteTargetComboId === null) return;
 
     deleteCombo(modals.deleteTargetComboId, {
@@ -167,16 +167,16 @@ const MyPage = () => {
         }, 300);
       },
     });
-  };
+  }, [modals, deleteCombo, detailViewComboId, deviceSelection]);
 
   // Pin 토글 핸들러
-  const handleTogglePin = (e: React.MouseEvent, comboId: number) => {
+  const handleTogglePin = useCallback((e: React.MouseEvent, comboId: number) => {
     e.stopPropagation();
     togglePin(comboId);
-  };
+  }, [togglePin]);
 
   // 조합명 저장 핸들러
-  const handleSaveCombinationName = () => {
+  const handleSaveCombinationName = useCallback(() => {
     if (combinationEdit.editingComboId === null) return;
 
     const finalError = combinationEdit.validateComboName(combinationEdit.editingCombinationName);
@@ -200,12 +200,12 @@ const MyPage = () => {
         },
       }
     );
-  };
+  }, [combinationEdit, updateCombo, modals]);
 
   // 맨 위로 스크롤
-  const handleScrollToTop = () => {
+  const handleScrollToTop = useCallback(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
+  }, []);
 
   return (
     <div className={`min-h-screen bg-white relative ${isAtBottom ? 'bg-effect-fade-bottom' : ''}`}>
