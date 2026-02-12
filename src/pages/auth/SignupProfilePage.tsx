@@ -21,6 +21,18 @@ const SignupProfilePage = () => {
   const { loginAndFinalize } = useLogin();
   const { isLoggedIn } = useAuth();
 
+  // 프로필 정보 입력 폼 상태 관리
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<SignupProfileFormData>({
+    resolver: zodResolver(signupProfileSchema),
+    // 최초에는 에러를 숨기고, submit 이후에는 onChange로 실시간 갱신되도록
+    mode: 'onChange',
+    reValidateMode: 'onChange',
+  });
+
   // 로그인된 상태에서 회원가입 페이지 접근 시 홈으로 리다이렉트
   if (isLoggedIn) {
     return <Navigate to={ROUTES.home} replace />;
@@ -33,18 +45,6 @@ const SignupProfilePage = () => {
   if (!isAccountComplete) {
     return <Navigate to={ROUTES.auth.signup.account} replace />;
   }
-
-  // 프로필 정보 입력 폼 상태 관리
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<SignupProfileFormData>({
-    resolver: zodResolver(signupProfileSchema),
-    // 최초에는 에러를 숨기고, submit 이후에는 onChange로 실시간 갱신되도록
-    mode: 'onChange',
-    reValidateMode: 'onChange',
-  });
 
   // 프로필 정보 제출 성공 핸들러
   const onSubmitValid = async (data: SignupProfileFormData) => {
