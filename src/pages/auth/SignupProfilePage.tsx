@@ -16,7 +16,7 @@ import { useAuth } from '@/hooks/useAuth';
 const SignupProfilePage = () => {
   const navigate = useNavigate();
   const [hasSubmitted, setHasSubmitted] = useState(false);
-  const { account, setProfile } = useSignupStore();
+  const { account, resetSignup } = useSignupStore();
   const { mutateAsync: signup } = usePostJoin();
   const { loginAndFinalize } = useLogin();
   const { isLoggedIn } = useAuth();
@@ -50,12 +50,6 @@ const SignupProfilePage = () => {
   const onSubmitValid = async (data: SignupProfileFormData) => {
     setHasSubmitted(true);
 
-    // zustand에 프로필 정보 저장
-    setProfile({
-      username: data.name,
-      phoneNumber: data.phone,
-    });
-
     // 회원가입 API 호출
     try {
       await signup({
@@ -73,10 +67,14 @@ const SignupProfilePage = () => {
           keepLogin: false,
         });
 
+        // 회원가입 성공 → zustand 초기화 (이메일/비밀번호 메모리 정리)
+        resetSignup();
+
         // 로그인 성공 시 온보딩으로 이동
         navigate(ROUTES.onboarding.lifestyle, { replace: true });
       } catch (loginError) {
-        // 로그인 실패 시 알림
+        // 자동 로그인 실패해도 회원가입은 완료 → zustand 초기화
+        resetSignup();
         alert('회원가입은 완료되었지만 자동 로그인에 실패했습니다. 로그인 페이지에서 다시 시도해주세요.');
         navigate(ROUTES.auth.login, { replace: true });
       }
