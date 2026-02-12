@@ -245,7 +245,15 @@ const CombinationList = ({
                       createdAt={combination.createdAt}
                       isPinned={combination.isPinned}
                       index={index}
+                      isEditing={combinationEdit.editingComboId === combination.comboId}
+                      editingName={combinationEdit.editingCombinationName}
+                      nameError={combinationEdit.comboNameError}
                       onTogglePin={handleTogglePin}
+                      onNameChange={combinationEdit.handleComboNameChange}
+                      onNameBlur={(name) => {
+                        const error = combinationEdit.validateComboName(name);
+                        combinationEdit.setComboNameError(error);
+                      }}
                     />
                   )}
                 </>
