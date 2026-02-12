@@ -24,48 +24,53 @@ export const useDeviceSearch = () => {
     }));
   }, [brandsData]);
 
-  // 가격대 필터를 minPrice/maxPrice로 변환
-  const priceRange = useMemo(() => {
-    if (selectedPrice.length === 0) return { minPrice: undefined, maxPrice: undefined };
-
-    const prices = selectedPrice.map(value => {
-      switch (value) {
-        case 'under-100':
-          return { min: 0, max: 1000000 };
-        case '100-150':
-          return { min: 1000000, max: 1500000 };
-        case '150-200':
-          return { min: 1500000, max: 2000000 };
-        case 'over-200':
-          return { min: 2000000, max: Infinity };
-        default:
-          return { min: 0, max: Infinity };
-      }
-    });
-
-    // 선택된 모든 가격대에서 최소값과 최대값 계산
-    const minPrice = Math.min(...prices.map(p => p.min));
-    const maxPrice = Math.max(...prices.map(p => p.max));
-
-    return {
-      minPrice: minPrice > 0 ? minPrice : undefined,
-      maxPrice: maxPrice < Infinity ? maxPrice : undefined,
-    };
-  }, [selectedPrice]);
-
   // 기기 검색 API 파라미터 구성
   const apiSearchParams = useMemo(() => {
     const deviceType = getCategoryDeviceType(selectedCategory);
+
+    // 가격대 필터를 minPrice/maxPrice로 변환
+    let minPrice: number | undefined = undefined;
+    let maxPrice: number | undefined = undefined;
+
+    if (selectedPrice.length > 0) {
+      const prices = selectedPrice.map(value => {
+        switch (value) {
+          case 'under-100':
+            return { min: 0, max: 1000000 };
+          case '100-150':
+            return { min: 1000000, max: 1500000 };
+          case '150-200':
+            return { min: 1500000, max: 2000000 };
+          case 'over-200':
+            return { min: 2000000, max: Infinity };
+          default:
+            return { min: 0, max: Infinity };
+        }
+      });
+
+      // 선택된 모든 가격대에서 최소값과 최대값 계산
+      const calculatedMin = Math.min(...prices.map(p => p.min));
+      const calculatedMax = Math.max(...prices.map(p => p.max));
+
+      minPrice = calculatedMin > 0 ? calculatedMin : undefined;
+      maxPrice = calculatedMax < Infinity ? calculatedMax : undefined;
+    }
+
+    // 가격 정렬은 클라이언트에서 처리하므로 API에는 기본 정렬 사용
+    const apiSortType = (sortOption === 'price-low' || sortOption === 'price-high')
+      ? 'LATEST'
+      : getSortType(sortOption);
+
     return {
       keyword: searchQuery || undefined,
       size: 24,
-      sortType: getSortType(sortOption),
+      sortType: apiSortType,
       deviceTypes: deviceType ? [deviceType] : undefined,
       brandIds: selectedBrand ? [Number(selectedBrand)] : undefined,
-      minPrice: priceRange.minPrice,
-      maxPrice: priceRange.maxPrice,
+      minPrice,
+      maxPrice,
     };
-  }, [searchQuery, selectedCategory, sortOption, selectedBrand, priceRange]);
+  }, [searchQuery, selectedCategory, sortOption, selectedBrand, selectedPrice]);
 
   // 기기 검색 API 호출
   const {
@@ -77,11 +82,19 @@ export const useDeviceSearch = () => {
     isError: isSearchError,
   } = useSearchDevices(apiSearchParams);
 
-  // 전체 기기 목록 (모든 페이지 결합)
-  const allDevices = useMemo(() =>
-    searchData?.pages.flatMap(page => page.devices) ?? [],
-    [searchData]
-  );
+  // 전체 기기 목록 (모든 페이지 결합 + 클라이언트 사이드 정렬)
+  const allDevices = useMemo(() => {
+    const devices = searchData?.pages.flatMap(page => page.devices) ?? [];
+
+    // 가격 정렬은 클라이언트에서 처리 (백엔드 미지원 시)
+    if (sortOption === 'price-low') {
+      return [...devices].sort((a, b) => a.price - b.price);
+    } else if (sortOption === 'price-high') {
+      return [...devices].sort((a, b) => b.price - a.price);
+    }
+
+    return devices;
+  }, [searchData, sortOption]);
 
   // 무한 스크롤 트리거
   const { targetRef, isIntersecting } = useIntersectionObserver({ rootMargin: '100px' });
