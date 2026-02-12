@@ -1,4 +1,4 @@
-import { useRef, useLayoutEffect, useCallback, useMemo } from 'react';
+import { useRef, useLayoutEffect, useCallback, useMemo, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import GNB from '@/components/Home/GNB';
 import ProductCard from '@/components/ProductCard/ProductCard';
@@ -90,6 +90,22 @@ const DeviceSearchPage = () => {
       document.body.style.overflow = '';
     }
   }, [isModalOpen]);
+
+  /* ESC 키로 모달 닫기 */
+  useEffect(() => {
+    const handleEscapeKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && isModalOpen) {
+        combo.handleCloseModal();
+      }
+    };
+
+    if (isModalOpen) {
+      document.addEventListener('keydown', handleEscapeKey);
+      return () => {
+        document.removeEventListener('keydown', handleEscapeKey);
+      };
+    }
+  }, [isModalOpen, combo]);
 
   return (
     <div className={`min-h-screen bg-white relative max-w-[100vw] overflow-x-hidden ${scroll.isAtBottom ? 'bg-effect-fade-bottom' : ''}`}>
@@ -248,10 +264,22 @@ const DeviceSearchPage = () => {
           <div
             className="fixed inset-0 bg-black/50 z-60"
             onClick={combo.handleCloseModal}
+            role="presentation"
+            aria-hidden="true"
           />
 
           {/* Modal */}
-          <div className="fixed inset-0 flex justify-center items-center z-72 pointer-events-none">
+          <div
+            className="fixed inset-0 flex justify-center items-center z-72 pointer-events-none"
+            role="dialog"
+            aria-modal="true"
+            {...(combo.modalView === 'device'
+              ? { 'aria-labelledby': 'device-modal-title' }
+              : combo.modalView === 'combination'
+              ? { 'aria-label': '조합 선택' }
+              : { 'aria-label': `${combo.selectedCombination?.comboName || '조합'} 상세` }
+            )}
+          >
             {combo.modalView === 'device' && (
               <DeviceDetailModal
                 product={selectedProduct}
