@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useRef, useLayoutEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import GNB from '@/components/Home/GNB';
 import ProductCard from '@/components/ProductCard/ProductCard';
@@ -22,7 +22,6 @@ import { mapSearchDeviceToProduct } from '@/utils/mapSearchDevice';
 import { useDeviceSearch } from '@/hooks/useDeviceSearch';
 import { useScrollState } from '@/hooks/useScrollState';
 import { useAddToCombination } from '@/hooks/useAddToCombination';
-import { useEffect } from 'react';
 
 const DeviceSearchPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -46,27 +45,37 @@ const DeviceSearchPage = () => {
     selectedDeviceType: selectedDevice?.deviceType ?? null,
     selectedDeviceName: selectedDevice?.name ?? null,
     onCloseModal: () => {
-      searchParams.delete('productId');
-      setSearchParams(searchParams);
+      // 새로운 URLSearchParams 객체 생성하여 React가 변경 감지하도록 함
+      setSearchParams((prev) => {
+        const newParams = new URLSearchParams(prev);
+        newParams.delete('productId');
+        return newParams;
+      });
     },
   });
 
   /* 모달 열림 상태 확인 및 스크롤 잠금 (회색 배경이 보일 때와 동일한 조건) */
   const isModalOpen = (!!selectedProduct && !combo.showSaveCompleteModal) || combo.showSaveCompleteModal;
 
-  useEffect(() => {
-    if (isModalOpen) {
-      document.documentElement.style.overflow = 'hidden';
-      document.body.style.overflow = 'hidden';
-    } else {
+  /* selectedProductId가 null이 될 때 명시적으로 스크롤 unlock */
+  useLayoutEffect(() => {
+    if (selectedProductId === null) {
       document.documentElement.style.overflow = '';
       document.body.style.overflow = '';
     }
+  }, [selectedProductId]);
 
-    return () => {
-      document.documentElement.style.overflow = '';
-      document.body.style.overflow = '';
-    };
+  /* 모달 열림 상태에 따른 스크롤 lock */
+  useLayoutEffect(() => {
+    if (isModalOpen) {
+      document.documentElement.style.overflow = 'hidden';
+      document.body.style.overflow = 'hidden';
+
+      return () => {
+        document.documentElement.style.overflow = '';
+        document.body.style.overflow = '';
+      };
+    }
   }, [isModalOpen]);
 
   return (
