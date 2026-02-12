@@ -3,8 +3,10 @@ import StarIcon from '@/assets/icons/star.svg?react';
 import StarXIcon from '@/assets/icons/starx.svg?react';
 import StarHoverIcon from '@/assets/icons/starhover.svg?react';
 import CombinationTag from '@/components/Combination/CombinationTag';
+import { useComboEvaluation } from '@/apis/combo/getComboEvaluation';
 import { formatDate } from '@/utils/format';
 import type { ComboListItem } from '@/types/combo/combo';
+import type { CombinationStatus } from '@/constants/combination';
 
 interface CombinationCardProps {
   combination: ComboListItem;
@@ -30,6 +32,9 @@ const CombinationCard = ({
   onNameBlur,
 }: CombinationCardProps) => {
   const [hoveredStarComboId, setHoveredStarComboId] = useState<number | null>(null);
+
+  // 조합 평가 캐시 구독 (staleTime: Infinity이므로 캐시에 있으면 API 호출 없이 바로 사용)
+  const { data: evaluation } = useComboEvaluation(combination.comboId);
 
   // 그라데이션 로직
   const gradientThreshold = columns === 4 ? 9 : 7;
@@ -132,11 +137,20 @@ const CombinationCard = ({
                 )}
               </div>
             </div>
-            {/* 조합 평가 태그 (연동성, 편의성, 라이프스타일) */}
+            {/* 조합 평가 태그 - COMBO_EVALUATION 캐시에서 등급 읽기 */}
             <div className="flex gap-12">
-              <CombinationTag name="연동성" status="최적" />
-              <CombinationTag name="편의성" status="최적" />
-              <CombinationTag name="라이프스타일" status="최적" />
+              <CombinationTag
+                name="연동성"
+                status={(evaluation?.connectivityGrade as CombinationStatus) || '-'}
+              />
+              <CombinationTag
+                name="편의성"
+                status={(evaluation?.convenienceGrade as CombinationStatus) || '-'}
+              />
+              <CombinationTag
+                name="라이프스타일"
+                status={(evaluation?.lifestyleGrade as CombinationStatus) || '-'}
+              />
             </div>
           </div>
         )}
