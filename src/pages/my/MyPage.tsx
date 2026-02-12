@@ -31,6 +31,7 @@ import { useCombinationSort } from '@/hooks/useCombinationSort';
 import { useCombinationEdit } from '@/hooks/useCombinationEdit';
 import { useClickOutside } from '@/hooks/useClickOutside';
 import { useModalScrollLock } from '@/hooks/useModalScrollLock';
+import { useMyPageScroll } from '@/hooks/useMyPageScroll';
 import { mapEvaluationToUI } from '@/utils/mapEvaluationToUI';
 import { MYPAGE_SORT_OPTIONS } from '@/constants/combination';
 import type { LifestyleKey } from '@/constants/evaluation/lifestyle';
@@ -39,12 +40,10 @@ const MyPage = () => {
   const navigate = useNavigate();
 
   // 상태 관리
-  const [isAtBottom, setIsAtBottom] = useState(false);
   const [columns, setColumns] = useState<3 | 4>(4);
   const [openMenuIndex, setOpenMenuIndex] = useState<number | null>(null);
   const [detailViewComboId, setDetailViewComboId] = useState<number | null>(null);
   const [savedScrollPosition, setSavedScrollPosition] = useState<number>(0);
-  const [showTopButton, setShowTopButton] = useState(false);
 
   const menuRef = useRef<HTMLDivElement>(null);
   const sidebarContentRef = useRef<HTMLDivElement>(null);
@@ -82,24 +81,7 @@ const MyPage = () => {
   }, [evaluation, lifestyleKey]);
 
   // 스크롤 감지 (하단 그라데이션용 + Top 버튼용)
-  useEffect(() => {
-    const handleScroll = () => {
-      const scrollTop = window.scrollY;
-      const windowHeight = window.innerHeight;
-      const documentHeight = document.documentElement.scrollHeight;
-      setIsAtBottom(scrollTop + windowHeight >= documentHeight - 50);
-
-      // 조합 3개 정도 스크롤 시 Top 버튼 표시
-      if (combinationListRef.current) {
-        const listTop = combinationListRef.current.offsetTop;
-        const thirdCombinationVisible = scrollTop + windowHeight >= listTop + 800;
-        setShowTopButton(thirdCombinationVisible);
-      }
-    };
-    window.addEventListener('scroll', handleScroll);
-    handleScroll();
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  const { isAtBottom, showTopButton } = useMyPageScroll(combinationListRef);
 
   // 브레이크포인트 감지 (칼럼 수 반응형)
   useEffect(() => {
