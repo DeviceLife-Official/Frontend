@@ -220,10 +220,6 @@ const CombinationDetailView = ({
           <div className="mx-44 border-t border-gray-300" />
 
           <div className="px-56 py-56">
-            <div className="flex items-center justify-end gap-16 mb-32">
-              <p className="font-body-2-r text-gray-400 underline">조합평가 전문보기</p>
-            </div>
-
             <div className="flex flex-col gap-20">
               {evaluationCards ? (
                 evaluationCards.map((card) => (
