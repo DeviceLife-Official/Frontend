@@ -19,7 +19,7 @@ const SignupProfilePage = () => {
   const { account, isEmailVerified, resetSignup } = useSignupStore();
   const { mutateAsync: signup } = usePostJoin();
   const { loginAndFinalize } = useLogin();
-  const { isLoggedIn } = useAuth();
+  const { isLoggedIn, hasCompletedOnboarding } = useAuth();
 
   // 프로필 정보 입력 폼 상태 관리
   const {
@@ -33,9 +33,13 @@ const SignupProfilePage = () => {
     reValidateMode: 'onChange',
   });
 
-  // 로그인된 상태에서 회원가입 페이지 접근 시 홈으로 리다이렉트
+  // 로그인된 상태에서 회원가입 페이지 접근 시 리다이렉트
+  // (자동 로그인 후 온보딩 미완료 유저는 온보딩으로 보내야 함)
   if (isLoggedIn) {
-    return <Navigate to={ROUTES.home} replace />;
+    const destination = hasCompletedOnboarding
+      ? ROUTES.home
+      : ROUTES.onboarding.lifestyle;
+    return <Navigate to={destination} replace />;
   }
 
   // 이메일, 비밀번호, 중복확인이 모두 완료되었는지 확인
