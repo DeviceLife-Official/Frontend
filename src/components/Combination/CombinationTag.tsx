@@ -21,10 +21,6 @@ const STATUS_STYLE_MAP: Record<CombinationStatus, string> = {
 };
 
 const CombinationTag = ({ name, status, className = '' }: CombinationTagProps) => {
-  // status가 유효하지 않을 경우를 대비한 안전한 스타일 추출
-  const statusStyle = STATUS_STYLE_MAP[status] || STATUS_STYLE_MAP['-'];
-  const displayStatus = status || '-';
-
   return (
     <span
       className={`
@@ -37,7 +33,7 @@ const CombinationTag = ({ name, status, className = '' }: CombinationTagProps) =
       `}
     >
       <span>{name}:</span>
-      <span className={statusStyle}>{displayStatus}</span>
+      <span className={STATUS_STYLE_MAP[status]}>{status}</span>
     </span>
   );
 };
