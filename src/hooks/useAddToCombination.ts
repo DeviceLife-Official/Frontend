@@ -173,18 +173,6 @@ export const useAddToCombination = ({
     ? combinationDevices.some(device => device.deviceId === Number(selectedProductId))
     : false;
 
-  /* 모달 열렸을 때 y 스크롤 방지 */
-  useEffect(() => {
-    if (selectedProductId) {
-      document.documentElement.style.overflowY = 'hidden';
-    } else {
-      document.documentElement.style.overflowY = 'auto';
-    }
-    return () => {
-      document.documentElement.style.overflowY = 'auto';
-    };
-  }, [selectedProductId]);
-
   return {
     modalView,
     setModalView,

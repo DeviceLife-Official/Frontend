@@ -22,6 +22,7 @@ import { mapSearchDeviceToProduct } from '@/utils/mapSearchDevice';
 import { useDeviceSearch } from '@/hooks/useDeviceSearch';
 import { useScrollState } from '@/hooks/useScrollState';
 import { useAddToCombination } from '@/hooks/useAddToCombination';
+import { useEffect } from 'react';
 
 const DeviceSearchPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -47,6 +48,21 @@ const DeviceSearchPage = () => {
     ? search.allDevices.find(d => d.deviceId === Number(selectedProductId))
     : null;
   const selectedProduct = selectedDevice ? mapSearchDeviceToProduct(selectedDevice) : null;
+
+  /* 모달 열림 상태 확인 및 스크롤 잠금 */
+  const isModalOpen = !!selectedProduct || combo.showSaveCompleteModal;
+
+  useEffect(() => {
+    if (isModalOpen) {
+      document.documentElement.style.overflowY = 'hidden';
+    } else {
+      document.documentElement.style.overflowY = '';
+    }
+
+    return () => {
+      document.documentElement.style.overflowY = '';
+    };
+  }, [isModalOpen]);
 
   return (
     <div className={`min-h-screen bg-white relative max-w-[100vw] overflow-x-hidden ${scroll.isAtBottom ? 'bg-effect-fade-bottom' : ''}`}>
