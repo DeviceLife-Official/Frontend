@@ -8,7 +8,11 @@ import CombinationDetailView from '@/components/MyPage/CombinationDetailView';
 import SettingMoreIcon from '@/assets/icons/settingmore.svg?react';
 import AlarmIcon from '@/assets/icons/alarm.svg?react';
 import { MYPAGE_SORT_OPTIONS } from '@/constants/combination';
-import type { ComboListItem } from '@/types/combo/combo';
+import type { ComboListItem, GetComboResult } from '@/types/combo/combo';
+import type { UseCombinationEditReturn } from '@/hooks/useCombinationEdit';
+import type { UseCombinationModalsReturn } from '@/hooks/useCombinationModals';
+import type { UseDeviceSelectionReturn } from '@/hooks/useDeviceSelection';
+import type { EvaluationCardUI } from '@/utils/mapEvaluationToUI';
 
 interface CombinationListProps {
   combinationListRef: RefObject<HTMLDivElement>;
@@ -16,17 +20,17 @@ interface CombinationListProps {
   isLoading: boolean;
   isError: boolean;
   detailViewComboId: number | null;
-  comboDetail: any;
+  comboDetail: GetComboResult | undefined;
   columns: 3 | 4;
   sortOption: string;
   setSortOption: (option: string) => void;
   openMenuIndex: number | null;
   setOpenMenuIndex: (index: number | null) => void;
   menuRef: RefObject<HTMLDivElement>;
-  combinationEdit: any;
-  modals: any;
-  deviceSelection: any;
-  evaluationCards: any;
+  combinationEdit: UseCombinationEditReturn;
+  modals: UseCombinationModalsReturn;
+  deviceSelection: UseDeviceSelectionReturn;
+  evaluationCards: EvaluationCardUI[] | null;
   isEvaluationLoading: boolean;
   handleDetailView: (comboId: number) => void;
   handleBackToNormal: () => void;
