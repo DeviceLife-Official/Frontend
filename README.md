@@ -14,7 +14,6 @@
 - 로직 기반 평가 리포트: 기기 간 연동성, 편의성, 라이프스타일 적합도 분석 내용을 마이페이지 내 한 줄 평가 리포트로 렌더링
 
 ---
-
 ## 🧑🏻‍💻 팀원 (Contributors)
 
 | <img src="https://github.com/waldls.png" width="150" height="150"/> | <img src="https://github.com/Seony777.png" width="150" height="150"/> | <img src="https://github.com/H-un1.png" width="150" height="150"/> |
@@ -24,7 +23,6 @@
 
 
 ---
-
 ## 🛠️ 기술 스택 (Tech Stack)
 
 | 역할 | 종류 | 선정 근거 |
@@ -40,16 +38,16 @@
 | **Validation** | ![Zod](https://img.shields.io/badge/Zod-3E67B1?style=for-the-badge&logo=zod&logoColor=white) | Zod로 API 응답 및 폼 입력 값을 스키마 기반으로 검증해 런타임 오류를 줄이고 타입 안정성을 강화했습니다. |
 
 
-
-
 ---
-## 📌 Conventions
+## 📎 컨벤션 (Conventions)
+
 - 🍃 [Commit Convention](https://www.notion.so/Commit-Convention-305c82f125c980898111df6891b25578?source=copy_link)
 - 🪵 [Branch Convention](https://www.notion.so/Branch-Convention-305c82f125c980afaecfdc5b00ad1f71?source=copy_link)
 - 💻 [Coding Convention](https://www.notion.so/Coding-Convention-2dac82f125c980a8810bca8fadbe8b5f?source=copy_link)
 - 📢 [API Convention](https://www.notion.so/API-Convention-2e0c82f125c9805bb0c3c22fda770978?source=copy_link)
 - 📌 [Issue Convention](https://www.notion.so/Issue-Convention-305c82f125c980029b7ce00b73962f66?source=copy_link)
 - ✅ [PR Convention](https://www.notion.so/PR-Convention-305c82f125c9809e98ebe702534bf18a?source=copy_link)
+- 📁 [Folder Structure Convention](https://www.notion.so/Folder-Structure-Convention-2d4c82f125c98112bd64d946da9d2f34?source=copy_link)
 
 ---
 
@@ -70,3 +68,7 @@
 
 - **Figma 수치 규칙**
   - 디자이너님께서 별도로 안내한 경우를 제외하고, 가장 가까운 4의 배수로 스냅하여 적용합니다.
+ 
+---
+
+## 📰 아티클 모음
