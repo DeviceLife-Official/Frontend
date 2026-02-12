@@ -30,5 +30,6 @@ export const useSearchDevices = (params: Omit<SearchDevicesParams, 'cursor'>) =>
       lastPage?.hasNext ? lastPage.nextCursor : undefined,
     enabled: true,
     staleTime: 1000 * 60 * 5,
+    placeholderData: (prev) => prev,
   });
 };
