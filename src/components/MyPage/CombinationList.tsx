@@ -36,6 +36,7 @@ interface CombinationListProps {
   handleBackToNormal: () => void;
   handleTogglePin: (e: React.MouseEvent, comboId: number) => void;
   handleTrashClick: () => void;
+  handleSaveScrollBeforeNavigate: () => void;
 }
 
 const CombinationList = ({
@@ -60,6 +61,7 @@ const CombinationList = ({
   handleBackToNormal,
   handleTogglePin,
   handleTrashClick,
+  handleSaveScrollBeforeNavigate,
 }: CombinationListProps) => {
   // Lazy Loading: 초기 12개, 더 보기 클릭 시 12개씩 추가
   const INITIAL_DISPLAY_COUNT = 12;
@@ -219,6 +221,7 @@ const CombinationList = ({
                   onSelectAll={deviceSelection.handleSelectAll}
                   onSelectDevice={deviceSelection.handleSelectDevice}
                   onTrashClick={handleTrashClick}
+                  onSaveScrollBeforeNavigate={handleSaveScrollBeforeNavigate}
                 />
               ) : (
                 /* 일반 모드 */
