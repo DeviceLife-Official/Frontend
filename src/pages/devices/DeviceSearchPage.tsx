@@ -54,20 +54,13 @@ const DeviceSearchPage = () => {
 
   useEffect(() => {
     if (isModalOpen) {
-      const scrollBarWidth = window.innerWidth - document.documentElement.clientWidth;
       document.documentElement.style.overflow = 'hidden';
-      document.body.style.overflow = 'hidden';
-      document.body.style.paddingRight = `${scrollBarWidth}px`;
     } else {
       document.documentElement.style.overflow = '';
-      document.body.style.overflow = '';
-      document.body.style.paddingRight = '';
     }
 
     return () => {
       document.documentElement.style.overflow = '';
-      document.body.style.overflow = '';
-      document.body.style.paddingRight = '';
     };
   }, [isModalOpen]);
 

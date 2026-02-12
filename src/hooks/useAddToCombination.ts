@@ -56,8 +56,12 @@ export const useAddToCombination = ({
   };
 
   // 에러 핸들러 (공통)
-  const handleComboError = (error: unknown) => {
-    console.error('기기 추가 실패:', error);
+  const handleComboError = (error: any) => {
+    console.error('기기 추가 실패 상세 정보:', error.response?.data || error.message);
+    if (error.response?.data) {
+      console.log('Error Code:', error.response.data.errorCode || error.response.data.code);
+      console.log('Error Message:', error.response.data.message);
+    }
   };
 
   /* 내 조합에 담기 */
