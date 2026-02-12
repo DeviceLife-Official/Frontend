@@ -6,6 +6,7 @@ import { useGetCombos } from '@/apis/combo/getCombos';
 import { useGetCombo } from '@/apis/combo/getComboId';
 import { usePostComboDevice } from '@/apis/combo/postComboDevices';
 import { useGetUserProfile } from '@/apis/mypage/getUserProfile';
+import { usePostRecentlyViewed } from '@/apis/recentlyViewed/postRecentlyViewed';
 import { hasAccessToken, hasCompletedOnboarding } from '@/utils/authStorage';
 
 interface UseAddToCombinationParams {
@@ -33,11 +34,19 @@ export const useAddToCombination = ({
   // API hooks
   const { data: combos = [] } = useGetCombos();
   const { mutate: addDeviceToCombo, isPending: isAddingDevice } = usePostComboDevice();
+  const { mutate: recordRecentlyViewed } = usePostRecentlyViewed();
 
   const [selectedCombinationId, setSelectedCombinationId] = useState<number | null>(null);
   const [showAllDevices, setShowAllDevices] = useState(false);
   const [showSaveCompleteModal, setShowSaveCompleteModal] = useState(false);
   const [isFadingOut, setIsFadingOut] = useState(false);
+
+  // 모달 열릴 때 최근 본 기기 기록 (로그인 상태에서만)
+  useEffect(() => {
+    if (isLoggedIn && selectedProductId) {
+      recordRecentlyViewed(Number(selectedProductId));
+    }
+  }, [selectedProductId]);
 
   // 선택된 조합의 상세 정보 조회
   const { data: comboDetail } = useGetCombo(selectedCombinationId);
