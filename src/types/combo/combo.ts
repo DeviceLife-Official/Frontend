@@ -21,6 +21,9 @@ export type ComboListItem = {
   pinnedAt: string | null;
   totalPrice: number;
   currentTotalScore: number;
+  connectivityGrade?: string;
+  convenienceGrade?: string;
+  lifestyleGrade?: string;
   deviceCount: number;
   createdAt: string;
   updatedAt: string;
@@ -35,6 +38,9 @@ export type ComboDetail = {
   pinnedAt: string | null;
   totalPrice: number;
   currentTotalScore: number;
+  connectivityGrade?: string;
+  convenienceGrade?: string;
+  lifestyleGrade?: string;
   evaluatedAt: string | null;
   createdAt: string;
   updatedAt: string;

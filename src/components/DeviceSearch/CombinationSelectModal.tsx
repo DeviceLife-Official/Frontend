@@ -1,8 +1,11 @@
 import type { ComboListItem } from '@/types/combo/combo';
+import type { CombinationStatus } from '@/constants/combination';
+import CombinationTag from '@/components/Combination/CombinationTag';
 import BackIcon from '@/assets/icons/back.svg?react';
 import XIcon from '@/assets/icons/X.svg?react';
 import StarIcon from '@/assets/icons/star.svg?react';
 import MoreIcon from '@/assets/icons/more.svg?react';
+import { useComboEvaluation } from '@/apis/combo/getComboEvaluation';
 
 interface CombinationSelectModalProps {
   combos: ComboListItem[];
@@ -10,6 +13,61 @@ interface CombinationSelectModalProps {
   onBack: () => void;
   onClose: () => void;
 }
+
+/**
+ * 개별 조합 아이템 컴포넌트
+ * 마이페이지 상세 정보와 동일한 평가 데이터를 가져와서 표시합니다.
+ */
+const CombinationSelectItem = ({
+  comboItem,
+  index,
+  onSelect,
+}: {
+  comboItem: ComboListItem;
+  index: number;
+  onSelect: (id: number) => void;
+}) => {
+  // 각 조합의 평가 정보를 상세 API에서 가져옴 (마이페이지와 동일한 데이터 소스)
+  const { data: evaluation } = useComboEvaluation(comboItem.comboId);
+
+  return (
+    <button
+      onClick={() => onSelect(comboItem.comboId)}
+      className="flex items-center justify-between pl-20 pr-36 py-24 hover:bg-gray-50 transition-colors border-b border-gray-200 cursor-pointer last:border-none"
+    >
+      {/* 좌측: 조합 정보 */}
+      <div className="flex flex-col gap-16 items-start">
+        {/* 조합 번호 + 조합명 */}
+        <div className="flex flex-col gap-8 items-start">
+          <p className="font-body-3-r text-gray-400">조합 {index + 1}</p>
+          <div className="flex items-center gap-8">
+            <p className="font-body-1-sm text-black">{comboItem.comboName}</p>
+            {comboItem.isPinned && <StarIcon className="w-22 h-22 -mt-3" />}
+          </div>
+        </div>
+
+        {/* 평가 태그: evaluation 데이터가 있으면 등급을, 없으면 '-' 표시 */}
+        <div className="flex gap-8">
+          <CombinationTag
+            name="연동성"
+            status={(evaluation?.connectivityGrade || '-') as CombinationStatus}
+          />
+          <CombinationTag
+            name="편의성"
+            status={(evaluation?.convenienceGrade || '-') as CombinationStatus}
+          />
+          <CombinationTag
+            name="라이프스타일"
+            status={(evaluation?.lifestyleGrade || '-') as CombinationStatus}
+          />
+        </div>
+      </div>
+
+      {/* 우측: More 아이콘 */}
+      <MoreIcon className="w-20 h-36 text-gray-400" />
+    </button>
+  );
+};
 
 const CombinationSelectModal = ({
   combos,
@@ -48,36 +106,12 @@ const CombinationSelectModal = ({
         {/* Combination List */}
         <div className="flex flex-col ml-20 overflow-y-auto h-full scrollbar-minimal">
           {combos.map((comboItem, index) => (
-            <button
+            <CombinationSelectItem
               key={comboItem.comboId}
-              onClick={() => onSelectCombination(comboItem.comboId)}
-              className="flex items-center justify-between pl-20 pr-36 py-24 hover:bg-gray-50 transition-colors border-b border-gray-200 cursor-pointer last:border-none"
-            >
-              {/* 좌측: 조합 정보 */}
-              <div className="flex flex-col gap-24 items-start">
-                {/* 조합 번호 + 조합명 */}
-                <div className="flex flex-col gap-8 items-start">
-                  <p className="font-body-3-r text-gray-400">조합 {index + 1}</p>
-                  {/* 조합명 + 대표조합 star */}
-                  <div className="flex items-center gap-8">
-                    <p className="font-body-1-sm text-black">{comboItem.comboName}</p>
-                    {comboItem.isPinned && <StarIcon className="w-22 h-22 -mt-3" />}
-                  </div>
-                </div>
-                {/* 기기 수 + 총 가격 */}
-                <div className="flex gap-12">
-                  <span className="bg-blue-200 text-blue-700 font-body-2-sm px-12 py-8 rounded-full">
-                    기기 {comboItem.deviceCount}개
-                  </span>
-                  <span className="bg-gray-200 text-gray-700 font-body-2-sm px-12 py-8 rounded-full">
-                    ₩{comboItem.totalPrice.toLocaleString()}
-                  </span>
-                </div>
-              </div>
-
-              {/* 우측: More 아이콘 */}
-              <MoreIcon className="w-20 h-36 text-gray-400" />
-            </button>
+              comboItem={comboItem}
+              index={index}
+              onSelect={onSelectCombination}
+            />
           ))}
         </div>
       </div>
@@ -86,3 +120,5 @@ const CombinationSelectModal = ({
 };
 
 export default CombinationSelectModal;
+
+

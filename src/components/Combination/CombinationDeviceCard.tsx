@@ -1,6 +1,9 @@
 import { useState } from 'react';
 import StarIcon from '@/assets/icons/star.svg?react';
 import type { ComboListItem, ComboDevice } from '@/types/combo/combo';
+import type { CombinationStatus } from '@/constants/combination';
+import CombinationTag from '@/components/Combination/CombinationTag';
+import { useComboEvaluation } from '@/apis/combo/getComboEvaluation';
 
 type CombinationDeviceCardProps = {
   combination: ComboListItem;
@@ -28,6 +31,9 @@ const CombinationDeviceCard = ({
   index,
 }: CombinationDeviceCardProps) => {
   const [internalExpanded, setInternalExpanded] = useState(false);
+
+  // 평가 데이터 조회 (마이페이지와 동일한 데이터 소스)
+  const { data: evaluation } = useComboEvaluation(combination.comboId);
 
   const isControlled = expanded !== undefined;
   const showAllDevices = isControlled ? expanded : internalExpanded;
@@ -60,7 +66,7 @@ const CombinationDeviceCard = ({
   return (
     <div className={className}>
       {/* 조합 정보 */}
-      <div className="flex flex-col gap-24 pl-20 py-24 flex-shrink-0">
+      <div className="flex flex-col gap-16 pl-20 pt-24 flex-shrink-0">
         {/* 조합명 */}
         <div className="flex flex-col gap-8">
           {/* 조합 번호 */}
@@ -73,18 +79,24 @@ const CombinationDeviceCard = ({
             {combination.isPinned && <StarIcon className="w-22 h-22 -mt-3" />}
           </div>
         </div>
-        {/* Tags */}
-        <div className="flex gap-12 -ml-4">
-          <span className="bg-blue-200 text-blue-700 font-body-2-sm px-12 py-8 rounded-full">
-            기기 {combination.deviceCount}개
-          </span>
-          <span className="bg-gray-200 text-gray-700 font-body-2-sm px-12 py-8 rounded-full">
-            ₩{combination.totalPrice.toLocaleString()}
-          </span>
+        {/* 평가 태그 */}
+        <div className="flex gap-8 -ml-4">
+          <CombinationTag
+            name="연동성"
+            status={(evaluation?.connectivityGrade || '-') as CombinationStatus}
+          />
+          <CombinationTag
+            name="편의성"
+            status={(evaluation?.convenienceGrade || '-') as CombinationStatus}
+          />
+          <CombinationTag
+            name="라이프스타일"
+            status={(evaluation?.lifestyleGrade || '-') as CombinationStatus}
+          />
         </div>
       </div>
 
-      {/* 기기 그리드 */}
+      {/* 기기 그리드 - 태그와의 마진 24px (mt-24) */}
       <div className="pl-8 mt-24 relative">
         <div className={`grid ${gridColsClass} gap-x-28 gap-y-12`}>
           {displayedDevices.map((device) => (
@@ -143,3 +155,4 @@ const CombinationDeviceCard = ({
 };
 
 export default CombinationDeviceCard;
+
