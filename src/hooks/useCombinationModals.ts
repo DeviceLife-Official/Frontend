@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-interface UseCombinationModalsReturn {
+export interface UseCombinationModalsReturn {
   // 기기 삭제 모달
   showDeleteModal: boolean;
   openDeleteModal: () => void;

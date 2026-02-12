@@ -1,7 +1,7 @@
 import { useState, useCallback, useMemo } from 'react';
 import type { ComboListItem } from '@/types/combo/combo';
 
-interface UseCombinationEditReturn {
+export interface UseCombinationEditReturn {
   editingComboId: number | null;
   editingCombinationName: string;
   comboNameError: string | null;

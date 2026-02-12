@@ -49,4 +49,4 @@ export const MYPAGE_SORT_OPTIONS = [
   { value: 'latest', label: '최근생성순' },
   { value: 'oldest', label: '오래된순' },
   { value: 'alphabetical', label: '가나다순' },
-] as const;
+];

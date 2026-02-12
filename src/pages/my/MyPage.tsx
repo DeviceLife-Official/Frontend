@@ -37,9 +37,9 @@ const MyPage = () => {
   const [detailViewComboId, setDetailViewComboId] = useState<number | null>(null);
   const [savedScrollPosition, setSavedScrollPosition] = useState<number>(0);
 
-  const menuRef = useRef<HTMLDivElement>(null);
-  const sidebarContentRef = useRef<HTMLDivElement>(null);
-  const combinationListRef = useRef<HTMLDivElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null!);
+  const sidebarContentRef = useRef<HTMLDivElement>(null!);
+  const combinationListRef = useRef<HTMLDivElement>(null!);
 
   // API 호출
   const { data: combos = [], isLoading, isError } = useGetCombos();
@@ -87,7 +87,8 @@ const MyPage = () => {
   }, []);
 
   // 드롭다운 외부 클릭 시 닫기
-  useClickOutside(menuRef, () => setOpenMenuIndex(null));
+  const handleClickOutside = useCallback(() => setOpenMenuIndex(null), []);
+  useClickOutside(menuRef, handleClickOutside);
 
   // 모달 열릴 때 배경 스크롤 방지
   const isAnyModalOpen =

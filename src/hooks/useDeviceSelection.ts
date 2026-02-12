@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-interface UseDeviceSelectionReturn {
+export interface UseDeviceSelectionReturn {
   selectedDevices: number[];
   handleSelectAll: (deviceIds: number[]) => void;
   handleSelectDevice: (deviceId: number) => void;
