@@ -61,12 +61,7 @@ export const useAddToCombination = ({
 
   // 에러 핸들러 (공통)
   const handleComboError = (error: unknown) => {
-    const axiosError = error as { response?: { status?: number } };
-    if (axiosError?.response?.status === 400) {
-      alert('이미 조합에 추가된 기기입니다.');
-    } else {
-      console.error('기기 추가 실패:', error);
-    }
+    console.error('기기 추가 실패:', error);
   };
 
   /* 내 조합에 담기 */
