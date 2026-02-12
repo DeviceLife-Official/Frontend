@@ -32,7 +32,7 @@ const OnboardingCompletePage = () => {
       }
     };
     complete();
-  }, [shouldSkipApiCall, completeOnboarding, navigate]);
+  }, [shouldSkipApiCall, navigate]);
 
   // 온보딩 완료 후 5초 뒤 추천 페이지로 이동
   useEffect(() => {
