@@ -29,6 +29,7 @@ import { useCombinationModals } from '@/hooks/useCombinationModals';
 import { useDeviceSelection } from '@/hooks/useDeviceSelection';
 import { useCombinationSort } from '@/hooks/useCombinationSort';
 import { useCombinationEdit } from '@/hooks/useCombinationEdit';
+import { useClickOutside } from '@/hooks/useClickOutside';
 import { mapEvaluationToUI } from '@/utils/mapEvaluationToUI';
 import { MYPAGE_SORT_OPTIONS } from '@/constants/combination';
 import type { LifestyleKey } from '@/constants/evaluation/lifestyle';
@@ -111,15 +112,7 @@ const MyPage = () => {
   }, []);
 
   // 드롭다운 외부 클릭 시 닫기
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        setOpenMenuIndex(null);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+  useClickOutside(menuRef, () => setOpenMenuIndex(null));
 
   // 모달 열릴 때 배경 스크롤 방지
   useEffect(() => {
