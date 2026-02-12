@@ -34,7 +34,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
 
         {/* Price */}
         <p className="font-body-1-sm text-gray-500">
-          {(product.price ?? 0).toLocaleString()}
+         ₩ {(product.price ?? 0).toLocaleString()}
         </p>
 
         {/* Color Chips */}
