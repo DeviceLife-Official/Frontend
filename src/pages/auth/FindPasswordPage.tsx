@@ -115,9 +115,9 @@ const FindPasswordPage = () => {
         setStep(3);
       }
     } catch (error: unknown) {
-      const axiosError = error as { response?: { data?: { message?: string } } };
-      if (axiosError.response) {
-        setVerifyError(axiosError.response.data?.message ?? '인증에 실패했습니다. 다시 시도해 주세요.');
+      const { hasResponse, message } = parseApiError(error);
+      if (hasResponse) {
+        setVerifyError(message ?? '인증에 실패했습니다. 다시 시도해 주세요.');
         return;
       }
       alert('오류가 발생했습니다. 다시 시도해 주세요.');
