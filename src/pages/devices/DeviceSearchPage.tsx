@@ -44,6 +44,7 @@ const DeviceSearchPage = () => {
   const combo = useAddToCombination({
     selectedProductId,
     selectedDeviceType: selectedDevice?.deviceType ?? null,
+    selectedDeviceName: selectedDevice?.name ?? null,
     onCloseModal: () => {
       searchParams.delete('productId');
       setSearchParams(searchParams);
@@ -255,6 +256,7 @@ const DeviceSearchPage = () => {
                 showAllDevices={combo.showAllDevices}
                 onExpandChange={combo.setShowAllDevices}
                 isAlreadyInCombination={combo.isAlreadyInSelectedCombination}
+                duplicateReason={combo.duplicateReason}
                 isAddingDevice={combo.isAddingDevice}
                 onAddDevice={combo.handleAddDeviceToCombination}
                 onBack={() => combo.setModalView('combination')}

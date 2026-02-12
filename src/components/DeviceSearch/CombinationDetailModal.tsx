@@ -11,6 +11,7 @@ interface CombinationDetailModalProps {
   showAllDevices: boolean;
   onExpandChange: (expanded: boolean) => void;
   isAlreadyInCombination: boolean | 0 | null;
+  duplicateReason: 'model' | 'category' | null;
   isAddingDevice: boolean;
   onAddDevice: () => void;
   onBack: () => void;
@@ -24,11 +25,28 @@ const CombinationDetailModal = ({
   showAllDevices,
   onExpandChange,
   isAlreadyInCombination,
+  duplicateReason,
   isAddingDevice,
   onAddDevice,
   onBack,
   onClose,
 }: CombinationDetailModalProps) => {
+  // 중복 이유에 따라 다른 메시지 표시
+  const getButtonText = () => {
+    if (!isAlreadyInCombination) {
+      return `${combination.comboName}에 담기`;
+    }
+
+    if (duplicateReason === 'model') {
+      return '이미 담은 기기입니다.';
+    }
+
+    if (duplicateReason === 'category') {
+      return '이미 담은 타입입니다.';
+    }
+
+    return '이미 담은 타입입니다.';
+  };
   return (
     <div
       className="flex flex-col items-start gap-20 pointer-events-auto"
@@ -97,7 +115,7 @@ const CombinationDetailModal = ({
         <div className="px-40 pb-40 pt-30 mt-auto">
           <div className="flex justify-end">
             <PrimaryButton
-              text={isAlreadyInCombination ? '이미 담은 상품입니다.' : `${combination.comboName}에 담기`}
+              text={getButtonText()}
               onClick={onAddDevice}
               disabled={!!isAlreadyInCombination || isAddingDevice}
               className={`w-280 ${isAlreadyInCombination ? '' : 'bg-blue-600 hover:bg-blue-500'}`}
