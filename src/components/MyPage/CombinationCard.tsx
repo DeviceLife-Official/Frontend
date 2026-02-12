@@ -166,7 +166,15 @@ const CombinationCard = ({
               key={device.deviceId}
               className="bg-white rounded-card shadow-[0_0_4px_rgba(0,0,0,0.1)] p-12 w-244 flex items-center gap-12"
             >
-              <div className="w-64 h-64 bg-gray-200 flex-shrink-0" />
+              <div className="w-64 h-64 bg-gray-200 flex-shrink-0 relative overflow-hidden">
+                {device.imageUrl && (
+                  <img
+                    src={device.imageUrl}
+                    alt={device.name}
+                    className="absolute inset-0 w-full h-full object-cover"
+                  />
+                )}
+              </div>
               <div className="flex flex-col gap-4 flex-1">
                 <p className="font-body-3-sm text-black truncate w-120">{device.name}</p>
                 <p className="font-body-4-r text-gray-300">{device.brandName}</p>
