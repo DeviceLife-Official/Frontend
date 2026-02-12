@@ -34,20 +34,22 @@ const DeviceSearchPage = () => {
   const productGridRef = useRef<HTMLDivElement>(null);
   const scroll = useScrollState(productGridRef);
 
-  // 조합 담기 + 모달 상태
-  const combo = useAddToCombination({
-    selectedProductId,
-    onCloseModal: () => {
-      searchParams.delete('productId');
-      setSearchParams(searchParams);
-    },
-  });
-
   /* 선택된 제품 찾기 */
   const selectedDevice = selectedProductId
     ? search.allDevices.find(d => d.deviceId === Number(selectedProductId))
     : null;
   const selectedProduct = selectedDevice ? mapSearchDeviceToProduct(selectedDevice) : null;
+
+  // 조합 담기 + 모달 상태
+  const combo = useAddToCombination({
+    selectedProductId,
+    selectedDeviceType: selectedDevice?.deviceType ?? null,
+    selectedDeviceName: selectedDevice?.name ?? null,
+    onCloseModal: () => {
+      searchParams.delete('productId');
+      setSearchParams(searchParams);
+    },
+  });
 
   /* 모달 열림 상태 확인 및 스크롤 잠금 (회색 배경이 보일 때와 동일한 조건) */
   const isModalOpen = (!!selectedProduct && !combo.showSaveCompleteModal) || combo.showSaveCompleteModal;
@@ -55,12 +57,15 @@ const DeviceSearchPage = () => {
   useEffect(() => {
     if (isModalOpen) {
       document.documentElement.style.overflow = 'hidden';
+      document.body.style.overflow = 'hidden';
     } else {
       document.documentElement.style.overflow = '';
+      document.body.style.overflow = '';
     }
 
     return () => {
       document.documentElement.style.overflow = '';
+      document.body.style.overflow = '';
     };
   }, [isModalOpen]);
 
@@ -251,6 +256,7 @@ const DeviceSearchPage = () => {
                 showAllDevices={combo.showAllDevices}
                 onExpandChange={combo.setShowAllDevices}
                 isAlreadyInCombination={combo.isAlreadyInSelectedCombination}
+                duplicateReason={combo.duplicateReason}
                 isAddingDevice={combo.isAddingDevice}
                 onAddDevice={combo.handleAddDeviceToCombination}
                 onBack={() => combo.setModalView('combination')}

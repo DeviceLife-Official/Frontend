@@ -7,14 +7,19 @@ import { useGetCombo } from '@/apis/combo/getComboId';
 import { usePostComboDevice } from '@/apis/combo/postComboDevices';
 import { usePostRecentlyViewed } from '@/apis/recentlyViewed/postRecentlyViewed';
 import { useAuth } from '@/hooks/useAuth';
+import { getBaseModelName } from '@/utils/devices/getBaseModelName';
 
 interface UseAddToCombinationParams {
   selectedProductId: string | null;
+  selectedDeviceType?: string | null;
+  selectedDeviceName?: string | null;
   onCloseModal: () => void;
 }
 
 export const useAddToCombination = ({
   selectedProductId,
+  selectedDeviceType,
+  selectedDeviceName,
   onCloseModal,
 }: UseAddToCombinationParams) => {
   const navigate = useNavigate();
@@ -56,12 +61,8 @@ export const useAddToCombination = ({
   };
 
   // 에러 핸들러 (공통)
-  const handleComboError = (error: any) => {
-    console.error('기기 추가 실패 상세 정보:', error.response?.data || error.message);
-    if (error.response?.data) {
-      console.log('Error Code:', error.response.data.errorCode || error.response.data.code);
-      console.log('Error Message:', error.response.data.message);
-    }
+  const handleComboError = (_error: any) => {
+    // 에러 처리 로직 필요시 추가
   };
 
   /* 내 조합에 담기 */
@@ -169,9 +170,61 @@ export const useAddToCombination = ({
   const combinationDevices = comboDetail?.devices || [];
 
   /* 선택된 조합에 이미 담긴 기기인지 확인 */
-  const isAlreadyInSelectedCombination = selectedCombinationId && selectedProductId
-    ? combinationDevices.some(device => device.deviceId === Number(selectedProductId))
-    : false;
+  const duplicateCheck = (() => {
+    if (!selectedCombinationId || !selectedDeviceType || !selectedDeviceName) {
+      return { isBlocked: false, reason: null };
+    }
+
+    // deviceType 매핑 (영어 ↔ 한글)
+    const deviceTypeMap: Record<string, string[]> = {
+      'SMARTPHONE': ['SMARTPHONE', 'PHONE', '스마트폰', '폰'],
+      'LAPTOP': ['LAPTOP', '노트북'],
+      'TABLET': ['TABLET', '태블릿'],
+      'CHARGER': ['CHARGER', '충전기'],
+      'EARBUDS': ['EARBUDS', '이어버드'],
+      'WATCH': ['WATCH', '워치', '시계'],
+    };
+
+    // 같은 카테고리인지 확인하는 함수
+    const isSameDeviceType = (type1: string, type2: string): boolean => {
+      // 정확히 일치
+      if (type1 === type2) return true;
+
+      // 매핑 테이블에서 확인
+      for (const types of Object.values(deviceTypeMap)) {
+        if (types.includes(type1) && types.includes(type2)) {
+          return true;
+        }
+      }
+
+      return false;
+    };
+
+    const selectedBaseName = getBaseModelName(selectedDeviceName);
+
+    // 우선순위: 같은 모델 > 같은 카테고리
+    for (const device of combinationDevices) {
+      const deviceBaseName = getBaseModelName(device.name);
+      const isSameModel = deviceBaseName === selectedBaseName;
+
+      if (isSameModel) {
+        return { isBlocked: true, reason: 'model' as const };
+      }
+    }
+
+    for (const device of combinationDevices) {
+      const isSameCategory = isSameDeviceType(device.deviceType, selectedDeviceType);
+
+      if (isSameCategory) {
+        return { isBlocked: true, reason: 'category' as const };
+      }
+    }
+
+    return { isBlocked: false, reason: null };
+  })();
+
+  const isAlreadyInSelectedCombination = duplicateCheck.isBlocked;
+  const duplicateReason = duplicateCheck.reason;
 
   return {
     modalView,
@@ -185,6 +238,7 @@ export const useAddToCombination = ({
     showAllDevices,
     setShowAllDevices,
     isAlreadyInSelectedCombination,
+    duplicateReason,
     isAddingDevice,
     addToCombinationConfig,
     isProfileLoading: isAuthLoading,
