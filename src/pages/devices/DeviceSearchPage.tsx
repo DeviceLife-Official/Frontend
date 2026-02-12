@@ -1,4 +1,4 @@
-import { useRef, useLayoutEffect, useCallback } from 'react';
+import { useRef, useLayoutEffect, useCallback, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import GNB from '@/components/Home/GNB';
 import ProductCard from '@/components/ProductCard/ProductCard';
@@ -45,6 +45,15 @@ const DeviceSearchPage = () => {
     searchParams.set('productId', deviceId.toString());
     setSearchParams(searchParams);
   }, [searchParams, setSearchParams]);
+
+  /* 변환된 제품 리스트 (useMemo로 캐싱) */
+  const products = useMemo(
+    () => search.allDevices.map(device => ({
+      product: mapSearchDeviceToProduct(device),
+      deviceId: device.deviceId,
+    })),
+    [search.allDevices]
+  );
 
   /* 선택된 제품 찾기 */
   const selectedDevice = selectedProductId
@@ -194,11 +203,11 @@ const DeviceSearchPage = () => {
             </div>
           ) : (
             <div className="grid grid-cols-3 2xl:grid-cols-4 gap-x-28 gap-y-164">
-              {search.allDevices.map((device) => (
+              {products.map(({ product, deviceId }) => (
                 <ProductCard
-                  key={device.deviceId}
-                  product={mapSearchDeviceToProduct(device)}
-                  onClick={() => handleProductClick(device.deviceId)}
+                  key={deviceId}
+                  product={product}
+                  onClick={() => handleProductClick(deviceId)}
                 />
               ))}
             </div>
