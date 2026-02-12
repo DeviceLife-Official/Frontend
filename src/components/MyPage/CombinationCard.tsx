@@ -2,8 +2,11 @@ import { useState, memo } from 'react';
 import StarIcon from '@/assets/icons/star.svg?react';
 import StarXIcon from '@/assets/icons/starx.svg?react';
 import StarHoverIcon from '@/assets/icons/starhover.svg?react';
+import CombinationTag from '@/components/Combination/CombinationTag';
+import { useComboEvaluation } from '@/apis/combo/getComboEvaluation';
 import { formatDate } from '@/utils/format';
 import type { ComboListItem } from '@/types/combo/combo';
+import type { CombinationStatus } from '@/constants/combination';
 
 interface CombinationCardProps {
   combination: ComboListItem;
@@ -29,6 +32,9 @@ const CombinationCard = ({
   onNameBlur,
 }: CombinationCardProps) => {
   const [hoveredStarComboId, setHoveredStarComboId] = useState<number | null>(null);
+
+  // 조합 평가 캐시 구독 (staleTime: Infinity이므로 캐시에 있으면 API 호출 없이 바로 사용)
+  const { data: evaluation } = useComboEvaluation(combination.comboId);
 
   // 그라데이션 로직
   const gradientThreshold = columns === 4 ? 9 : 7;
@@ -90,44 +96,61 @@ const CombinationCard = ({
             {nameError && <p className="pl-12 font-body-4-r text-warning">{nameError}</p>}
           </div>
         ) : (
-          /* 일반 모드: 조합 번호 + 생성일 + 조합명 */
-          <div className="flex flex-col gap-8">
-            <div className="flex items-center gap-16">
-              <p className="font-body-3-r text-gray-400">조합{index + 1}</p>
-              <p className="font-body-3-r text-gray-400">
-                생성일: {formatDate(combination.createdAt)}
-              </p>
+          /* 일반 모드: 조합 번호 + 생성일 + 조합명 + 태그 */
+          <div className="flex flex-col gap-16">
+            <div className="flex flex-col gap-8">
+              <div className="flex items-center gap-16">
+                <p className="font-body-3-r text-gray-400">조합{index + 1}</p>
+                <p className="font-body-3-r text-gray-400">
+                  생성일: {formatDate(combination.createdAt)}
+                </p>
+              </div>
+              <div className="flex items-center gap-8">
+                <p className="font-body-1-sm text-black">{combination.comboName}</p>
+                {combination.isPinned ? (
+                  <StarIcon
+                    onClick={(e) => onTogglePin(e, combination.comboId)}
+                    className={`!w-22 !h-22 -mt-3 cursor-pointer transition-opacity ${
+                      hoveredStarComboId === combination.comboId ? 'opacity-80' : ''
+                    }`}
+                    onMouseEnter={() => setHoveredStarComboId(combination.comboId)}
+                    onMouseLeave={() => setHoveredStarComboId(null)}
+                  />
+                ) : (
+                  <>
+                    {hoveredStarComboId === combination.comboId ? (
+                      <StarHoverIcon
+                        onClick={(e) => onTogglePin(e, combination.comboId)}
+                        className="!w-22 !h-22 -mt-3 cursor-pointer"
+                        onMouseEnter={() => setHoveredStarComboId(combination.comboId)}
+                        onMouseLeave={() => setHoveredStarComboId(null)}
+                      />
+                    ) : (
+                      <StarXIcon
+                        onClick={(e) => onTogglePin(e, combination.comboId)}
+                        className="!w-22 !h-22 -mt-3 cursor-pointer"
+                        onMouseEnter={() => setHoveredStarComboId(combination.comboId)}
+                        onMouseLeave={() => setHoveredStarComboId(null)}
+                      />
+                    )}
+                  </>
+                )}
+              </div>
             </div>
-            <div className="flex items-center gap-8">
-              <p className="font-body-1-sm text-black">{combination.comboName}</p>
-              {combination.isPinned ? (
-                <StarIcon
-                  onClick={(e) => onTogglePin(e, combination.comboId)}
-                  className={`!w-22 !h-22 -mt-3 cursor-pointer transition-opacity ${
-                    hoveredStarComboId === combination.comboId ? 'opacity-80' : ''
-                  }`}
-                  onMouseEnter={() => setHoveredStarComboId(combination.comboId)}
-                  onMouseLeave={() => setHoveredStarComboId(null)}
-                />
-              ) : (
-                <>
-                  {hoveredStarComboId === combination.comboId ? (
-                    <StarHoverIcon
-                      onClick={(e) => onTogglePin(e, combination.comboId)}
-                      className="!w-22 !h-22 -mt-3 cursor-pointer"
-                      onMouseEnter={() => setHoveredStarComboId(combination.comboId)}
-                      onMouseLeave={() => setHoveredStarComboId(null)}
-                    />
-                  ) : (
-                    <StarXIcon
-                      onClick={(e) => onTogglePin(e, combination.comboId)}
-                      className="!w-22 !h-22 -mt-3 cursor-pointer"
-                      onMouseEnter={() => setHoveredStarComboId(combination.comboId)}
-                      onMouseLeave={() => setHoveredStarComboId(null)}
-                    />
-                  )}
-                </>
-              )}
+            {/* 조합 평가 태그 - COMBO_EVALUATION 캐시에서 등급 읽기 */}
+            <div className="flex gap-12">
+              <CombinationTag
+                name="연동성"
+                status={(evaluation?.connectivityGrade as CombinationStatus) || '-'}
+              />
+              <CombinationTag
+                name="편의성"
+                status={(evaluation?.convenienceGrade as CombinationStatus) || '-'}
+              />
+              <CombinationTag
+                name="라이프스타일"
+                status={(evaluation?.lifestyleGrade as CombinationStatus) || '-'}
+              />
             </div>
           </div>
         )}
@@ -143,15 +166,7 @@ const CombinationCard = ({
               key={device.deviceId}
               className="bg-white rounded-card shadow-[0_0_4px_rgba(0,0,0,0.1)] p-12 w-244 flex items-center gap-12"
             >
-              <div className="w-64 h-64 bg-gray-200 flex-shrink-0 overflow-hidden relative">
-                {device.imageUrl && (
-                  <img
-                    src={device.imageUrl}
-                    alt={device.name}
-                    className="absolute inset-0 w-full h-full object-cover"
-                  />
-                )}
-              </div>
+              <div className="w-64 h-64 bg-gray-200 flex-shrink-0" />
               <div className="flex flex-col gap-4 flex-1">
                 <p className="font-body-3-sm text-black truncate w-120">{device.name}</p>
                 <p className="font-body-4-r text-gray-300">{device.brandName}</p>

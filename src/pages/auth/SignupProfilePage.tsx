@@ -16,23 +16,10 @@ import { useAuth } from '@/hooks/useAuth';
 const SignupProfilePage = () => {
   const navigate = useNavigate();
   const [hasSubmitted, setHasSubmitted] = useState(false);
-  const { account, setProfile } = useSignupStore();
+  const { account, isEmailVerified, resetSignup } = useSignupStore();
   const { mutateAsync: signup } = usePostJoin();
   const { loginAndFinalize } = useLogin();
   const { isLoggedIn } = useAuth();
-
-  // 로그인된 상태에서 회원가입 페이지 접근 시 홈으로 리다이렉트
-  if (isLoggedIn) {
-    return <Navigate to={ROUTES.home} replace />;
-  }
-
-  // 이메일, 비밀번호, 중복확인이 모두 완료되었는지 확인
-  const isAccountComplete = account.email && account.password && account.isEmailVerified;
-
-  // 하나라도 빠지면 계정 페이지로 리다이렉트
-  if (!isAccountComplete) {
-    return <Navigate to={ROUTES.auth.signup.account} replace />;
-  }
 
   // 프로필 정보 입력 폼 상태 관리
   const {
@@ -46,15 +33,22 @@ const SignupProfilePage = () => {
     reValidateMode: 'onChange',
   });
 
+  // 로그인된 상태에서 회원가입 페이지 접근 시 홈으로 리다이렉트
+  if (isLoggedIn) {
+    return <Navigate to={ROUTES.home} replace />;
+  }
+
+  // 이메일, 비밀번호, 중복확인이 모두 완료되었는지 확인
+  const isAccountComplete = account.email && account.password && isEmailVerified;
+
+  // 하나라도 빠지면 계정 페이지로 리다이렉트
+  if (!isAccountComplete) {
+    return <Navigate to={ROUTES.auth.signup.account} replace />;
+  }
+
   // 프로필 정보 제출 성공 핸들러
   const onSubmitValid = async (data: SignupProfileFormData) => {
     setHasSubmitted(true);
-
-    // zustand에 프로필 정보 저장
-    setProfile({
-      username: data.name,
-      phoneNumber: data.phone,
-    });
 
     // 회원가입 API 호출
     try {
@@ -73,10 +67,14 @@ const SignupProfilePage = () => {
           keepLogin: false,
         });
 
+        // 회원가입 성공 → zustand 초기화 (이메일/비밀번호 메모리 정리)
+        resetSignup();
+
         // 로그인 성공 시 온보딩으로 이동
         navigate(ROUTES.onboarding.lifestyle, { replace: true });
       } catch (loginError) {
-        // 로그인 실패 시 알림
+        // 자동 로그인 실패해도 회원가입은 완료 → zustand 초기화
+        resetSignup();
         alert('회원가입은 완료되었지만 자동 로그인에 실패했습니다. 로그인 페이지에서 다시 시도해주세요.');
         navigate(ROUTES.auth.login, { replace: true });
       }

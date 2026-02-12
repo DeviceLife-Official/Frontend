@@ -16,11 +16,6 @@ import { useAuth } from '@/hooks/useAuth';
 const SignupAccountPage = () => {
   const navigate = useNavigate();
   const { isLoggedIn } = useAuth();
-
-  // 로그인된 상태에서 회원가입 페이지 접근 시 홈으로 리다이렉트
-  if (isLoggedIn) {
-    return <Navigate to={ROUTES.home} replace />;
-  }
   const [hasSubmitted, setHasSubmitted] = useState(false);
   const [hasEmailSubmitted, setHasEmailSubmitted] = useState(false);
 
@@ -46,6 +41,11 @@ const SignupAccountPage = () => {
     mode: 'onChange',
     reValidateMode: 'onChange',
   });
+
+  // 로그인된 상태에서 회원가입 페이지 접근 시 홈으로 리다이렉트
+  if (isLoggedIn) {
+    return <Navigate to={ROUTES.home} replace />;
+  }
 
   // 이메일 중복확인 핸들러
   const handleCheckDuplicate = async () => {
@@ -90,11 +90,10 @@ const SignupAccountPage = () => {
       return;
     }
 
-    // zustand에 계정 정보 + 중복확인 여부 저장 (API 호출 시 한 번에 사용)
+    // zustand에 계정 정보 저장 (API 호출 시 한 번에 사용)
     setAccount({
       email: data.email,
       password: data.password,
-      isEmailVerified: true,
     });
     // 프로필 페이지로 이동
     navigate(ROUTES.auth.signup.profile);

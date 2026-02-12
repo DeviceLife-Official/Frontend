@@ -5,9 +5,8 @@ import { ROUTES } from '@/constants/routes';
 import { useGetCombos } from '@/apis/combo/getCombos';
 import { useGetCombo } from '@/apis/combo/getComboId';
 import { usePostComboDevice } from '@/apis/combo/postComboDevices';
-import { useGetUserProfile } from '@/apis/mypage/getUserProfile';
 import { usePostRecentlyViewed } from '@/apis/recentlyViewed/postRecentlyViewed';
-import { hasAccessToken, hasCompletedOnboarding } from '@/utils/authStorage';
+import { useAuth } from '@/hooks/useAuth';
 
 interface UseAddToCombinationParams {
   selectedProductId: string | null;
@@ -20,14 +19,11 @@ export const useAddToCombination = ({
 }: UseAddToCombinationParams) => {
   const navigate = useNavigate();
 
-  // 로그인 상태 확인
-  const isLoggedIn = hasAccessToken();
+  // 인증 상태 확인
+  const { isLoggedIn, hasCompletedOnboarding, isAuthLoading } = useAuth();
 
-  // 사용자 프로필 조회 (로그인 시에만 자동 실행)
-  const { data: userProfile, isLoading: isProfileLoading } = useGetUserProfile();
-
-  // 온보딩 완료 여부 확인 (로딩 중에는 false로 기본 처리)
-  const hasOnboarding = isProfileLoading ? false : hasCompletedOnboarding(userProfile);
+  // 온보딩 완료 여부 (로딩 중에는 false로 기본 처리)
+  const hasOnboarding = isAuthLoading ? false : hasCompletedOnboarding;
 
   const [modalView, setModalView] = useState<ModalView>('device');
 
@@ -187,7 +183,7 @@ export const useAddToCombination = ({
     isAlreadyInSelectedCombination,
     isAddingDevice,
     addToCombinationConfig,
-    isProfileLoading,
+    isProfileLoading: isAuthLoading,
     handleCloseModal,
     handleSelectCombination,
     handleAddDeviceToCombination,

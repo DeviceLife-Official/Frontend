@@ -1,4 +1,3 @@
-import { axiosInstance } from '@/apis/axios/axios';
 import { cookieAxiosInstance } from '@/apis/axios/cookieAxios';
 import type {
   SendMailRequest,
@@ -14,7 +13,7 @@ import { useMutation } from '@tanstack/react-query';
 export const postSendMail = async (
   payload: SendMailRequest
 ): Promise<SendMailResponse> => {
-  const { data } = await axiosInstance.post<SendMailResponse>(
+  const { data } = await cookieAxiosInstance.post<SendMailResponse>(
     '/api/find-credential/find-password/send-mail',
     payload
   );
