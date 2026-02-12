@@ -55,7 +55,7 @@ const FindIdResultPage = () => {
                 <span>비밀번호가 생각나지 않으신가요?</span>
                 <button
                   type="button"
-                  className="underline underline-offset-4 cursor-pointer"
+                  className="underline underline-offset-4 cursor-pointer hover:opacity-80"
                   onClick={() => navigate(ROUTES.auth.findPassword)}
                 >
                   비밀번호 찾기
