@@ -2,6 +2,7 @@
 > 최적의 기기조합 웹 서비스
 > UMC 9th Project - Client Repository
 
+![KakaoTalk_20260212_224313434](https://github.com/user-attachments/assets/2deaa37b-9ce5-4c96-9201-beccaff84793)
 
 ## 📖 프로젝트 소개 (Project Overview)
 이 저장소는 최적의 기기 조합 추천 서비스 'Device Life'의 웹 클라이언트 코드를 관리합니다. 사용자가 수많은 스마트 기기 사이에서 자신에게 맞는 최적의 조합을 찾을 수 있도록, 직관적인 탐색 경험과 로직 기반의 실시간 평가 피드백을 제공하는 완성도 높은 UI/UX 구현에 집중합니다.
