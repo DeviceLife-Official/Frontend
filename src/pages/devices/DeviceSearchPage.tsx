@@ -1,4 +1,4 @@
-import { useRef, useLayoutEffect } from 'react';
+import { useRef, useLayoutEffect, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import GNB from '@/components/Home/GNB';
 import ProductCard from '@/components/ProductCard/ProductCard';
@@ -32,6 +32,19 @@ const DeviceSearchPage = () => {
 
   const productGridRef = useRef<HTMLDivElement>(null);
   const scroll = useScrollState(productGridRef);
+
+  /* 카테고리 클릭 핸들러 */
+  const handleCategoryClick = useCallback((categoryId: number) => {
+    search.setSelectedCategory(
+      search.selectedCategory === categoryId ? null : categoryId
+    );
+  }, [search.selectedCategory, search.setSelectedCategory]);
+
+  /* 제품 클릭 핸들러 */
+  const handleProductClick = useCallback((deviceId: number) => {
+    searchParams.set('productId', deviceId.toString());
+    setSearchParams(searchParams);
+  }, [searchParams, setSearchParams]);
 
   /* 선택된 제품 찾기 */
   const selectedDevice = selectedProductId
@@ -96,7 +109,7 @@ const DeviceSearchPage = () => {
               return (
                 <button
                   key={category.id}
-                  onClick={() => search.setSelectedCategory(search.selectedCategory === category.id ? null : category.id)}
+                  onClick={() => handleCategoryClick(category.id)}
                   className={`flex flex-col items-center gap-12 cursor-pointer transition-colors ${
                     category.id === 8 ? 'w-80' : 'w-110'
                   } ${
@@ -185,10 +198,7 @@ const DeviceSearchPage = () => {
                 <ProductCard
                   key={device.deviceId}
                   product={mapSearchDeviceToProduct(device)}
-                  onClick={() => {
-                    searchParams.set('productId', device.deviceId.toString());
-                    setSearchParams(searchParams);
-                  }}
+                  onClick={() => handleProductClick(device.deviceId)}
                 />
               ))}
             </div>
