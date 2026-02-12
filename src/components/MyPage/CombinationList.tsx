@@ -1,4 +1,4 @@
-import { type RefObject } from 'react';
+import { type RefObject, useState, useMemo } from 'react';
 import SecondaryButton from '@/components/Button/SecondaryButton';
 import SortDropdown from '@/components/Filter/SortDropdown';
 import CombinationMenu from '@/components/MyPage/CombinationMenu';
@@ -61,6 +61,27 @@ const CombinationList = ({
   handleTogglePin,
   handleTrashClick,
 }: CombinationListProps) => {
+  // Lazy Loading: 초기 12개, 더 보기 클릭 시 12개씩 추가
+  const INITIAL_DISPLAY_COUNT = 12;
+  const LOAD_MORE_COUNT = 12;
+  const [displayCount, setDisplayCount] = useState(INITIAL_DISPLAY_COUNT);
+
+  // 실제 렌더링할 조합 목록 (Detail View가 아닐 때만 Lazy Loading 적용)
+  const displayedCombos = useMemo(() => {
+    if (detailViewComboId !== null) {
+      // Detail View: 모든 조합 표시 (필터링된 조합 찾기 위해)
+      return sortedCombos;
+    }
+    // Normal View: displayCount만큼만 표시
+    return sortedCombos.slice(0, displayCount);
+  }, [sortedCombos, displayCount, detailViewComboId]);
+
+  const hasMore = sortedCombos.length > displayCount && detailViewComboId === null;
+
+  const handleLoadMore = () => {
+    setDisplayCount((prev) => prev + LOAD_MORE_COUNT);
+  };
+
   return (
     <div ref={combinationListRef} className="mt-76 flex flex-col gap-40">
       {isLoading && (
@@ -78,7 +99,7 @@ const CombinationList = ({
           <p className="font-body-2-r text-gray-400">등록된 조합이 없습니다.</p>
         </div>
       )}
-      {sortedCombos.map((combination, index) => {
+      {displayedCombos.map((combination, index) => {
         const isDetailView = detailViewComboId === combination.comboId;
         const hasDevices = combination.deviceCount > 0;
         const devices = isDetailView && comboDetail ? comboDetail.devices : [];
@@ -233,6 +254,18 @@ const CombinationList = ({
           </div>
         );
       })}
+
+      {/* 더 보기 버튼 */}
+      {hasMore && (
+        <div className="flex justify-center mt-40">
+          <button
+            onClick={handleLoadMore}
+            className="px-40 py-16 bg-blue-600 text-white font-body-2-sb rounded-button hover:bg-blue-500 transition-colors"
+          >
+            더 보기 ({sortedCombos.length - displayCount}개 남음)
+          </button>
+        </div>
+      )}
     </div>
   );
 };
