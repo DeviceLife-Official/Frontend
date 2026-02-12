@@ -24,7 +24,7 @@ const GoogleLoginButton = ({ onClick, className }: GoogleLoginButtonProps) => {
       className={clsx(
         'flex items-center gap-24',
         'py-8 pl-0 pr-8',
-        'bg-white cursor-pointer',
+        'bg-white cursor-pointer hover:bg-gray-100',
         className
       )}
       style={{ boxShadow: '0 0 4px 0 rgba(0, 0, 0, 0.20)' }}
