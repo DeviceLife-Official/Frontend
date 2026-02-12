@@ -27,8 +27,10 @@ export const usePostComboDevice = () => {
     mutationFn: ({ comboId, deviceId }: { comboId: number; deviceId: number }) =>
       postComboDevice(comboId, { deviceId }),
     onSuccess: (_data, variables) => {
-      // 조합 목록/상세 캐시 무효화
+      // 조합 목록 캐시 무효화
       queryClient.invalidateQueries({ queryKey: [queryKey.COMBOS] });
+      // 조합 상세 정보 캐시 무효화
+      queryClient.invalidateQueries({ queryKey: [queryKey.COMBO_DETAIL] });
       // 조합 평가 폴링 시작
       poll(variables.comboId);
     },
