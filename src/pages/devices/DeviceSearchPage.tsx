@@ -1,377 +1,66 @@
-import { useState, useEffect, useRef, useMemo } from 'react';
-import { useSearchParams, useNavigate } from 'react-router-dom';
+import { useRef } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import GNB from '@/components/Home/GNB';
 import ProductCard from '@/components/ProductCard/ProductCard';
-import PrimaryButton from '@/components/Button/PrimaryButton';
-import CombinationDeviceCard from '@/components/Combination/CombinationDeviceCard';
 import FilterDropdown from '@/components/Filter/FilterDropdown';
 import SortDropdown from '@/components/Filter/SortDropdown';
 import LoadingSpinner from '@/components/LoadingSpinner';
+import DeviceDetailModal from '@/components/DeviceSearch/DeviceDetailModal';
+import CombinationSelectModal from '@/components/DeviceSearch/CombinationSelectModal';
+import CombinationDetailModal from '@/components/DeviceSearch/CombinationDetailModal';
+import SaveCompleteModal from '@/components/DeviceSearch/SaveCompleteModal';
 import SearchIcon from '@/assets/icons/search.svg?react';
 import FilterIcon from '@/assets/icons/filter.svg?react';
 import TopIcon from '@/assets/icons/top.svg?react';
-import XIcon from '@/assets/icons/X.svg?react';
-import BackIcon from '@/assets/icons/back.svg?react';
-import StarIcon from '@/assets/icons/star.svg?react';
-import MoreIcon from '@/assets/icons/more.svg?react';
-import SaveIcon from '@/assets/icons/save.svg?react';
 
 import {
   DEVICE_CATEGORIES,
   SORT_OPTIONS,
   PRICE_OPTIONS,
-  SCROLL_CONSTANTS,
 } from '@/constants/devices';
-import { ROUTES } from '@/constants/routes';
-import { type ModalView, type SearchDevice } from '@/types/devices';
-import { useSearchDevices } from '@/apis/devices/searchDevices';
-import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
-import { useGetCombos } from '@/apis/combo/getCombos';
-import { useGetCombo } from '@/apis/combo/getComboId';
-import { usePostComboDevice } from '@/apis/combo/postComboDevices';
-import { useGetUserProfile } from '@/apis/mypage/getUserProfile';
-import { useGetBrands } from '@/apis/devices/getBrands';
-import { hasAccessToken, hasCompletedOnboarding } from '@/utils/authStorage';
-
-// 카테고리 ID를 API deviceType으로 변환
-const getCategoryDeviceType = (categoryId: number | null): string | undefined => {
-  if (!categoryId) return undefined;
-  const mapping: Record<number, string> = {
-    1: 'SMARTPHONE',
-    2: 'LAPTOP',
-    3: 'TABLET',
-    4: 'SMARTWATCH',
-    5: 'AUDIO',
-    6: 'KEYBOARD',
-    7: 'MOUSE',
-    8: 'CHARGER',
-  };
-  return mapping[categoryId];
-};
-
-// sortOption을 API sortType으로 변환
-const getSortType = (sortOption: string) => {
-  const mapping: Record<string, 'LATEST' | 'NAME_ASC' | 'PRICE_ASC' | 'PRICE_DESC'> = {
-    'latest': 'LATEST',
-    'alphabetical': 'NAME_ASC',
-    'price-low': 'PRICE_ASC',
-    'price-high': 'PRICE_DESC',
-  };
-  return mapping[sortOption] ?? 'LATEST';
-};
-
-// SearchDevice를 Product 형식으로 변환
-const mapSearchDeviceToProduct = (device: SearchDevice) => {
-  const brandName = device.brandName ?? '';
-  const deviceName = device.name ?? '';
-
-  // device.name이 이미 brandName으로 시작하면 중복 방지
-  const fullName = deviceName.startsWith(brandName)
-    ? deviceName
-    : `${brandName} ${deviceName}`.trim();
-
-  return {
-    id: device.deviceId,
-    name: fullName,
-    category: device.deviceType ?? '',
-    price: device.price ?? 0,
-    image: device.imageUrl ?? null,
-    colors: [] as string[],
-  };
-};
+import { mapSearchDeviceToProduct } from '@/utils/mapSearchDevice';
+import { useDeviceSearch } from '@/hooks/useDeviceSearch';
+import { useScrollState } from '@/hooks/useScrollState';
+import { useAddToCombination } from '@/hooks/useAddToCombination';
 
 const DeviceSearchPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const selectedProductId = searchParams.get('productId');
-  const navigate = useNavigate();
 
-  // 로그인 상태 확인
-  const isLoggedIn = hasAccessToken();
-
-  // 사용자 프로필 조회 (로그인 시에만 자동 실행)
-  const { data: userProfile, isLoading: isProfileLoading } = useGetUserProfile();
-
-  // 온보딩 완료 여부 확인 (로딩 중에는 false로 기본 처리)
-  const hasOnboarding = isProfileLoading ? false : hasCompletedOnboarding(userProfile);
-
-  const [modalView, setModalView] = useState<ModalView>('device');
-
-  // API hooks
-  const { data: combos = [] } = useGetCombos();
-  const { mutate: addDeviceToCombo, isPending: isAddingDevice } = usePostComboDevice();
-
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
-  const [sortOption, setSortOption] = useState('latest');
-  const [selectedPrice, setSelectedPrice] = useState<string[]>([]);
-  const [selectedBrand, setSelectedBrand] = useState<string | null>(null);
-  const [isAtBottom, setIsAtBottom] = useState(false);
-  const [showTopButton, setShowTopButton] = useState(false);
-  const [selectedCombinationId, setSelectedCombinationId] = useState<number | null>(null);
-  const [showAllDevices, setShowAllDevices] = useState(false);
-  const [showSaveCompleteModal, setShowSaveCompleteModal] = useState(false);
-  const [isFadingOut, setIsFadingOut] = useState(false);
-
-  // 선택된 조합의 상세 정보 조회
-  const { data: comboDetail } = useGetCombo(selectedCombinationId);
+  // 검색/필터 상태
+  const search = useDeviceSearch();
 
   const productGridRef = useRef<HTMLDivElement>(null);
+  const scroll = useScrollState(productGridRef);
 
-  // 브랜드 API 조회 - 선택된 카테고리에 따라 deviceType 전달
-  const { data: brandsData } = useGetBrands(getCategoryDeviceType(selectedCategory));
-
-  // API 데이터를 FilterOption 형식으로 변환
-  const brandOptions = useMemo(() => {
-    if (!brandsData?.result) return [];
-    return brandsData.result.map(brand => ({
-      value: brand.brandId.toString(),
-      label: brand.brandName,
-    }));
-  }, [brandsData]);
-
-  // 기기 검색 API 파라미터 구성
-  const apiSearchParams = useMemo(() => {
-    const deviceType = getCategoryDeviceType(selectedCategory);
-    return {
-      keyword: searchQuery || undefined,
-      size: 24,
-      sortType: getSortType(sortOption),
-      deviceTypes: deviceType ? [deviceType] : undefined,
-      brandIds: selectedBrand ? [Number(selectedBrand)] : undefined,
-    };
-  }, [searchQuery, selectedCategory, sortOption, selectedBrand]);
-
-  // 기기 검색 API 호출
-  const {
-    data: searchData,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-    isLoading: isSearchLoading,
-    isError: isSearchError,
-  } = useSearchDevices(apiSearchParams);
-
-  // 전체 기기 목록 (모든 페이지 결합)
-  const allDevices = useMemo(() =>
-    searchData?.pages.flatMap(page => page.devices) ?? [],
-    [searchData]
-  );
-
-  // 무한 스크롤 트리거
-  const { targetRef, isIntersecting } = useIntersectionObserver({ rootMargin: '100px' });
-
-  // 스크롤 감지 시 다음 페이지 로드
-  useEffect(() => {
-    if (isIntersecting && hasNextPage && !isFetchingNextPage) {
-      fetchNextPage();
-    }
-  }, [isIntersecting, hasNextPage, isFetchingNextPage, fetchNextPage]);
-
-  // 페이지 마운트 시 상단으로 스크롤
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
-
-  // 카테고리 변경 시 선택된 브랜드 초기화
-  useEffect(() => {
-    setSelectedBrand(null);
-  }, [selectedCategory]);
+  // 조합 담기 + 모달 상태
+  const combo = useAddToCombination({
+    selectedProductId,
+    onCloseModal: () => {
+      searchParams.delete('productId');
+      setSearchParams(searchParams);
+    },
+  });
 
   /* 선택된 제품 찾기 */
   const selectedDevice = selectedProductId
-    ? allDevices.find(d => d.deviceId === Number(selectedProductId))
+    ? search.allDevices.find(d => d.deviceId === Number(selectedProductId))
     : null;
   const selectedProduct = selectedDevice ? mapSearchDeviceToProduct(selectedDevice) : null;
 
-  /* 모달 닫기 */
-  const handleCloseModal = () => {
-    searchParams.delete('productId');
-    setSearchParams(searchParams);
-    setModalView('device');
-    setSelectedCombinationId(null);
-    setShowAllDevices(false);
-  };
-
-  /* 내 조합에 담기 */
-  const handleAddToCombination = () => {
-    // 조합이 1개면 바로 저장
-    if (combos.length === 1 && selectedProductId) {
-      addDeviceToCombo(
-        { comboId: combos[0].comboId, deviceId: Number(selectedProductId) },
-        {
-          onSuccess: () => {
-            setModalView('device');
-            setShowSaveCompleteModal(true);
-          },
-          onError: (error: unknown) => {
-            const axiosError = error as { response?: { status?: number } };
-            if (axiosError?.response?.status === 400) {
-              alert('이미 조합에 추가된 기기입니다.');
-            } else {
-              console.error('기기 추가 실패:', error);
-            }
-          },
-        }
-      );
-      return;
-    }
-
-    // 조합이 2개 이상이면 선택 모달 표시
-    setModalView('combination');
-  };
-
-  /* 버튼 텍스트 및 핸들러 결정 */
-  const getAddToCombinationConfig = () => {
-    // Case 1: 로그아웃 상태
-    if (!isLoggedIn) {
-      return {
-        text: '로그인하고 내 조합에 담기',
-        handler: () => {
-          navigate(ROUTES.auth.login);
-        },
-      };
-    }
-
-    // Case 2: 로그인했지만 온보딩 미완료
-    if (!hasOnboarding) {
-      return {
-        text: '맞춤 설정하고 담기',
-        handler: () => {
-          navigate(ROUTES.onboarding.lifestyle);
-        },
-      };
-    }
-
-    // Case 3: 로그인 + 온보딩 완료
-    return {
-      text: '내 조합에 담기',
-      handler: handleAddToCombination,
-    };
-  };
-
-  const addToCombinationConfig = getAddToCombinationConfig();
-
-  /* 조합 선택 - 기기 리스트 보기 */
-  const handleSelectCombination = (combinationId: number) => {
-    setSelectedCombinationId(combinationId);
-    setShowAllDevices(false);
-    setModalView('combinationDetail');
-  };
-
-  /* 조합에 기기 담기 */
-  const handleAddDeviceToCombination = () => {
-    if (selectedCombinationId && selectedProductId) {
-      addDeviceToCombo(
-        { comboId: selectedCombinationId, deviceId: Number(selectedProductId) },
-        {
-          onSuccess: () => {
-            setModalView('device');
-            setShowSaveCompleteModal(true);
-          },
-          onError: (error: unknown) => {
-            const axiosError = error as { response?: { status?: number } };
-            if (axiosError?.response?.status === 400) {
-              alert('이미 조합에 추가된 기기입니다.');
-            } else {
-              console.error('기기 추가 실패:', error);
-            }
-          },
-        }
-      );
-    }
-  };
-
-  /* 저장 완료 모달 자동 닫기 */
-  useEffect(() => {
-    if (showSaveCompleteModal) {
-      // 1. 0.8초 유지
-      const holdTimer = setTimeout(() => {
-        setIsFadingOut(true);
-
-        // 2. 0.2초 동안 dissolve (fade-out) 후 종료
-        const closeTimer = setTimeout(() => {
-          setShowSaveCompleteModal(false);
-          setIsFadingOut(false);
-          handleCloseModal();
-        }, 200);
-
-        return () => clearTimeout(closeTimer);
-      }, 800);
-
-      return () => clearTimeout(holdTimer);
-    }
-  }, [showSaveCompleteModal]);
-
-  /* 선택된 조합 정보 */
-  const selectedCombination = selectedCombinationId
-    ? combos.find(c => c.comboId === selectedCombinationId)
-    : null;
-
-  /* 선택된 조합의 기기 리스트 (API에서 조회) */
-  const combinationDevices = comboDetail?.devices || [];
-
-  /* 선택된 조합에 이미 담긴 기기인지 확인 */
-  const isAlreadyInSelectedCombination = selectedCombinationId && selectedProductId
-    ? combinationDevices.some(device => device.deviceId === Number(selectedProductId))
-    : false;
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const scrollTop = window.scrollY;
-      const windowHeight = window.innerHeight;
-      const documentHeight = document.documentElement.scrollHeight;
-
-      /* 맨 마지막 스크롤 도달 여부 체크 */
-      const reachedBottom =
-        scrollTop + windowHeight >= documentHeight - SCROLL_CONSTANTS.BOTTOM_BUFFER;
-      setIsAtBottom(reachedBottom);
-
-      /* 3행이 완전히 보일 때 Top 버튼 표시 */
-      if (productGridRef.current) {
-        const gridTop = productGridRef.current.offsetTop;
-        const thirdRowVisible =
-          scrollTop + windowHeight >= gridTop + SCROLL_CONSTANTS.TOP_BUTTON_THRESHOLD;
-        setShowTopButton(thirdRowVisible);
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    handleScroll(); 
-
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  /* 모달 열렸을 때 y 스크롤 방지 */
-  useEffect(() => {
-    if (selectedProduct) {
-      document.documentElement.style.overflowY = 'hidden';
-    } else {
-      document.documentElement.style.overflowY = 'auto';
-    }
-    return () => {
-      document.documentElement.style.overflowY = 'auto';
-    };
-  }, [selectedProduct]);
-
-  const handleScrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
   return (
-    <div className={`min-h-screen bg-white relative max-w-[100vw] overflow-x-hidden ${isAtBottom ? 'bg-effect-fade-bottom' : ''}`}>
+    <div className={`min-h-screen bg-white relative max-w-[100vw] overflow-x-hidden ${scroll.isAtBottom ? 'bg-effect-fade-bottom' : ''}`}>
       <GNB />
 
-      {/* Main Content */}
-      {/* <div className="pt-108"> */}
-        {/* Search Bar */}
+      {/* Search Bar */}
         <div className="flex justify-center pt-80">
           <div className="w-600 h-72 bg-blue-100 rounded-button px-12 py-20 flex items-center gap-12">
             <SearchIcon className="w-28 h-28 flex-shrink-0 text-black" />
             <input
               type="text"
               placeholder="기기명으로 검색"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              value={search.searchQuery}
+              onChange={(e) => search.setSearchQuery(e.target.value)}
               className="flex-1 bg-transparent font-body-1-r text-gray-500 outline-none placeholder:text-gray-500"
             />
           </div>
@@ -382,11 +71,11 @@ const DeviceSearchPage = () => {
           <div className="flex items-center justify-center gap-20 2xl:gap-56">
             {DEVICE_CATEGORIES.map((category) => {
               const { Icon } = category;
-              const isSelected = selectedCategory === category.id;
+              const isSelected = search.selectedCategory === category.id;
               return (
                 <button
                   key={category.id}
-                  onClick={() => setSelectedCategory(category.id)}
+                  onClick={() => search.setSelectedCategory(search.selectedCategory === category.id ? null : category.id)}
                   className={`flex flex-col items-center gap-12 cursor-pointer transition-colors ${
                     category.id === 8 ? 'w-80' : 'w-110'
                   } ${
@@ -415,7 +104,7 @@ const DeviceSearchPage = () => {
           <div className="flex items-center gap-0">
             {/* Filter Icon */}
             <button className="w-48 h-48 flex items-center justify-center">
-              <FilterIcon className={`w-48 h-48 ${selectedPrice.length > 0 || selectedBrand !== null ? 'text-blue-600' : 'text-black'}`} />
+              <FilterIcon className={`w-48 h-48 ${search.selectedPrice.length > 0 || search.selectedBrand !== null ? 'text-blue-600' : 'text-black'}`} />
             </button>
 
             {/* Price Filter */}
@@ -423,8 +112,8 @@ const DeviceSearchPage = () => {
               <FilterDropdown
                 label="가격대"
                 options={PRICE_OPTIONS}
-                selectedValue={selectedPrice}
-                onSelect={(value) => setSelectedPrice(Array.isArray(value) ? value : [])}
+                selectedValue={search.selectedPrice}
+                onSelect={(value) => search.setSelectedPrice(Array.isArray(value) ? value : [])}
                 multiple
               />
             </div>
@@ -433,25 +122,25 @@ const DeviceSearchPage = () => {
             <div className="ml-20">
               <FilterDropdown
                 label="브랜드"
-                options={brandOptions}
-                selectedValue={selectedBrand}
-                onSelect={(value) => setSelectedBrand(value as string | null)}
+                options={search.brandOptions}
+                selectedValue={search.selectedBrand}
+                onSelect={(value) => search.setSelectedBrand(value as string | null)}
               />
             </div>
           </div>
 
-            <div className="flex items-center justify-between pt-80">
+          <div className="flex items-center justify-between pt-80">
             {/* Left side - Result count */}
             <div className="flex items-center gap-2">
-              <p className="font-body-1-sm text-black">{allDevices.length}</p>
+              <p className="font-body-1-sm text-black">{search.allDevices.length}</p>
               <p className="font-body-1-r text-black">개 결과</p>
             </div>
 
             {/* Right side - Sort dropdown */}
             <SortDropdown
               options={SORT_OPTIONS}
-              selectedValue={sortOption}
-              onSelect={setSortOption}
+              selectedValue={search.sortOption}
+              onSelect={search.setSortOption}
              />
           </div>
         </div>
@@ -459,19 +148,19 @@ const DeviceSearchPage = () => {
         {/* Product Grid */}
         <div ref={productGridRef} className="mx-auto px-120 2xl:px-160">
           {/* 초기 로딩: 데이터가 없고 로딩 중일 때만 로딩 스피너 표시 */}
-          {isSearchLoading && allDevices.length === 0 ? (
+          {search.isSearchLoading && search.allDevices.length === 0 ? (
             <LoadingSpinner />
-          ) : isSearchError && allDevices.length === 0 ? (
+          ) : search.isSearchError && search.allDevices.length === 0 ? (
             <div className="flex justify-center items-center py-100">
               <p className="font-body-1-r text-red-500">검색 결과를 불러오는데 실패했습니다.</p>
             </div>
-          ) : allDevices.length === 0 ? (
+          ) : search.allDevices.length === 0 ? (
             <div className="flex justify-center items-center py-100">
               <p className="font-body-1-r text-gray-400">검색 결과가 없습니다.</p>
             </div>
           ) : (
             <div className="grid grid-cols-3 2xl:grid-cols-4 gap-x-28 gap-y-164">
-              {allDevices.map((device) => (
+              {search.allDevices.map((device) => (
                 <ProductCard
                   key={device.deviceId}
                   product={mapSearchDeviceToProduct(device)}
@@ -485,10 +174,10 @@ const DeviceSearchPage = () => {
           )}
 
           {/* 무한 스크롤 트리거 */}
-          <div ref={targetRef} className="h-20" />
+          <div ref={search.targetRef} className="h-20" />
 
           {/* 로딩 인디케이터 */}
-          {isFetchingNextPage && (
+          {search.isFetchingNextPage && (
             <div className="flex justify-center py-40">
               <p className="font-body-1-r text-gray-400">더 불러오는 중...</p>
             </div>
@@ -496,9 +185,9 @@ const DeviceSearchPage = () => {
         </div>
 
         {/* Top Button - 3행이 보일 때만 표시 */}
-        {showTopButton && (
+        {scroll.showTopButton && (
           <button
-            onClick={handleScrollToTop}
+            onClick={scroll.handleScrollToTop}
             className="fixed right-48 bottom-48 w-48 h-48 flex items-center justify-center cursor-pointer hover:opacity-80 transition-all duration-300"
             aria-label="맨 위로 이동"
           >
@@ -508,298 +197,57 @@ const DeviceSearchPage = () => {
 
         {/* Bottom Spacing */}
         <div className="h-268" />
-      {/* </div> */}
-
       {/* Device Detail Modal */}
-      {selectedProduct && !showSaveCompleteModal && (
+      {selectedProduct && !combo.showSaveCompleteModal && (
         <>
           {/* Background Overlay - HomeIndicator보다 높게 설정 */}
           <div
             className="fixed inset-0 bg-black/50 z-60"
-            onClick={handleCloseModal}
+            onClick={combo.handleCloseModal}
           />
 
           {/* Modal */}
           <div className="fixed inset-0 flex justify-center items-center z-72 pointer-events-none">
-            {/* Device Info Modal */}
-            {modalView === 'device' && (
-              <div className="flex flex-col items-end gap-20 pointer-events-auto">
-                {/* Close Button - 카드 바깥 */}
-                <button
-                  onClick={handleCloseModal}
-                  className="w-48 h-48 flex items-center justify-center cursor-pointer hover:opacity-80 transition-opacity"
-                  aria-label="닫기"
-                >
-                  <XIcon className="w-48 h-48 text-white" />
-                </button>
-
-                {/* Card */}
-                <div
-                  className="bg-white rounded-card px-56 py-40 overflow-y-auto scrollbar-minimal"
-                  style={{
-                    width: '907px',
-                    height: '670px',
-                  }}
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  {/* Content */}
-                  <div className="flex flex-col gap-20">
-                    {/* Row 1: Name & Price */}
-                    <div className="w-400">
-                      {/* Name & Price */}
-                      <div className="flex flex-col gap-12">
-                        <p className="font-heading-1 text-blue-600">{selectedProduct.name}</p>
-                        <div className="flex items-center gap-8 font-heading-2 text-black">
-                          <p>₩</p>
-                          <p>{(selectedProduct.price ?? 0).toLocaleString()}</p>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Row 2: Image + Specs */}
-                    <div className="flex items-start gap-56">
-                      {/* Image */}
-                      <div className="w-400 h-400 bg-gray-200 relative">
-                        {selectedProduct.image ? (
-                          <img
-                            src={selectedProduct.image}
-                            alt={selectedProduct.name}
-                            className="absolute inset-0 w-full h-full object-contain"
-                          />
-                        ) : null}
-                      </div>
-
-                      {/* Right Section - Specs */}
-                      <div className="w-303 flex flex-col gap-40">
-                        {/* Product Info Table */}
-                        <div className="flex flex-col gap-20 pl-16">
-                          <div className="flex items-center gap-24">
-                            <p className="font-body-2-r text-gray-400 w-80 flex-shrink-0">모델명</p>
-                            <p className="font-body-2-r text-black line-clamp-1">{selectedProduct.name}</p>
-                          </div>
-                          <div className="flex items-center gap-24">
-                            <p className="font-body-2-r text-gray-400 w-80">카테고리</p>
-                            <p className="font-body-2-r text-black">{selectedProduct.category}</p>
-                          </div>
-                          {selectedDevice?.brandName && (
-                            <div className="flex items-center gap-24">
-                              <p className="font-body-2-r text-gray-400 w-80">브랜드</p>
-                              <p className="font-body-2-r text-black">{selectedDevice.brandName}</p>
-                            </div>
-                          )}
-                          <div className="flex items-center gap-24">
-                            <p className="font-body-2-r text-gray-400 w-80">가격</p>
-                            <div className="flex items-center gap-4 font-body-2-r text-black">
-                              <p>{(selectedProduct.price ?? 0).toLocaleString()}</p>
-                              <p>원</p>
-                            </div>
-                          </div>
-                          {selectedDevice?.specifications?.screenInch ? (
-                            <div className="flex items-center gap-24">
-                              <p className="font-body-2-r text-gray-400 w-80">인치</p>
-                              <p className="font-body-2-r text-black">
-                                {String(selectedDevice.specifications.screenInch)}
-                              </p>
-                            </div>
-                          ) : null}
-                          {selectedDevice?.specifications?.chargingPort ? (
-                            <div className="flex items-center gap-24">
-                              <p className="font-body-2-r text-gray-400 w-80">충전방식</p>
-                              <p className="font-body-2-r text-black">
-                                {String(selectedDevice.specifications.chargingPort).replace('_', '-')}
-                              </p>
-                            </div>
-                          ) : null}
-                          {selectedDevice?.releaseDate && (
-                            <div className="flex items-center gap-24">
-                              <p className="font-body-2-r text-gray-400 w-80">출시일</p>
-                              <p className="font-body-2-r text-black">
-                                {new Date(selectedDevice.releaseDate).toLocaleDateString('ko-KR', { year: 'numeric', month: 'long' })}
-                              </p>
-                            </div>
-                          )}
-                        </div>
-
-                      </div>
-                    </div>
-
-                    {/* Row 3: Button */}
-                    <div className="w-400">
-                      <PrimaryButton
-                        text={addToCombinationConfig.text}
-                        onClick={addToCombinationConfig.handler}
-                        disabled={isProfileLoading}
-                        className="w-full bg-blue-500 hover:bg-blue-400 transition-colors"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
+            {combo.modalView === 'device' && (
+              <DeviceDetailModal
+                product={selectedProduct}
+                device={selectedDevice!}
+                addToCombinationConfig={combo.addToCombinationConfig}
+                isProfileLoading={combo.isProfileLoading}
+                onClose={combo.handleCloseModal}
+              />
             )}
 
-            {/* Combination Selection Modal */}
-            {modalView === 'combination' && (
-              <div className="flex flex-col items-end gap-20 pointer-events-auto">
-                <div className="flex items-center justify-between w-full">
-                  <button
-                    onClick={() => setModalView('device')}
-                    className="w-48 h-48 flex items-center justify-center cursor-pointer hover:opacity-80 transition-opacity"
-                    aria-label="뒤로가기"
-                  >
-                    <BackIcon className="w-48 h-48" />
-                  </button>
-                  <button
-                    onClick={handleCloseModal}
-                    className="w-48 h-48 flex items-center justify-center cursor-pointer hover:opacity-80 transition-opacity"
-                    aria-label="닫기"
-                  >
-                    <XIcon className="w-48 h-48 text-white" />
-                  </button>
-                </div>
-
-                {/* Card */}
-                <div
-                  className="bg-white rounded-card shadow-[0_0_10px_rgba(0,0,0,0.25)]"
-                  style={{
-                    width: '907px',
-                    height: '670px',
-                  }}
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  {/* Combination List */}
-                  <div className="flex flex-col ml-20 overflow-y-auto h-full scrollbar-minimal">
-                    {combos.map((combo, index) => (
-                      <button
-                        key={combo.comboId}
-                        onClick={() => handleSelectCombination(combo.comboId)}
-                        className="flex items-center justify-between pl-20 pr-36 py-24 hover:bg-gray-50 transition-colors border-b border-gray-200 cursor-pointer last:border-none"
-                      >
-                        {/* 좌측: 조합 정보 */}
-                        <div className="flex flex-col gap-24 items-start">
-                          {/* 조합 번호 + 조합명 */}
-                          <div className="flex flex-col gap-8 items-start">
-                            <p className="font-body-3-r text-gray-400">조합 {index + 1}</p>
-                            {/* 조합명 + 대표조합 star */}
-                            <div className="flex items-center gap-8">
-                              <p className="font-body-1-sm text-black">{combo.comboName}</p>
-                              {combo.isPinned && <StarIcon className="w-22 h-22 -mt-3" />}
-                            </div>
-                          </div>
-                          {/* 기기 수 + 총 가격 */}
-                          <div className="flex gap-12">
-                            <span className="bg-blue-200 text-blue-700 font-body-2-sm px-12 py-8 rounded-full">
-                              기기 {combo.deviceCount}개
-                            </span>
-                            <span className="bg-gray-200 text-gray-700 font-body-2-sm px-12 py-8 rounded-full">
-                              ₩{combo.totalPrice.toLocaleString()}
-                            </span>
-                          </div>
-                        </div>
-
-                        {/* 우측: More 아이콘 */}
-                        <MoreIcon className="w-20 h-36 text-gray-400" />
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </div>
+            {combo.modalView === 'combination' && (
+              <CombinationSelectModal
+                combos={combo.combos}
+                onSelectCombination={combo.handleSelectCombination}
+                onBack={() => combo.setModalView('device')}
+                onClose={combo.handleCloseModal}
+              />
             )}
 
-            {/* Combination Detail Modal - 기기 리스트 */}
-            {modalView === 'combinationDetail' && selectedCombination && (
-              <div
-                className="flex flex-col items-start gap-20 pointer-events-auto"
-                style={{ paddingTop: '50px' }}
-              >
-                {/* Header: Back + X 버튼 */}
-                <div className="flex items-center justify-between w-full">
-                  <button
-                    onClick={() => setModalView('combination')}
-                    className="w-48 h-48 flex items-center justify-center cursor-pointer hover:opacity-80 transition-opacity"
-                    aria-label="뒤로가기"
-                  >
-                    <BackIcon className="w-48 h-48" />
-                  </button>
-                  <button
-                    onClick={handleCloseModal}
-                    className="w-48 h-48 flex items-center justify-center cursor-pointer hover:opacity-80 transition-opacity"
-                    aria-label="닫기"
-                  >
-                    <XIcon className="w-48 h-48 text-white" />
-                  </button>
-                </div>
-
-                {/* Card */}
-                <div
-                  className="bg-white rounded-card shadow-[0_0_10px_rgba(0,0,0,0.25)] mb-50 flex flex-col overflow-y-auto scrollbar-minimal"
-                  style={{
-                    width: '907px',
-                    height:'670px',
-                  }}
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  {/* 조합 정보 + 기기 그리드 */}
-                  <CombinationDeviceCard
-                    combination={selectedCombination}
-                    devices={combinationDevices}
-                    columns={3}
-                    defaultRows={3}
-                    expanded={showAllDevices}
-                    onExpand={(value) => setShowAllDevices(value)}
-                    showExpandButton={false}
-                    showGradient={true}
-                    className="px-56 pt-40 pb-0 flex-shrink-0"
-                    index={combos.findIndex(c => c.comboId === selectedCombinationId)}
-                  />
-
-                  {/* 토글 버튼 - CombinationDeviceCard 외부에 배치 */}
-                  {combinationDevices.length > 9 && !showAllDevices && (
-                    <button
-                      onClick={() => setShowAllDevices(true)}
-                      className="mt-16 px-56 pl-68 font-body-2-r text-gray-500 underline cursor-pointer hover:opacity-80 w-fit"
-                    >
-                      기기 전체보기
-                    </button>
-                  )}
-                  {combinationDevices.length > 9 && showAllDevices && (
-                    <button
-                      onClick={() => setShowAllDevices(false)}
-                      className="mt-16 px-56 pl-68 font-body-2-r text-gray-500 underline cursor-pointer hover:opacity-80 w-fit"
-                    >
-                      간략히 보기
-                    </button>
-                  )}
-
-                  {/* 버튼 컨테이너 - 토글 버튼으로부터 간격 유지하며 하단 고정 */}
-                  <div className="px-40 pb-40 pt-30 mt-auto">
-                    <div className="flex justify-end">
-                      <PrimaryButton
-                        text={isAlreadyInSelectedCombination ? '이미 담은 상품입니다.' : `${selectedCombination.comboName}에 담기`}
-                        onClick={handleAddDeviceToCombination}
-                        disabled={isAlreadyInSelectedCombination || isAddingDevice}
-                        className={`w-280 ${isAlreadyInSelectedCombination ? '' : 'bg-blue-600 hover:bg-blue-500'}`}
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
+            {combo.modalView === 'combinationDetail' && combo.selectedCombination && (
+              <CombinationDetailModal
+                combination={combo.selectedCombination}
+                devices={combo.combinationDevices}
+                comboIndex={combo.combos.findIndex(c => c.comboId === combo.selectedCombinationId)}
+                showAllDevices={combo.showAllDevices}
+                onExpandChange={combo.setShowAllDevices}
+                isAlreadyInCombination={combo.isAlreadyInSelectedCombination}
+                isAddingDevice={combo.isAddingDevice}
+                onAddDevice={combo.handleAddDeviceToCombination}
+                onBack={() => combo.setModalView('combination')}
+                onClose={combo.handleCloseModal}
+              />
             )}
-
           </div>
         </>
       )}
 
       {/* 저장 완료 모달 - 독립적으로 표시 */}
-      {showSaveCompleteModal && (
-        <>
-          <div className={`fixed inset-0 bg-black/50 z-60 transition-opacity duration-200 ${isFadingOut ? 'opacity-0' : 'opacity-100'}`} />
-          <div className={`fixed inset-0 flex items-center justify-center z-80 transition-opacity duration-200 ${isFadingOut ? 'opacity-0' : 'opacity-100'}`}>
-            <div className="w-300 h-300 bg-white rounded-card shadow-[0_0_10px_rgba(0,0,0,0.25)] relative animate-fade-in">
-              <SaveIcon className="w-100 h-100 text-blue-600 absolute left-1/2 -translate-x-1/2 top-64" />
-              <p className="font-heading-3 text-blue-600 absolute left-1/2 -translate-x-1/2 top-206">저장 완료!</p>
-            </div>
-          </div>
-        </>
+      {combo.showSaveCompleteModal && (
+        <SaveCompleteModal isFadingOut={combo.isFadingOut} />
       )}
     </div>
   );
