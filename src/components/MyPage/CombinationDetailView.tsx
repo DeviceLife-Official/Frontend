@@ -12,6 +12,7 @@ import CombinationEvaluationCard from '@/components/Combination/CombinationEvalu
 import { formatDate } from '@/utils/format';
 import type { ComboListItem } from '@/types/combo/combo';
 import type { CombinationName } from '@/constants/combination';
+import type { Grade } from '@/constants/evaluation/grade';
 
 interface Device {
   deviceId: number;
@@ -221,7 +222,7 @@ const CombinationDetailView = ({
                   <CombinationEvaluationCard
                     key={card.category}
                     category={card.category as CombinationName}
-                    grade={card.grade}
+                    grade={card.grade as Grade}
                     description={card.text}
                     tags={card.tags}
                   />

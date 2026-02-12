@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import type { ComboListItem } from '@/types/combo/combo';
 
 type SortOption = 'latest' | 'oldest' | 'alphabetical';
@@ -10,7 +10,11 @@ interface UseCombinationSortReturn {
 }
 
 export const useCombinationSort = (combos: ComboListItem[]): UseCombinationSortReturn => {
-  const [sortOption, setSortOption] = useState<SortOption>('latest');
+  const [sortOption, setSortOptionInternal] = useState<SortOption>('latest');
+
+  const setSortOption = useCallback((option: string) => {
+    setSortOptionInternal(option as SortOption);
+  }, []);
 
   // 정렬된 조합 목록
   const sortedCombos = useMemo(() => {

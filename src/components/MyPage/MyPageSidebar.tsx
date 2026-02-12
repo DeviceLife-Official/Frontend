@@ -6,10 +6,10 @@ import SettingIcon from '@/assets/icons/setting.svg?react';
 import SupportIcon from '@/assets/icons/support.svg?react';
 import Logo from '@/assets/logos/logo.svg?react';
 import { formatDate } from '@/utils/format';
-import type { UserProfile } from '@/types/mypage/user';
+import type { UserProfileResult } from '@/types/mypage/user';
 
 interface MyPageSidebarProps {
-  userProfile: UserProfile | null;
+  userProfile: UserProfileResult | null;
   isAuthLoading: boolean;
   sidebarContentRef: RefObject<HTMLDivElement>;
 }

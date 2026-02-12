@@ -1,4 +1,3 @@
-import { type UserCombination } from '@/types/devices';
 
 export interface Product {
   id: number;
