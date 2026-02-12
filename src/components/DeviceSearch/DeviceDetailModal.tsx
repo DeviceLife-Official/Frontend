@@ -1,4 +1,4 @@
-import type { Product } from '@/constants/mockData';
+import type { Product } from '@/types/product';
 import type { SearchDevice } from '@/types/devices';
 import PrimaryButton from '@/components/Button/PrimaryButton';
 import XIcon from '@/assets/icons/X.svg?react';

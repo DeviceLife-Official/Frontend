@@ -1,4 +1,3 @@
-
 export interface Product {
   id: number;
   name: string;
@@ -6,12 +5,4 @@ export interface Product {
   price: number;
   image: string | null;
   colors: string[];
-}
-
-export interface DeviceSummary {
-  id: number;
-  name: string;
-  chargingType: string;
-  color: string;
-  image: string | null;
 }
