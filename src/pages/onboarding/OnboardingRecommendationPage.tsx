@@ -1,9 +1,10 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import clsx from 'clsx';
 import PrimaryButton from '@/components/Button/PrimaryButton';
 import RecentlyViewedCard from '@/components/RecentlyViewed/RecentlyViewedCard';
 import LoadingSpinner from '@/components/LoadingSpinner';
+import SaveCompleteModal from '@/components/DeviceSearch/SaveCompleteModal';
 import type { RecentlyViewedDevice } from '@/types/recentlyViewed/recentlyViewed';
 import type { LifestyleTagKey } from '@/types/lifestyle/lifestyle';
 import { useAuth } from '@/hooks/useAuth';
@@ -41,6 +42,29 @@ const OnboardingRecommendationPage = () => {
 
   // 선택된 기기 Map (slot을 key로, deviceId를 value로 - 다른 타입 기기는 모두 선택 가능)
   const [selectedDevices, setSelectedDevices] = useState<Map<number, number>>(new Map());
+
+  // 저장 완료 모달 상태
+  const [showSaveSuccessModal, setShowSaveSuccessModal] = useState(false);
+  const [isSaveFadingOut, setIsSaveFadingOut] = useState(false);
+
+  // 저장 완료 팝업 자동 닫기 (0.8초 유지 후 0.2초 fade-out → 홈으로 이동)
+  useEffect(() => {
+    if (showSaveSuccessModal) {
+      const holdTimer = setTimeout(() => {
+        setIsSaveFadingOut(true);
+
+        const closeTimer = setTimeout(() => {
+          setShowSaveSuccessModal(false);
+          setIsSaveFadingOut(false);
+          navigate(ROUTES.home, { replace: true });
+        }, 200);
+
+        return () => clearTimeout(closeTimer);
+      }, 800);
+
+      return () => clearTimeout(holdTimer);
+    }
+  }, [showSaveSuccessModal, navigate]);
 
   const selectDevice = (deviceId: number, slot: number) => {
     setSelectedDevices((prev) => {
@@ -97,8 +121,7 @@ const OnboardingRecommendationPage = () => {
         await addDevice({ comboId, deviceId });
       }
 
-      alert(`선택한 ${deviceIds.length}개의 기기가 내 조합에 담겼습니다!`);
-      navigate(ROUTES.home, { replace: true });
+      setShowSaveSuccessModal(true);
     } catch (error) {
       const { message } = parseApiError(error);
       alert(message || '조합에 기기를 담는데 실패했습니다. 잠시 후 다시 시도해주세요.');
@@ -108,6 +131,7 @@ const OnboardingRecommendationPage = () => {
   };
 
   return (
+    <>
     <div className="flex flex-col items-center justify-center h-[calc(100vh-80px)]">
       {/* 메인 컨테이너 */}
       <div className="flex flex-col items-center gap-24 w-1400">
@@ -185,6 +209,11 @@ const OnboardingRecommendationPage = () => {
         </div>
       </div>
     </div>
+
+    {showSaveSuccessModal && (
+      <SaveCompleteModal isFadingOut={isSaveFadingOut} />
+    )}
+    </>
   );
 };
 
