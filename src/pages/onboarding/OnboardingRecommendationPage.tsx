@@ -1,9 +1,10 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import clsx from 'clsx';
 import PrimaryButton from '@/components/Button/PrimaryButton';
 import RecentlyViewedCard from '@/components/RecentlyViewed/RecentlyViewedCard';
 import LoadingSpinner from '@/components/LoadingSpinner';
+import SaveCompleteModal from '@/components/DeviceSearch/SaveCompleteModal';
 import type { RecentlyViewedDevice } from '@/types/recentlyViewed/recentlyViewed';
 import type { LifestyleTagKey } from '@/types/lifestyle/lifestyle';
 import { useAuth } from '@/hooks/useAuth';
@@ -39,11 +40,46 @@ const OnboardingRecommendationPage = () => {
   const { mutateAsync: addDevice } = usePostComboDevice();
   const [isAdding, setIsAdding] = useState(false);
 
-  // 선택된 기기 ID (단일 선택)
-  const [selectedDeviceId, setSelectedDeviceId] = useState<number | null>(null);
+  // 선택된 기기 Map (slot을 key로, deviceId를 value로 - 다른 타입 기기는 모두 선택 가능)
+  const [selectedDevices, setSelectedDevices] = useState<Map<number, number>>(new Map());
 
-  const selectDevice = (deviceId: number) => {
-    setSelectedDeviceId(deviceId);
+  // 저장 완료 모달 상태
+  const [showSaveSuccessModal, setShowSaveSuccessModal] = useState(false);
+  const [isSaveFadingOut, setIsSaveFadingOut] = useState(false);
+
+  // 저장 완료 팝업 자동 닫기 (0.8초 유지 후 0.2초 fade-out → 홈으로 이동)
+  useEffect(() => {
+    if (showSaveSuccessModal) {
+      const holdTimer = setTimeout(() => {
+        setIsSaveFadingOut(true);
+
+        const closeTimer = setTimeout(() => {
+          setShowSaveSuccessModal(false);
+          setIsSaveFadingOut(false);
+          navigate(ROUTES.home, { replace: true });
+        }, 200);
+
+        return () => clearTimeout(closeTimer);
+      }, 800);
+
+      return () => clearTimeout(holdTimer);
+    }
+  }, [showSaveSuccessModal, navigate]);
+
+  const selectDevice = (deviceId: number, slot: number) => {
+    setSelectedDevices((prev) => {
+      const newMap = new Map(prev);
+
+      if (newMap.get(slot) === deviceId) {
+        // 이미 선택된 기기를 다시 클릭하면 선택 해제
+        newMap.delete(slot);
+      } else {
+        // 새로운 기기 선택 (같은 slot의 기존 선택은 자동 대체)
+        newMap.set(slot, deviceId);
+      }
+
+      return newMap;
+    });
   };
 
   // 유저명
@@ -52,8 +88,11 @@ const OnboardingRecommendationPage = () => {
   // 타이틀 표시 여부
   const hasTitleData = lifestyleTagLabel && userName;
 
-  // API 응답을 RecentlyViewedDevice 형태로 변환 (3개만)
-  const recommendedDevices: RecentlyViewedDevice[] = (lifestyleData?.result?.devices ?? [])
+  // slot 정보를 포함한 확장 타입
+  type RecommendedDevice = RecentlyViewedDevice & { slot: number };
+
+  // API 응답을 RecentlyViewedDevice 형태로 변환 (3개만, slot 정보 보존)
+  const recommendedDevices: RecommendedDevice[] = (lifestyleData?.result?.devices ?? [])
     .slice(0, 3)
     .map((device) => ({
       deviceId: device.deviceId,
@@ -66,17 +105,23 @@ const OnboardingRecommendationPage = () => {
       priceKrw: device.price,
       imageUrl: device.imageUrl,
       viewedAt: new Date().toISOString(),
+      slot: device.slot,
     }));
 
-  // 내 조합에 담기 핸들러
+  // 내 조합에 담기 핸들러 (다중 기기 순차 추가)
   const handleAddToCombo = async () => {
-    if (!comboId || !selectedDeviceId || isAdding) return;
+    if (!comboId || selectedDevices.size === 0 || isAdding) return;
 
     setIsAdding(true);
     try {
-      await addDevice({ comboId, deviceId: selectedDeviceId });
-      alert('선택한 기기가 내 조합에 담겼습니다!');
-      navigate(ROUTES.home, { replace: true });
+      const deviceIds = Array.from(selectedDevices.values());
+
+      // 선택된 모든 기기를 순차적으로 추가
+      for (const deviceId of deviceIds) {
+        await addDevice({ comboId, deviceId });
+      }
+
+      setShowSaveSuccessModal(true);
     } catch (error) {
       const { message } = parseApiError(error);
       alert(message || '조합에 기기를 담는데 실패했습니다. 잠시 후 다시 시도해주세요.');
@@ -86,6 +131,7 @@ const OnboardingRecommendationPage = () => {
   };
 
   return (
+    <>
     <div className="flex flex-col items-center justify-center h-[calc(100vh-80px)]">
       {/* 메인 컨테이너 */}
       <div className="flex flex-col items-center gap-24 w-1400">
@@ -121,7 +167,7 @@ const OnboardingRecommendationPage = () => {
               <LoadingSpinner />
             ) : recommendedDevices.length > 0 ? (
               recommendedDevices.map((device) => {
-                const isSelected = selectedDeviceId === device.deviceId;
+                const isSelected = selectedDevices.get(device.slot) === device.deviceId;
                 return (
                   <RecentlyViewedCard
                     key={device.deviceId}
@@ -130,7 +176,7 @@ const OnboardingRecommendationPage = () => {
                       'rounded-8 transition-all',
                       isSelected && 'border-shadow-blue'
                     )}
-                    onClick={() => selectDevice(device.deviceId)}
+                    onClick={() => selectDevice(device.deviceId, device.slot)}
                   />
                 );
               })
@@ -142,8 +188,14 @@ const OnboardingRecommendationPage = () => {
           <div className="flex flex-col items-center gap-12 ">
             {/* 내 조합에 담기 버튼 */}
             <PrimaryButton
-              text={isAdding ? '담는 중...' : '내 조합에 담기'}
-              disabled={!comboId || !selectedDeviceId || isAdding}
+              text={
+                isAdding
+                  ? '담는 중...'
+                  : selectedDevices.size > 0
+                    ? `내 조합에 담기 (${selectedDevices.size}개)`
+                    : '내 조합에 담기'
+              }
+              disabled={!comboId || selectedDevices.size === 0 || isAdding}
               className="w-280 bg-blue-500 hover:bg-blue-400"
               onClick={handleAddToCombo}
             />
@@ -157,6 +209,11 @@ const OnboardingRecommendationPage = () => {
         </div>
       </div>
     </div>
+
+    {showSaveSuccessModal && (
+      <SaveCompleteModal isFadingOut={isSaveFadingOut} />
+    )}
+    </>
   );
 };
 
