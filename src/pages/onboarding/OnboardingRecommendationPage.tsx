@@ -39,11 +39,23 @@ const OnboardingRecommendationPage = () => {
   const { mutateAsync: addDevice } = usePostComboDevice();
   const [isAdding, setIsAdding] = useState(false);
 
-  // 선택된 기기 ID (단일 선택)
-  const [selectedDeviceId, setSelectedDeviceId] = useState<number | null>(null);
+  // 선택된 기기 Map (slot을 key로, deviceId를 value로 - 다른 타입 기기는 모두 선택 가능)
+  const [selectedDevices, setSelectedDevices] = useState<Map<number, number>>(new Map());
 
-  const selectDevice = (deviceId: number) => {
-    setSelectedDeviceId(deviceId);
+  const selectDevice = (deviceId: number, slot: number) => {
+    setSelectedDevices((prev) => {
+      const newMap = new Map(prev);
+
+      if (newMap.get(slot) === deviceId) {
+        // 이미 선택된 기기를 다시 클릭하면 선택 해제
+        newMap.delete(slot);
+      } else {
+        // 새로운 기기 선택 (같은 slot의 기존 선택은 자동 대체)
+        newMap.set(slot, deviceId);
+      }
+
+      return newMap;
+    });
   };
 
   // 유저명
@@ -52,8 +64,11 @@ const OnboardingRecommendationPage = () => {
   // 타이틀 표시 여부
   const hasTitleData = lifestyleTagLabel && userName;
 
-  // API 응답을 RecentlyViewedDevice 형태로 변환 (3개만)
-  const recommendedDevices: RecentlyViewedDevice[] = (lifestyleData?.result?.devices ?? [])
+  // slot 정보를 포함한 확장 타입
+  type RecommendedDevice = RecentlyViewedDevice & { slot: number };
+
+  // API 응답을 RecentlyViewedDevice 형태로 변환 (3개만, slot 정보 보존)
+  const recommendedDevices: RecommendedDevice[] = (lifestyleData?.result?.devices ?? [])
     .slice(0, 3)
     .map((device) => ({
       deviceId: device.deviceId,
@@ -66,16 +81,23 @@ const OnboardingRecommendationPage = () => {
       priceKrw: device.price,
       imageUrl: device.imageUrl,
       viewedAt: new Date().toISOString(),
+      slot: device.slot,
     }));
 
-  // 내 조합에 담기 핸들러
+  // 내 조합에 담기 핸들러 (다중 기기 순차 추가)
   const handleAddToCombo = async () => {
-    if (!comboId || !selectedDeviceId || isAdding) return;
+    if (!comboId || selectedDevices.size === 0 || isAdding) return;
 
     setIsAdding(true);
     try {
-      await addDevice({ comboId, deviceId: selectedDeviceId });
-      alert('선택한 기기가 내 조합에 담겼습니다!');
+      const deviceIds = Array.from(selectedDevices.values());
+
+      // 선택된 모든 기기를 순차적으로 추가
+      for (const deviceId of deviceIds) {
+        await addDevice({ comboId, deviceId });
+      }
+
+      alert(`선택한 ${deviceIds.length}개의 기기가 내 조합에 담겼습니다!`);
       navigate(ROUTES.home, { replace: true });
     } catch (error) {
       const { message } = parseApiError(error);
@@ -121,7 +143,7 @@ const OnboardingRecommendationPage = () => {
               <LoadingSpinner />
             ) : recommendedDevices.length > 0 ? (
               recommendedDevices.map((device) => {
-                const isSelected = selectedDeviceId === device.deviceId;
+                const isSelected = selectedDevices.get(device.slot) === device.deviceId;
                 return (
                   <RecentlyViewedCard
                     key={device.deviceId}
@@ -130,7 +152,7 @@ const OnboardingRecommendationPage = () => {
                       'rounded-8 transition-all',
                       isSelected && 'border-shadow-blue'
                     )}
-                    onClick={() => selectDevice(device.deviceId)}
+                    onClick={() => selectDevice(device.deviceId, device.slot)}
                   />
                 );
               })
@@ -142,8 +164,14 @@ const OnboardingRecommendationPage = () => {
           <div className="flex flex-col items-center gap-12 ">
             {/* 내 조합에 담기 버튼 */}
             <PrimaryButton
-              text={isAdding ? '담는 중...' : '내 조합에 담기'}
-              disabled={!comboId || !selectedDeviceId || isAdding}
+              text={
+                isAdding
+                  ? '담는 중...'
+                  : selectedDevices.size > 0
+                    ? `내 조합에 담기 (${selectedDevices.size}개)`
+                    : '내 조합에 담기'
+              }
+              disabled={!comboId || selectedDevices.size === 0 || isAdding}
               className="w-280 bg-blue-500 hover:bg-blue-400"
               onClick={handleAddToCombo}
             />
